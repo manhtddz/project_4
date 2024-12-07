@@ -8,6 +8,8 @@ import com.example.e_project_4_api.service.AlbumService;
 import com.example.e_project_4_api.service.PlaylistService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,11 +32,12 @@ public class PlaylistController {
     }
 
     @DeleteMapping("/public/playlists/{id}")
-    public Map<String, String> delete(@PathVariable("id") int id) {
-        service.deleteById(id);
-        return Map.of(
-                "message", "Delete playlist" + id
-        );
+    public  ResponseEntity<Void> delete(@PathVariable("id") int id) {
+
+        if(service.deleteById(id)){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/public/playlists")

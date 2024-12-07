@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.response.AlbumResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Subjects;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,50 +44,63 @@ public class AlbumService {
     public AlbumResponse findById(int id) {
         Optional<Albums> op = repo.findById(id);
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any albums with id: " + id);
+            throw new NotFoundException("Can't find any album with id: " + id);
         }
         return toAlbumResponse(op.get());
     }
 
-    public void deleteById(int id) {
-        Optional<Albums> op = repo.findById(id);
-        if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any albums with id: " + id);
+    public boolean deleteById(int id) {
+        Optional<Albums> album = repo.findById(id);
+        if (album.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + id);
         }
-        repo.delete(op.get());
+            Albums existing = album.get();
+            existing.setIsDeleted(true);
+            repo.save(existing);
+            return true;
     }
 
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
+        List<String> errors = new ArrayList<>();
+
         Optional<Albums> op = repo.findById(request.getId());
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (op.isPresent()) {
-            throw new AlreadyExistedException("Found a album with Id: " + request.getId());
+            errors.add("Already exist album with id: " + request.getId());
         }
+        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (artist.isEmpty()) {
-            throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
+            errors.add("Can't find any artist with id: " + request.getArtistId());
         }
+        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (subject.isEmpty()) {
-            throw new NotFoundException("Can't find any subjects with Id: " + request.getSubjectId());
+            errors.add("Can't find any subject with id: " + request.getSubjectId());
         }
-        Albums newAlbum = new Albums(request.getId(), request.getTitle(), request.getImage(),false, request.getReleaseDate(),
-                 false, request.getCreatedAt(), request.getModifiedAt(),artist.get(),subject.get());
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+        Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
+                false, request.getCreatedAt(), request.getModifiedAt(), artist.get(), subject.get());
         repo.save(newAlbum);
         return request;
     }
 
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
+        List<String> errors = new ArrayList<>();
+
         Optional<Albums> op = repo.findById(request.getId());
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any student with id: " + request.getId());
+            errors.add("Can't find any album with id: " + request.getId());
         }
+        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (artist.isEmpty()) {
-            throw new NotFoundException("Can't find any artists with id: " + request.getArtistId());
+            errors.add("Can't find any artist with id: " + request.getArtistId());
         }
+        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (subject.isEmpty()) {
-            throw new NotFoundException("Can't find any subjects with Id: " + request.getSubjectId());
+            errors.add("Can't find any subject with id: " + request.getSubjectId());
+        }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
         Albums album = op.get();
         album.setTitle(request.getTitle());
@@ -93,15 +108,15 @@ public class AlbumService {
         album.setReleaseDate(request.getReleaseDate());
         album.setSubjectId(subject.get());
         album.setIsReleased(request.getReleased());
-        album.setReleaseDate(request.getReleaseDate());
         album.setArtistId(artist.get());
         album.setIsDeleted(request.getDeleted());
         album.setModifiedAt(request.getModifiedAt());
         repo.save(album);
+
         return request;
     }
 
-    public AlbumResponse toAlbumResponse(Albums album){
+    public AlbumResponse toAlbumResponse(Albums album) {
         AlbumResponse res = new AlbumResponse();
         BeanUtils.copyProperties(album, res);
         res.setArtistId(album.getArtistId().getId());

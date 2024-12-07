@@ -70,7 +70,7 @@ public class SongService {
         if (artist.isEmpty()) {
             throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
         }
-        Songs newSong = new Songs(request.getId(), request.getTitle(), request.getAudioPath(), request.getLikeAmount(),
+        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(), request.getLikeAmount(),
                 request.getListenAmount(), request.getFeatureArtist(), request.getLyricFilePath(), false, false
                 , request.getCreatedAt(), request.getModifiedAt(), album.get(), artist.get());
         repo.save(newSong);

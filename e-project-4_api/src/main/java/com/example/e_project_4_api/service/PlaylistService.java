@@ -14,6 +14,7 @@ import com.example.e_project_4_api.repositories.PlaylistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -45,12 +46,15 @@ public class PlaylistService {
         return toPlayListResponse(op.get());
     }
 
-    public void deleteById(int id) {
-        Optional<Playlists> op = repo.findById(id);
-        if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any playlists with id: " + id);
+    public boolean deleteById(int id) {
+        Optional<Playlists> playlist = repo.findById(id);
+        if (playlist.isPresent()) {
+            Playlists existing = playlist.get();
+            existing.setIsDeleted(true);
+            repo.save(existing);
+            return true;
         }
-        repo.delete(op.get());
+        return false;
     }
 
     public NewOrUpdatePlaylist addNewPlaylist(NewOrUpdatePlaylist request) {
@@ -62,10 +66,11 @@ public class PlaylistService {
         if (users.isEmpty()) {
             throw new NotFoundException("Can't find any users with Id: " + request.getUserId());
         }
-        Playlists newPlaylist = new Playlists(request.getId(), request.getTitle(), false, request.getCreatedAt(),
+        Playlists newPlaylist = new Playlists(request.getTitle(), false, request.getCreatedAt(),
                 request.getModifiedAt(), users.get());
         repo.save(newPlaylist);
         return request;
+
     }
 
     public NewOrUpdatePlaylist updatePlaylist(NewOrUpdatePlaylist request) {
