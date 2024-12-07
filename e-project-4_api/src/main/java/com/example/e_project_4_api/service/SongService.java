@@ -7,9 +7,11 @@ import com.example.e_project_4_api.dto.response.SongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.models.Albums;
+import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.AlbumRepository;
+import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.SongRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,8 @@ public class SongService {
     private SongRepository repo;
     @Autowired
     private AlbumRepository albumRepo;
+    @Autowired
+    private ArtistRepository artistRepo;
 
     public List<SongResponse> getAllAlbums() {
         return repo.findAll()
@@ -56,15 +60,19 @@ public class SongService {
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
         Optional<Songs> op = repo.findById(request.getId());
         Optional<Albums> album = albumRepo.findById(request.getAlbumId());
+        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (op.isPresent()) {
             throw new AlreadyExistedException("Found a song with Id: " + request.getId());
         }
         if (album.isEmpty()) {
             throw new NotFoundException("Can't find any albums with Id: " + request.getAlbumId());
         }
-        Songs newSong = new Songs(request.getId(), request.getTitle(), request.getAudioPath(), request.getAmount(),
-                request.getLikeAmount(), request.getLyricFilePath(), request.getPending(), request.getDeleted()
-                , request.getCreatedAt(), request.getModifiedAt(), album.get());
+        if (artist.isEmpty()) {
+            throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
+        }
+        Songs newSong = new Songs(request.getId(), request.getTitle(), request.getAudioPath(), request.getLikeAmount(),
+                request.getListenAmount(), request.getFeatureArtist(), request.getLyricFilePath(), false, false
+                , request.getCreatedAt(), request.getModifiedAt(), album.get(), artist.get());
         repo.save(newSong);
         return request;
     }
@@ -72,21 +80,28 @@ public class SongService {
     public NewOrUpdateSong updateSong(NewOrUpdateSong request) {
         Optional<Songs> op = repo.findById(request.getId());
         Optional<Albums> album = albumRepo.findById(request.getAlbumId());
+        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any songs with id: " + request.getId());
         }
         if (album.isEmpty()) {
             throw new NotFoundException("Can't find any albums with id: " + request.getAlbumId());
         }
+        if (artist.isEmpty()) {
+            throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
+        }
         Songs song = op.get();
         song.setTitle(request.getTitle());
         song.setAudioPath(request.getAudioPath());
-        song.setAmount(request.getAmount());
         song.setLikeAmount(request.getLikeAmount());
+        song.setListenAmount(request.getListenAmount());
+        song.setFeatureArtist(request.getFeatureArtist());
         song.setLyricFilePath(request.getLyricFilePath());
         song.setIsPending(request.getPending());
         song.setIsDeleted(request.getDeleted());
         song.setModifiedAt(request.getModifiedAt());
+        song.setAlbumId(album.get());
+        song.setArtistId(artist.get());
         repo.save(song);
         return request;
     }
@@ -95,6 +110,7 @@ public class SongService {
         SongResponse res = new SongResponse();
         BeanUtils.copyProperties(song, res);
         res.setAlbumId(song.getAlbumId().getId());
+        res.setArtistId(song.getArtistId().getId());
         return res;
     }
 }

@@ -7,7 +7,6 @@ package com.example.e_project_4_api.dto.response;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.GenreSong;
 import com.example.e_project_4_api.models.PlaylistSong;
-import com.example.e_project_4_api.models.SubArtist;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -29,12 +28,13 @@ public class SongResponse{
     private Date createdAt;
     private Date modifiedAt;
     private Integer albumId;
+    private Integer artistId;
 
     public SongResponse() {
     }
 
     public SongResponse(Integer id, String title, String audioPath, Integer likeAmount, Integer amount, String lyricFilePath,
-                        Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Integer albumId) {
+                        Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Integer albumId,Integer artistId) {
         this.id = id;
         this.title = title;
         this.audioPath = audioPath;
@@ -46,6 +46,7 @@ public class SongResponse{
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.albumId = albumId;
+        this.artistId = artistId;
     }
 
     public Integer getId() {
@@ -134,5 +135,13 @@ public class SongResponse{
 
     public void setAlbumId(Integer albumId) {
         this.albumId = albumId;
+    }
+
+    public Integer getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Integer artistId) {
+        this.artistId = artistId;
     }
 }

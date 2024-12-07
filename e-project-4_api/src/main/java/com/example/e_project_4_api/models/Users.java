@@ -13,6 +13,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -26,19 +29,6 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "users")
-@NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
-    @NamedQuery(name = "Users.findById", query = "SELECT u FROM Users u WHERE u.id = :id"),
-    @NamedQuery(name = "Users.findByUsername", query = "SELECT u FROM Users u WHERE u.username = :username"),
-    @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password"),
-    @NamedQuery(name = "Users.findByPhone", query = "SELECT u FROM Users u WHERE u.phone = :phone"),
-    @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email"),
-    @NamedQuery(name = "Users.findByRole", query = "SELECT u FROM Users u WHERE u.role = :role"),
-    @NamedQuery(name = "Users.findByBio", query = "SELECT u FROM Users u WHERE u.bio = :bio"),
-    @NamedQuery(name = "Users.findByDob", query = "SELECT u FROM Users u WHERE u.dob = :dob"),
-    @NamedQuery(name = "Users.findByIsDeleted", query = "SELECT u FROM Users u WHERE u.isDeleted = :isDeleted"),
-    @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "Users.findByModifiedAt", query = "SELECT u FROM Users u WHERE u.modifiedAt = :modifiedAt")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +41,12 @@ public class Users implements Serializable {
     @Column(name = "username")
     private String username;
     @Basic(optional = false)
+    @Column(name = "full_name")
+    private String fullName;
+    @Basic(optional = false)
+    @Column(name = "avatar")
+    private String avatar;
+    @Basic(optional = false)
     @Column(name = "password")
     private String password;
     @Column(name = "phone")
@@ -59,6 +55,7 @@ public class Users implements Serializable {
     private String email;
     @Column(name = "role")
     private String role;
+    @Lob
     @Column(name = "bio")
     private String bio;
     @Column(name = "dob")
@@ -72,24 +69,32 @@ public class Users implements Serializable {
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
-    @OneToMany(mappedBy = "artistId")
-    private Collection<Albums> albumsCollection;
+    @OneToMany(mappedBy = "userId")
+    private Collection<FavouriteSongs> favouriteSongsCollection;
     @OneToMany(mappedBy = "userId")
     private Collection<Playlists> playlistsCollection;
-    @OneToMany(mappedBy = "artistId")
-    private Collection<SubArtist> subArtistCollection;
+    @JoinColumn(name = "artist_id", referencedColumnName = "id")
+    @ManyToOne
+    private Artists artistId;
 
     public Users() {
     }
 
-    public Users(Integer id) {
-        this.id = id;
-    }
-
-    public Users(Integer id, String username, String password) {
+    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
         this.id = id;
         this.username = username;
+        this.fullName = fullName;
+        this.avatar = avatar;
         this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+        this.bio = bio;
+        this.dob = dob;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.artistId = artistId;
     }
 
     public Integer getId() {
@@ -106,6 +111,22 @@ public class Users implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getPassword() {
@@ -180,12 +201,12 @@ public class Users implements Serializable {
         this.modifiedAt = modifiedAt;
     }
 
-    public Collection<Albums> getAlbumsCollection() {
-        return albumsCollection;
+    public Collection<FavouriteSongs> getFavouriteSongsCollection() {
+        return favouriteSongsCollection;
     }
 
-    public void setAlbumsCollection(Collection<Albums> albumsCollection) {
-        this.albumsCollection = albumsCollection;
+    public void setFavouriteSongsCollection(Collection<FavouriteSongs> favouriteSongsCollection) {
+        this.favouriteSongsCollection = favouriteSongsCollection;
     }
 
     public Collection<Playlists> getPlaylistsCollection() {
@@ -196,12 +217,12 @@ public class Users implements Serializable {
         this.playlistsCollection = playlistsCollection;
     }
 
-    public Collection<SubArtist> getSubArtistCollection() {
-        return subArtistCollection;
+    public Artists getArtistId() {
+        return artistId;
     }
 
-    public void setSubArtistCollection(Collection<SubArtist> subArtistCollection) {
-        this.subArtistCollection = subArtistCollection;
+    public void setArtistId(Artists artistId) {
+        this.artistId = artistId;
     }
 
     @Override

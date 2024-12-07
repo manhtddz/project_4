@@ -1,9 +1,5 @@
 package com.example.e_project_4_api.dto.request;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import java.time.Instant;
 import java.util.Date;
@@ -12,30 +8,26 @@ public class NewOrUpdateAlbum {
     private Integer id;
     private String title;
     private String image;
-    private Integer artistId;
+    private Boolean isReleased;
     private Date releaseDate;
+    private Integer artistId;
+    private Integer subjectId;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
 
-    public NewOrUpdateAlbum(Integer id, String title, String image, Date releaseDate, Integer artistId, Boolean isDeleted) {
+    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Integer subjectId, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.image = image;
+        this.isReleased = isReleased;
         this.releaseDate = releaseDate;
         this.artistId = artistId;
+        this.subjectId = subjectId;
         this.isDeleted = isDeleted;
         this.createdAt = Date.from(Instant.now());
         this.modifiedAt = Date.from(Instant.now());
-    }
-
-    public Integer getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Integer artistId) {
-        this.artistId = artistId;
     }
 
     public Integer getId() {
@@ -62,12 +54,36 @@ public class NewOrUpdateAlbum {
         this.image = image;
     }
 
+    public Boolean getReleased() {
+        return isReleased;
+    }
+
+    public void setReleased(Boolean released) {
+        isReleased = released;
+    }
+
     public Date getReleaseDate() {
         return releaseDate;
     }
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public Integer getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Integer artistId) {
+        this.artistId = artistId;
+    }
+
+    public Integer getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Integer subjectId) {
+        this.subjectId = subjectId;
     }
 
     public Boolean getDeleted() {

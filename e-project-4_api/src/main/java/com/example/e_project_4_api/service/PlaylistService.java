@@ -62,7 +62,7 @@ public class PlaylistService {
         if (users.isEmpty()) {
             throw new NotFoundException("Can't find any users with Id: " + request.getUserId());
         }
-        Playlists newPlaylist = new Playlists(request.getId(), request.getTitle(), request.getDeleted(), request.getCreatedAt(),
+        Playlists newPlaylist = new Playlists(request.getId(), request.getTitle(), false, request.getCreatedAt(),
                 request.getModifiedAt(), users.get());
         repo.save(newPlaylist);
         return request;

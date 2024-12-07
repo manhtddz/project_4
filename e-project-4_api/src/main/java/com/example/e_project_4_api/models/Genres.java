@@ -26,14 +26,6 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "genres")
-@NamedQueries({
-    @NamedQuery(name = "Genres.findAll", query = "SELECT g FROM Genres g"),
-    @NamedQuery(name = "Genres.findById", query = "SELECT g FROM Genres g WHERE g.id = :id"),
-    @NamedQuery(name = "Genres.findByTitle", query = "SELECT g FROM Genres g WHERE g.title = :title"),
-    @NamedQuery(name = "Genres.findByImage", query = "SELECT g FROM Genres g WHERE g.image = :image"),
-    @NamedQuery(name = "Genres.findByIsDeleted", query = "SELECT g FROM Genres g WHERE g.isDeleted = :isDeleted"),
-    @NamedQuery(name = "Genres.findByCreatedAt", query = "SELECT g FROM Genres g WHERE g.createdAt = :createdAt"),
-    @NamedQuery(name = "Genres.findByModifiedAt", query = "SELECT g FROM Genres g WHERE g.modifiedAt = :modifiedAt")})
 public class Genres implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,13 +53,13 @@ public class Genres implements Serializable {
     public Genres() {
     }
 
-    public Genres(Integer id) {
-        this.id = id;
-    }
-
-    public Genres(Integer id, String title) {
+    public Genres(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.title = title;
+        this.image = image;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 
     public Integer getId() {

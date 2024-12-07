@@ -28,13 +28,6 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "playlists")
-@NamedQueries({
-    @NamedQuery(name = "Playlists.findAll", query = "SELECT p FROM Playlists p"),
-    @NamedQuery(name = "Playlists.findById", query = "SELECT p FROM Playlists p WHERE p.id = :id"),
-    @NamedQuery(name = "Playlists.findByTitle", query = "SELECT p FROM Playlists p WHERE p.title = :title"),
-    @NamedQuery(name = "Playlists.findByIsDeleted", query = "SELECT p FROM Playlists p WHERE p.isDeleted = :isDeleted"),
-    @NamedQuery(name = "Playlists.findByCreatedAt", query = "SELECT p FROM Playlists p WHERE p.createdAt = :createdAt"),
-    @NamedQuery(name = "Playlists.findByModifiedAt", query = "SELECT p FROM Playlists p WHERE p.modifiedAt = :modifiedAt")})
 public class Playlists implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,9 +53,6 @@ public class Playlists implements Serializable {
     @OneToMany(mappedBy = "playlistId")
     private Collection<PlaylistSong> playlistSongCollection;
 
-    public Playlists() {
-    }
-
     public Playlists(Integer id, String title, Boolean isDeleted, Date createdAt, Date modifiedAt, Users userId) {
         this.id = id;
         this.title = title;
@@ -70,6 +60,9 @@ public class Playlists implements Serializable {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.userId = userId;
+    }
+
+    public Playlists() {
     }
 
     public Integer getId() {

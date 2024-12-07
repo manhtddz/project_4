@@ -6,18 +6,22 @@ public class AlbumResponse {
     private Integer id;
     private String title;
     private String image;
-    private Integer artistId;
+    private Boolean isReleased;
     private Date releaseDate;
+    private Integer artistId;
+    private Integer subjectId;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
-    public AlbumResponse(Integer id, String title, String image, Integer artistId, Date releaseDate, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public AlbumResponse(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Integer subjectId, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.image = image;
-        this.artistId = artistId;
+        this.isReleased = isReleased;
         this.releaseDate = releaseDate;
+        this.artistId = artistId;
+        this.subjectId = subjectId;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
@@ -50,12 +54,12 @@ public class AlbumResponse {
         this.image = image;
     }
 
-    public Integer getArtistId() {
-        return artistId;
+    public Boolean getReleased() {
+        return isReleased;
     }
 
-    public void setArtistId(Integer artistId) {
-        this.artistId = artistId;
+    public void setReleased(Boolean released) {
+        isReleased = released;
     }
 
     public Date getReleaseDate() {
@@ -64,6 +68,22 @@ public class AlbumResponse {
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public Integer getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Integer artistId) {
+        this.artistId = artistId;
+    }
+
+    public Integer getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Integer subjectId) {
+        this.subjectId = subjectId;
     }
 
     public Boolean getDeleted() {

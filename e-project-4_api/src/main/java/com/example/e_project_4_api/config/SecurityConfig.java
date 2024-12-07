@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/login", "/api/register").permitAll()
+                        .requestMatchers("api/login", "api/register").permitAll()
                         .requestMatchers("/api/artist/**").hasAnyAuthority("ROLE_ARTIST")
                         .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")

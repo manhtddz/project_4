@@ -5,6 +5,7 @@
 package com.example.e_project_4_api.models;
 
 import java.io.Serializable;
+import java.util.Date;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,17 +17,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  *
  * @author admin
  */
 @Entity
-@Table(name = "sub_artist")
-@NamedQueries({
-    @NamedQuery(name = "SubArtist.findAll", query = "SELECT s FROM SubArtist s"),
-    @NamedQuery(name = "SubArtist.findById", query = "SELECT s FROM SubArtist s WHERE s.id = :id")})
-public class SubArtist implements Serializable {
+@Table(name = "favourite_songs")
+public class FavouriteSongs implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -34,18 +34,31 @@ public class SubArtist implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    @Column(name = "modified_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedAt;
     @JoinColumn(name = "song_id", referencedColumnName = "id")
     @ManyToOne
     private Songs songId;
-    @JoinColumn(name = "artist_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne
-    private Users artistId;
+    private Users userId;
 
-    public SubArtist() {
+    public FavouriteSongs() {
     }
 
-    public SubArtist(Integer id) {
+    public FavouriteSongs(Integer id, Boolean isDeleted, Date createdAt, Date modifiedAt, Songs songId, Users userId) {
         this.id = id;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.songId = songId;
+        this.userId = userId;
     }
 
     public Integer getId() {
@@ -56,6 +69,30 @@ public class SubArtist implements Serializable {
         this.id = id;
     }
 
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
     public Songs getSongId() {
         return songId;
     }
@@ -64,12 +101,12 @@ public class SubArtist implements Serializable {
         this.songId = songId;
     }
 
-    public Users getArtistId() {
-        return artistId;
+    public Users getUserId() {
+        return userId;
     }
 
-    public void setArtistId(Users artistId) {
-        this.artistId = artistId;
+    public void setUserId(Users userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -82,10 +119,10 @@ public class SubArtist implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SubArtist)) {
+        if (!(object instanceof FavouriteSongs)) {
             return false;
         }
-        SubArtist other = (SubArtist) object;
+        FavouriteSongs other = (FavouriteSongs) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -94,7 +131,7 @@ public class SubArtist implements Serializable {
 
     @Override
     public String toString() {
-        return "models.SubArtist[ id=" + id + " ]";
+        return "models.FavouriteSongs[ id=" + id + " ]";
     }
     
 }

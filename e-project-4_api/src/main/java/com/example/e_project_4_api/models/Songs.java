@@ -28,17 +28,6 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "songs")
-@NamedQueries({
-    @NamedQuery(name = "Songs.findAll", query = "SELECT s FROM Songs s"),
-    @NamedQuery(name = "Songs.findById", query = "SELECT s FROM Songs s WHERE s.id = :id"),
-    @NamedQuery(name = "Songs.findByTitle", query = "SELECT s FROM Songs s WHERE s.title = :title"),
-    @NamedQuery(name = "Songs.findByAudioPath", query = "SELECT s FROM Songs s WHERE s.audioPath = :audioPath"),
-    @NamedQuery(name = "Songs.findByAmount", query = "SELECT s FROM Songs s WHERE s.amount = :amount"),
-    @NamedQuery(name = "Songs.findByLyricFilePath", query = "SELECT s FROM Songs s WHERE s.lyricFilePath = :lyricFilePath"),
-    @NamedQuery(name = "Songs.findByIsPending", query = "SELECT s FROM Songs s WHERE s.isPending = :isPending"),
-    @NamedQuery(name = "Songs.findByIsDeleted", query = "SELECT s FROM Songs s WHERE s.isDeleted = :isDeleted"),
-    @NamedQuery(name = "Songs.findByCreatedAt", query = "SELECT s FROM Songs s WHERE s.createdAt = :createdAt"),
-    @NamedQuery(name = "Songs.findByModifiedAt", query = "SELECT s FROM Songs s WHERE s.modifiedAt = :modifiedAt")})
 public class Songs implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,10 +41,12 @@ public class Songs implements Serializable {
     private String title;
     @Column(name = "audio_path")
     private String audioPath;
-    @Column(name = "amount")
-    private Integer amount;
     @Column(name = "like_amount")
     private Integer likeAmount;
+    @Column(name = "listen_amount")
+    private Integer listenAmount;
+    @Column(name = "feature_artist")
+    private String featureArtist;
     @Column(name = "lyric_file_path")
     private String lyricFilePath;
     @Column(name = "is_pending")
@@ -71,8 +62,11 @@ public class Songs implements Serializable {
     @JoinColumn(name = "album_id", referencedColumnName = "id")
     @ManyToOne
     private Albums albumId;
+    @JoinColumn(name = "artist_id", referencedColumnName = "id")
+    @ManyToOne
+    private Artists artistId;
     @OneToMany(mappedBy = "songId")
-    private Collection<SubArtist> subArtistCollection;
+    private Collection<FavouriteSongs> favouriteSongsCollection;
     @OneToMany(mappedBy = "songId")
     private Collection<PlaylistSong> playlistSongCollection;
     @OneToMany(mappedBy = "songId")
@@ -81,27 +75,20 @@ public class Songs implements Serializable {
     public Songs() {
     }
 
-    public Songs(Integer id, String title, String audioPath, Integer amount, Integer likeAmount, String lyricFilePath,
-                 Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId) {
+    public Songs(Integer id, String title, String audioPath, Integer likeAmount, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
         this.id = id;
         this.title = title;
         this.audioPath = audioPath;
-        this.amount = amount;
         this.likeAmount = likeAmount;
+        this.listenAmount = listenAmount;
+        this.featureArtist = featureArtist;
         this.lyricFilePath = lyricFilePath;
         this.isPending = isPending;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.albumId = albumId;
-    }
-
-    public Integer getLikeAmount() {
-        return likeAmount;
-    }
-
-    public void setLikeAmount(Integer likeAmount) {
-        this.likeAmount = likeAmount;
+        this.artistId = artistId;
     }
 
     public Integer getId() {
@@ -128,12 +115,28 @@ public class Songs implements Serializable {
         this.audioPath = audioPath;
     }
 
-    public Integer getAmount() {
-        return amount;
+    public Integer getLikeAmount() {
+        return likeAmount;
     }
 
-    public void setAmount(Integer amount) {
-        this.amount = amount;
+    public void setLikeAmount(Integer likeAmount) {
+        this.likeAmount = likeAmount;
+    }
+
+    public Integer getListenAmount() {
+        return listenAmount;
+    }
+
+    public void setListenAmount(Integer listenAmount) {
+        this.listenAmount = listenAmount;
+    }
+
+    public String getFeatureArtist() {
+        return featureArtist;
+    }
+
+    public void setFeatureArtist(String featureArtist) {
+        this.featureArtist = featureArtist;
     }
 
     public String getLyricFilePath() {
@@ -184,12 +187,20 @@ public class Songs implements Serializable {
         this.albumId = albumId;
     }
 
-    public Collection<SubArtist> getSubArtistCollection() {
-        return subArtistCollection;
+    public Artists getArtistId() {
+        return artistId;
     }
 
-    public void setSubArtistCollection(Collection<SubArtist> subArtistCollection) {
-        this.subArtistCollection = subArtistCollection;
+    public void setArtistId(Artists artistId) {
+        this.artistId = artistId;
+    }
+
+    public Collection<FavouriteSongs> getFavouriteSongsCollection() {
+        return favouriteSongsCollection;
+    }
+
+    public void setFavouriteSongsCollection(Collection<FavouriteSongs> favouriteSongsCollection) {
+        this.favouriteSongsCollection = favouriteSongsCollection;
     }
 
     public Collection<PlaylistSong> getPlaylistSongCollection() {

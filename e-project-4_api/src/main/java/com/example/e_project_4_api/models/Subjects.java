@@ -13,8 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Lob;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -27,8 +26,8 @@ import jakarta.persistence.TemporalType;
  * @author admin
  */
 @Entity
-@Table(name = "albums")
-public class Albums implements Serializable {
+@Table(name = "subjects")
+public class Subjects implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -41,11 +40,9 @@ public class Albums implements Serializable {
     private String title;
     @Column(name = "image")
     private String image;
-    @Column(name = "is_released")
-    private Boolean isReleased;
-    @Column(name = "release_date")
-    @Temporal(TemporalType.DATE)
-    private Date releaseDate;
+    @Lob
+    @Column(name = "description")
+    private String description;
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     @Column(name = "created_at")
@@ -54,29 +51,20 @@ public class Albums implements Serializable {
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
-    @JoinColumn(name = "artist_id", referencedColumnName = "id")
-    @ManyToOne
-    private Artists artistId;
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    @ManyToOne
-    private Subjects subjectId;
-    @OneToMany(mappedBy = "albumId")
-    private Collection<Songs> songsCollection;
+    @OneToMany(mappedBy = "subjectId")
+    private Collection<Albums> albumsCollection;
 
-    public Albums() {
+    public Subjects() {
     }
 
-    public Albums(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId, Subjects subjectId) {
+    public Subjects(Integer id, String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.image = image;
-        this.isReleased = isReleased;
-        this.releaseDate = releaseDate;
+        this.description = description;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.artistId = artistId;
-        this.subjectId = subjectId;
     }
 
     public Integer getId() {
@@ -103,20 +91,12 @@ public class Albums implements Serializable {
         this.image = image;
     }
 
-    public Boolean getIsReleased() {
-        return isReleased;
+    public String getDescription() {
+        return description;
     }
 
-    public void setIsReleased(Boolean isReleased) {
-        this.isReleased = isReleased;
-    }
-
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getIsDeleted() {
@@ -143,28 +123,12 @@ public class Albums implements Serializable {
         this.modifiedAt = modifiedAt;
     }
 
-    public Artists getArtistId() {
-        return artistId;
+    public Collection<Albums> getAlbumsCollection() {
+        return albumsCollection;
     }
 
-    public void setArtistId(Artists artistId) {
-        this.artistId = artistId;
-    }
-
-    public Subjects getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Subjects subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public Collection<Songs> getSongsCollection() {
-        return songsCollection;
-    }
-
-    public void setSongsCollection(Collection<Songs> songsCollection) {
-        this.songsCollection = songsCollection;
+    public void setAlbumsCollection(Collection<Albums> albumsCollection) {
+        this.albumsCollection = albumsCollection;
     }
 
     @Override
@@ -177,10 +141,10 @@ public class Albums implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Albums)) {
+        if (!(object instanceof Subjects)) {
             return false;
         }
-        Albums other = (Albums) object;
+        Subjects other = (Subjects) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -189,7 +153,7 @@ public class Albums implements Serializable {
 
     @Override
     public String toString() {
-        return "models.Albums[ id=" + id + " ]";
+        return "models.Subjects[ id=" + id + " ]";
     }
     
 }
