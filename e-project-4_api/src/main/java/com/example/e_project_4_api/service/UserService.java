@@ -9,40 +9,37 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.e_project_4_api.models.Users;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Service
 public class UserService {
 
     @Autowired
-    private UserRepository repo;
+    private UserRepository userRepository;
 
     @Autowired
     private JWTService jwtService;
 
     @Autowired
-    AuthenticationManager authManager;
-
+    private AuthenticationManager authenticationManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+
     public Users register(Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setIsDeleted(false);
-        user.setCreatedAt(Date.from(Instant.now()));
-        user.setModifiedAt(Date.from(Instant.now()));
-        repo.save(user);
-        return user;
+        return userRepository.save(user);
     }
-    public String verify(LoginRequest user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+
+
+    public String verify(LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
+
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(user.getUsername())  ;
-        } else {
-            return "fail";
+            return jwtService.generateToken(loginRequest.getUsername());
         }
+        return null;
     }
 }
