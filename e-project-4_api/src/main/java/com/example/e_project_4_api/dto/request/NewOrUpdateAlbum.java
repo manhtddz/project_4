@@ -17,7 +17,7 @@ public class NewOrUpdateAlbum {
     private Date modifiedAt;
 
 
-    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Integer subjectId, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Integer subjectId, Boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.image = image;

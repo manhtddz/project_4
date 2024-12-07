@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,23 +51,34 @@ public class AlbumService {
         if (album.isEmpty()) {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
-            Albums existing = album.get();
-            existing.setIsDeleted(true);
-            repo.save(existing);
-            return true;
+        Albums existing = album.get();
+        existing.setIsDeleted(true);
+        repo.save(existing);
+        return true;
     }
 
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
         List<String> errors = new ArrayList<>();
-
-        Optional<Albums> op = repo.findById(request.getId());
-        if (op.isPresent()) {
-            errors.add("Already exist album with id: " + request.getId());
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+        } else {
+            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+            Optional<Albums> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add("Already exist album with title: " + request.getTitle());
+            }
         }
+        //check null
+        if (request.getImage().isEmpty() || (request.getImage() == null)) {
+            errors.add("ImageURL is required");
+        }
+        //check sự tồn tại
         Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (artist.isEmpty()) {
             errors.add("Can't find any artist with id: " + request.getArtistId());
         }
+        //check sự tồn tại
         Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (subject.isEmpty()) {
             errors.add("Can't find any subject with id: " + request.getSubjectId());
@@ -88,13 +96,30 @@ public class AlbumService {
         List<String> errors = new ArrayList<>();
 
         Optional<Albums> op = repo.findById(request.getId());
+        //check sự tồn tại
         if (op.isEmpty()) {
             errors.add("Can't find any album with id: " + request.getId());
         }
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+        } else {
+            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+            Optional<Albums> opTitle = repo.findByTitle(request.getTitle());
+            if (opTitle.get().getTitle() == request.getTitle()) {
+                errors.add("Already exist album with title: " + request.getTitle());
+            }
+        }
+        //check null
+        if (request.getImage().isEmpty() || (request.getImage() == null)) {
+            errors.add("ImageURL is required");
+        }
+        //check sự tồn tại
         Optional<Artists> artist = artistRepo.findById(request.getArtistId());
         if (artist.isEmpty()) {
             errors.add("Can't find any artist with id: " + request.getArtistId());
         }
+        //check sự tồn tại
         Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
         if (subject.isEmpty()) {
             errors.add("Can't find any subject with id: " + request.getSubjectId());
