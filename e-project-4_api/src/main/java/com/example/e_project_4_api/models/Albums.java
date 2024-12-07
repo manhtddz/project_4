@@ -66,8 +66,7 @@ public class Albums implements Serializable {
     public Albums() {
     }
 
-    public Albums(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId, Subjects subjectId) {
-        this.id = id;
+    public Albums(String title, String image, Boolean isReleased, Date releaseDate, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId, Subjects subjectId) {
         this.title = title;
         this.image = image;
         this.isReleased = isReleased;
