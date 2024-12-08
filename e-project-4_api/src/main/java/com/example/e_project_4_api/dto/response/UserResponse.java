@@ -1,9 +1,15 @@
-package com.example.e_project_4_api.dto.request;
+package com.example.e_project_4_api.dto.response;
 
-import java.time.Instant;
+import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.FavouriteSongs;
+import com.example.e_project_4_api.models.Playlists;
+import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.Date;
 
-public class RegisterRequest {
+public class UserResponse {
+
     private Integer id;
     private String username;
     private String fullName;
@@ -19,7 +25,7 @@ public class RegisterRequest {
     private Date modifiedAt;
     private Integer artistId;
 
-    public RegisterRequest(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Integer artistId) {
+    public UserResponse(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Integer artistId) {
         this.id = id;
         this.username = username;
         this.fullName = fullName;
@@ -31,9 +37,12 @@ public class RegisterRequest {
         this.bio = bio;
         this.dob = dob;
         this.isDeleted = isDeleted;
-        this.createdAt = Date.from(Instant.now());;
-        this.modifiedAt = Date.from(Instant.now());;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
         this.artistId = artistId;
+    }
+
+    public UserResponse() {
     }
 
     public Integer getId() {

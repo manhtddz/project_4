@@ -1,7 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
-import com.example.e_project_4_api.dto.request.RegisterRequest;
+import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Users;
@@ -37,7 +37,7 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public Users register(RegisterRequest request) {
+    public Users register(NewOrUpdateUser request) {
         List<String> errors = new ArrayList<>();
         Users newUser = new Users();
 

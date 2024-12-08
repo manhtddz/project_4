@@ -144,6 +144,8 @@ public class AlbumService {
     public AlbumResponse toAlbumResponse(Albums album) {
         AlbumResponse res = new AlbumResponse();
         BeanUtils.copyProperties(album, res);
+        res.setDeleted(album.getIsDeleted());
+        res.setReleased(album.getIsReleased());
         res.setArtistId(album.getArtistId().getId());
         res.setSubjectId(album.getSubjectId().getId());
         return res;

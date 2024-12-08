@@ -1,13 +1,11 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
-import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
-import com.example.e_project_4_api.dto.request.RegisterRequest;
+import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.service.AuthenticationService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody RegisterRequest user) {
+    public ResponseEntity<Object> register(@RequestBody NewOrUpdateUser user) {
         try {
             Users newUser = service.register(user);
             return new ResponseEntity<>(

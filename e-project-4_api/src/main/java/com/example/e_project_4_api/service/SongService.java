@@ -42,7 +42,7 @@ public class SongService {
     public SongResponse findById(int id) {
         Optional<Songs> op = repo.findById(id);
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any songs with id: " + id);
+            throw new NotFoundException("Can't find any song with id: " + id);
         }
         return toSongResponse(op.get());
     }
@@ -139,6 +139,8 @@ public class SongService {
     public SongResponse toSongResponse(Songs song) {
         SongResponse res = new SongResponse();
         BeanUtils.copyProperties(song, res);
+        res.setDeleted(song.getIsDeleted());
+        res.setPending(song.getIsPending());
         res.setAlbumId(song.getAlbumId().getId());
         res.setArtistId(song.getArtistId().getId());
         return res;

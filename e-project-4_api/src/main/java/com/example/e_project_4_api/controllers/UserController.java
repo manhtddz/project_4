@@ -1,15 +1,14 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
-import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
+import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.response.AlbumResponse;
-import com.example.e_project_4_api.dto.response.PlaylistResponse;
-import com.example.e_project_4_api.dto.response.SongResponse;
+import com.example.e_project_4_api.dto.response.UserResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.service.AlbumService;
-import com.example.e_project_4_api.service.SongService;
+import com.example.e_project_4_api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,20 +20,20 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class SongController {
+public class UserController {
     @Autowired
-    private SongService service;
+    private UserService service;
 
-    @GetMapping("/public/songs")
-    public ResponseEntity<List<SongResponse>> findAll() {
-        return new ResponseEntity<>(service.getAllSongs(), HttpStatus.OK);
+    @GetMapping("/public/users")
+    public ResponseEntity<List<UserResponse>> findAll() {
+        return new ResponseEntity<>(service.getAllUsers(), HttpStatus.OK);
     }
 
-    @GetMapping("/public/songs/{id}")
+    @GetMapping("/public/users/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         try {
-            SongResponse song = service.findById(id);
-            return new ResponseEntity<>(song, HttpStatus.OK);
+            UserResponse album = service.findById(id);
+            return new ResponseEntity<>(album, HttpStatus.OK);
         } catch (NotFoundException ex) {
             return new ResponseEntity<>(
                     Map.of(
@@ -46,7 +45,7 @@ public class SongController {
         }
     }
 
-    @DeleteMapping("/public/songs/{id}")
+    @DeleteMapping("/public/users/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
         try {
             service.deleteById(id);
@@ -67,37 +66,15 @@ public class SongController {
         }
     }
 
-    @PostMapping("/public/songs")
-    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdateSong request) {
+    @PutMapping("/public/users")
+    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateUser request) {
         try {
-            NewOrUpdateSong newSong = service.addNewSong(request);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Song added successfully",
-                            "data", newSong
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (ValidationException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
-                    ),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-    }
-
-    @PutMapping("/public/songs")
-    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateSong request) {
-        try {
-            NewOrUpdateSong updatedSong = service.updateSong(request);
+            Users updatedUser = service.updateUser(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Song updated successfully",
-                            "data", updatedSong
+                            "message", "User updated successfully",
+                            "data", updatedUser
                     ),
                     HttpStatus.OK
             );
