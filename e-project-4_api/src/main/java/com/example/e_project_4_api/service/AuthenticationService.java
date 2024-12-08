@@ -74,7 +74,7 @@ public class AuthenticationService {
         if (request.getEmail().isEmpty() || (request.getEmail() == null)) {
             errors.add("Email is required");
         } else {
-            if (!EmailValidator.isValidEmail(request.getPhone())) {
+            if (!EmailValidator.isValidEmail(request.getEmail())) {
                 errors.add("Email is not valid");
             }
         }
