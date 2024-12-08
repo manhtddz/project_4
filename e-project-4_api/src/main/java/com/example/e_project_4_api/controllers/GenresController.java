@@ -1,12 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
+import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
+import com.example.e_project_4_api.dto.response.GenresResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.service.AlbumService;
-import jakarta.validation.Valid;
+import com.example.e_project_4_api.service.GenresService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +12,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-public class AlbumController {
+public class GenresController {
     @Autowired
-    private AlbumService service;
+    private GenresService service;
 
-    @GetMapping("/public/albums")
-    public ResponseEntity<List<AlbumResponse>> findAll() {
-        return new ResponseEntity<>(service.getAllAlbums(), HttpStatus.OK);
+    @GetMapping("/public/genres")
+    public ResponseEntity<List<GenresResponse>> findAll() {
+        return new ResponseEntity<>(service.getAllGenres(), HttpStatus.OK);
     }
 
-    @GetMapping("/public/albums/{id}")
+    @GetMapping("/public/genres/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         try {
-            AlbumResponse album = service.findById(id);
-            return new ResponseEntity<>(album, HttpStatus.OK);
+            GenresResponse genre = service.findById(id);
+            return new ResponseEntity<>(genre, HttpStatus.OK);
         } catch (NotFoundException ex) {
             return new ResponseEntity<>(
                     Map.of(
@@ -43,7 +40,7 @@ public class AlbumController {
         }
     }
 
-    @DeleteMapping("/public/albums/{id}")
+    @DeleteMapping("/public/genres/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
         try {
             service.deleteById(id);
@@ -64,15 +61,15 @@ public class AlbumController {
         }
     }
 
-    @PostMapping("/public/albums")
-    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdateAlbum request) {
+    @PostMapping("/public/genres")
+    public ResponseEntity<Object> add(@RequestBody NewOrUpdateGenres request) {
         try {
-            NewOrUpdateAlbum newAlbum = service.addNewAlbum(request);
+            NewOrUpdateGenres newGenre = service.addNewGenre(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Album added successfully",
-                            "data", newAlbum
+                            "message", "Genre added successfully",
+                            "data", newGenre
                     ),
                     HttpStatus.OK
             );
@@ -87,15 +84,15 @@ public class AlbumController {
         }
     }
 
-    @PutMapping("/public/albums")
-    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateAlbum request) {
+    @PutMapping("/public/genres")
+    public ResponseEntity<Object> update(@RequestBody NewOrUpdateGenres request) {
         try {
-            NewOrUpdateAlbum updatedAlbum = service.updateAlbum(request);
+            NewOrUpdateGenres updatedGenre = service.updateGenre(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Album updated successfully",
-                            "data", updatedAlbum
+                            "message", "Genre updated successfully",
+                            "data", updatedGenre
                     ),
                     HttpStatus.OK
             );

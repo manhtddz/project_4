@@ -1,41 +1,23 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.request;
 
 import java.util.Date;
 
-public class GenresResponse {
-    private Integer id;
-    private String title;
+public class ArtistRequest {
+
+    private String artistName;
     private String image;
+    private String bio;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
-    public GenresResponse(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
-        this.title = title;
-        this.image = image;
-        this.isDeleted = isDeleted;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+    // Getters and Setters
+    public String getArtistName() {
+        return artistName;
     }
 
-    public GenresResponse() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
     }
 
     public String getImage() {
@@ -44,6 +26,14 @@ public class GenresResponse {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public Boolean getIsDeleted() {

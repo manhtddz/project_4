@@ -61,8 +61,8 @@ public class Artists implements Serializable {
     public Artists() {
     }
 
-    public Artists(Integer id, String artistName, String image, String bio, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
+    public Artists(String artistName, String image, String bio, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+
         this.artistName = artistName;
         this.image = image;
         this.bio = bio;

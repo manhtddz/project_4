@@ -52,8 +52,8 @@ public class PlaylistSong implements Serializable {
     public PlaylistSong() {
     }
 
-    public PlaylistSong(Integer id, Boolean isDeleted, Date createdAt, Date modifiedAt, Playlists playlistId, Songs songId) {
-        this.id = id;
+    public PlaylistSong(Boolean isDeleted, Date createdAt, Date modifiedAt, Playlists playlistId, Songs songId) {
+
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;

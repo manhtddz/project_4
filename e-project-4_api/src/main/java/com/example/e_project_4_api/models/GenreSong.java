@@ -52,8 +52,7 @@ public class GenreSong implements Serializable {
     public GenreSong() {
     }
 
-    public GenreSong(Integer id, Boolean isDeleted, Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
-        this.id = id;
+    public GenreSong(Boolean isDeleted, Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;

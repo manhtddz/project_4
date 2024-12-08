@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class    SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/public/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_ARTIST")
                         .anyRequest().authenticated()).
+
 
                 httpBasic(Customizer.withDefaults()).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

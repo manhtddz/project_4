@@ -2,26 +2,17 @@ package com.example.e_project_4_api.dto.response;
 
 import java.util.Date;
 
-public class GenresResponse {
+public class ArtistResponse {
+
     private Integer id;
-    private String title;
+    private String artistName;
     private String image;
+    private String bio;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
-    public GenresResponse(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
-        this.title = title;
-        this.image = image;
-        this.isDeleted = isDeleted;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
-    public GenresResponse() {
-    }
-
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -30,12 +21,12 @@ public class GenresResponse {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getArtistName() {
+        return artistName;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
     }
 
     public String getImage() {
@@ -44,6 +35,14 @@ public class GenresResponse {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public Boolean getIsDeleted() {

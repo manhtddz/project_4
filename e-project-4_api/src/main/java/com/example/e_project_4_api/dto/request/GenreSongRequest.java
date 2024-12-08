@@ -1,27 +1,29 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.request;
 
 import java.util.Date;
 
-public class GenresResponse {
+public class GenreSongRequest {
     private Integer id;
-    private String title;
-    private String image;
+    private Integer genreId;
+    private Integer songId;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
-    public GenresResponse(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+
+    public GenreSongRequest() {}
+
+
+    public GenreSongRequest(Integer id, Integer genreId, Integer songId, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
-        this.title = title;
-        this.image = image;
+        this.genreId = genreId;
+        this.songId = songId;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
 
-    public GenresResponse() {
-    }
-
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -30,20 +32,20 @@ public class GenresResponse {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public Integer getGenreId() {
+        return genreId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setGenreId(Integer genreId) {
+        this.genreId = genreId;
     }
 
-    public String getImage() {
-        return image;
+    public Integer getSongId() {
+        return songId;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setSongId(Integer songId) {
+        this.songId = songId;
     }
 
     public Boolean getIsDeleted() {

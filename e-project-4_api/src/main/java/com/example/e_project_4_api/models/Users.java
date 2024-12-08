@@ -80,8 +80,8 @@ public class Users implements Serializable {
     public Users() {
     }
 
-    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
-        this.id = id;
+    public Users(String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
+
         this.username = username;
         this.fullName = fullName;
         this.avatar = avatar;

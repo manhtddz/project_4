@@ -57,8 +57,8 @@ public class Subjects implements Serializable {
     public Subjects() {
     }
 
-    public Subjects(Integer id, String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
+    public Subjects(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+
         this.title = title;
         this.image = image;
         this.description = description;

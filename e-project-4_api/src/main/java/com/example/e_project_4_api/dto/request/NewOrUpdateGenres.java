@@ -1,8 +1,8 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.request;
 
 import java.util.Date;
 
-public class GenresResponse {
+public class NewOrUpdateGenres {
     private Integer id;
     private String title;
     private String image;
@@ -10,16 +10,13 @@ public class GenresResponse {
     private Date createdAt;
     private Date modifiedAt;
 
-    public GenresResponse(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public NewOrUpdateGenres(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.image = image;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-    }
-
-    public GenresResponse() {
     }
 
     public Integer getId() {

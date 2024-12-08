@@ -52,8 +52,7 @@ public class FavouriteSongs implements Serializable {
     public FavouriteSongs() {
     }
 
-    public FavouriteSongs(Integer id, Boolean isDeleted, Date createdAt, Date modifiedAt, Songs songId, Users userId) {
-        this.id = id;
+    public FavouriteSongs(Boolean isDeleted, Date createdAt, Date modifiedAt, Songs songId, Users userId) {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;

@@ -22,7 +22,13 @@ public class UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    public UserService(UserRepository userRepository, JWTService jwtService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
 
 
     public Users register(Users user) {

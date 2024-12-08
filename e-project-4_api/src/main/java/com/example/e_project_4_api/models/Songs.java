@@ -75,8 +75,8 @@ public class Songs implements Serializable {
     public Songs() {
     }
 
-    public Songs(Integer id, String title, String audioPath, Integer likeAmount, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
-        this.id = id;
+    public Songs( String title, String audioPath, Integer likeAmount, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
+
         this.title = title;
         this.audioPath = audioPath;
         this.likeAmount = likeAmount;

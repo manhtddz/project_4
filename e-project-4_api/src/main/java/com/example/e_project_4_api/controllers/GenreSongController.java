@@ -1,12 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
+import com.example.e_project_4_api.dto.request.GenreSongRequest;
+import com.example.e_project_4_api.dto.response.GenreSongResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.service.AlbumService;
-import jakarta.validation.Valid;
+import com.example.e_project_4_api.service.GenreSongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +12,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-public class AlbumController {
-    @Autowired
-    private AlbumService service;
+public class GenreSongController {
 
-    @GetMapping("/public/albums")
-    public ResponseEntity<List<AlbumResponse>> findAll() {
-        return new ResponseEntity<>(service.getAllAlbums(), HttpStatus.OK);
+    @Autowired
+    private GenreSongService service;
+
+    @GetMapping("/public/genre-songs")
+    public ResponseEntity<List<GenreSongResponse>> findAll() {
+        return new ResponseEntity<>(service.getAllGenreSongs(), HttpStatus.OK);
     }
 
-    @GetMapping("/public/albums/{id}")
+    @GetMapping("/public/genre-songs/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         try {
-            AlbumResponse album = service.findById(id);
-            return new ResponseEntity<>(album, HttpStatus.OK);
+            GenreSongResponse genreSong = service.findById(id);
+            return new ResponseEntity<>(genreSong, HttpStatus.OK);
         } catch (NotFoundException ex) {
             return new ResponseEntity<>(
                     Map.of(
@@ -43,7 +41,7 @@ public class AlbumController {
         }
     }
 
-    @DeleteMapping("/public/albums/{id}")
+    @DeleteMapping("/public/genre-songs/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
         try {
             service.deleteById(id);
@@ -64,15 +62,15 @@ public class AlbumController {
         }
     }
 
-    @PostMapping("/public/albums")
-    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdateAlbum request) {
+    @PostMapping("/public/genre-songs")
+    public ResponseEntity<Object> add(@RequestBody GenreSongRequest request) {
         try {
-            NewOrUpdateAlbum newAlbum = service.addNewAlbum(request);
+            GenreSongRequest newGenreSong = service.addNewGenreSong(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Album added successfully",
-                            "data", newAlbum
+                            "message", "GenreSong added successfully",
+                            "data", newGenreSong
                     ),
                     HttpStatus.OK
             );
@@ -87,15 +85,15 @@ public class AlbumController {
         }
     }
 
-    @PutMapping("/public/albums")
-    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateAlbum request) {
+    @PutMapping("/public/genre-songs")
+    public ResponseEntity<Object> update(@RequestBody GenreSongRequest request) {
         try {
-            NewOrUpdateAlbum updatedAlbum = service.updateAlbum(request);
+            GenreSongRequest updatedGenreSong = service.updateGenreSong(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Album updated successfully",
-                            "data", updatedAlbum
+                            "message", "GenreSong updated successfully",
+                            "data", updatedGenreSong
                     ),
                     HttpStatus.OK
             );

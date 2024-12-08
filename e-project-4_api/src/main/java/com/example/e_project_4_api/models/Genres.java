@@ -53,8 +53,8 @@ public class Genres implements Serializable {
     public Genres() {
     }
 
-    public Genres(Integer id, String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
+    public Genres(String title, String image, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+
         this.title = title;
         this.image = image;
         this.isDeleted = isDeleted;
