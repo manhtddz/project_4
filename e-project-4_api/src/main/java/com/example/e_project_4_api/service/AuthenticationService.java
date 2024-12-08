@@ -39,6 +39,8 @@ public class AuthenticationService {
 
     public Users register(RegisterRequest request) {
         List<String> errors = new ArrayList<>();
+        Users newUser = new Users();
+
         if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
             //check null
             errors.add("Username is required");
@@ -80,19 +82,24 @@ public class AuthenticationService {
             errors.add("Role is required");
         } else {
             if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
-                    || !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
-                    || !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
+                    && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
+                    && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
                 errors.add("Role is not valid");
             }
+            if (request.getRole().equals(Role.ROLE_ARTIST.toString())) {
+                Optional<Artists> artist = artistRepo.findById(request.getArtistId());
+                if (artist.isPresent()) {
+                    newUser.setArtistId(artist.get());
+                } else {
+                    errors.add("Can't find any artist with id: " + request.getArtistId());
+                }
+            }
         }
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-        if (artist.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getArtistId());
-        }
+
+
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-        Users newUser = new Users();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(encoder.encode(request.getPassword()));
         newUser.setFullName(request.getFullName());
@@ -105,7 +112,6 @@ public class AuthenticationService {
         newUser.setIsDeleted(false);
         newUser.setCreatedAt(request.getCreatedAt());
         newUser.setModifiedAt(request.getModifiedAt());
-        newUser.setArtistId(artist.get());
 
         repo.save(newUser);
         return newUser;
