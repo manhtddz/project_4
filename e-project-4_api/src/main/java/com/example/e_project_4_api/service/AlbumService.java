@@ -106,7 +106,7 @@ public class AlbumService {
         } else {
             // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
             Optional<Albums> opTitle = repo.findByTitle(request.getTitle());
-            if (opTitle.get().getTitle() == request.getTitle()) {
+            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
                 errors.add("Already exist album with title: " + request.getTitle());
             }
         }

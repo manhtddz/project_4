@@ -6,10 +6,7 @@ import com.example.e_project_4_api.dto.response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.SongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.Songs;
-import com.example.e_project_4_api.models.Users;
+import com.example.e_project_4_api.models.*;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.SongRepository;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +32,7 @@ public class SongService {
     @Autowired
     private ArtistRepository artistRepo;
 
-    public List<SongResponse> getAllAlbums() {
+    public List<SongResponse> getAllSongs() {
         return repo.findAll()
                 .stream()
                 .map(this::toSongResponse)
@@ -49,46 +47,78 @@ public class SongService {
         return toSongResponse(op.get());
     }
 
-    public void deleteById(int id) {
+
+    public boolean deleteById(int id) {
         Optional<Songs> op = repo.findById(id);
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any songs with id: " + id);
+            throw new NotFoundException("Can't find any song with id: " + id);
         }
-        repo.delete(op.get());
+        Songs existing = op.get();
+        existing.setIsDeleted(true);
+        repo.save(existing);
+        return true;
     }
 
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
-        Optional<Songs> op = repo.findById(request.getId());
+        List<String> errors = new ArrayList<>();
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+        } else {
+            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+            Optional<Songs> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add("Already exist song with title: " + request.getTitle());
+            }
+        }
+        //check null
+        if (request.getAudioPath().isEmpty() || (request.getAudioPath() == null)) {
+            errors.add("Audio path is required");
+        }
+        //check null
+        if (request.getLyricFilePath().isEmpty() || (request.getLyricFilePath() == null)) {
+            errors.add("Lyric file path is required");
+        }
         Optional<Albums> album = albumRepo.findById(request.getAlbumId());
         Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-        if (op.isPresent()) {
-            throw new AlreadyExistedException("Found a song with Id: " + request.getId());
+        if (artist.isEmpty()) {
+            errors.add("Can't find any artist with id: " + request.getArtistId());
         }
         if (album.isEmpty()) {
-            throw new NotFoundException("Can't find any albums with Id: " + request.getAlbumId());
+            errors.add("Can't find any album with id: " + request.getAlbumId());
         }
-        if (artist.isEmpty()) {
-            throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
-        }
-        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(), request.getLikeAmount(),
-                request.getListenAmount(), request.getFeatureArtist(), request.getLyricFilePath(), false, false
-                , request.getCreatedAt(), request.getModifiedAt(), album.get(), artist.get());
+        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(), 0,
+                0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
+                request.getCreatedAt(), request.getModifiedAt(), album.get(), artist.get());
         repo.save(newSong);
         return request;
     }
 
     public NewOrUpdateSong updateSong(NewOrUpdateSong request) {
+        List<String> errors = new ArrayList<>();
+
         Optional<Songs> op = repo.findById(request.getId());
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            errors.add("Can't find any song with id: " + request.getId());
+        }
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+        } else {
+            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+            Optional<Songs> opTitle = repo.findByTitle(request.getTitle());
+            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+                errors.add("Already exist song with title: " + request.getTitle());
+            }
+        }
         Optional<Albums> album = albumRepo.findById(request.getAlbumId());
         Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-        if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any songs with id: " + request.getId());
+        if (artist.isEmpty()) {
+            errors.add("Can't find any artist with id: " + request.getArtistId());
         }
         if (album.isEmpty()) {
-            throw new NotFoundException("Can't find any albums with id: " + request.getAlbumId());
-        }
-        if (artist.isEmpty()) {
-            throw new NotFoundException("Can't find any artists with Id: " + request.getArtistId());
+            errors.add("Can't find any album with id: " + request.getAlbumId());
         }
         Songs song = op.get();
         song.setTitle(request.getTitle());

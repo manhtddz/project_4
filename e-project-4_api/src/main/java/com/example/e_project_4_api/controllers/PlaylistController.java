@@ -4,6 +4,8 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
 import com.example.e_project_4_api.dto.response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.PlaylistResponse;
+import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.AlbumService;
 import com.example.e_project_4_api.service.PlaylistService;
 import jakarta.validation.Valid;
@@ -22,39 +24,87 @@ public class PlaylistController {
     private PlaylistService service;
 
     @GetMapping("/public/playlists")
-    public List<PlaylistResponse> findAll() {
-        return service.getAllPlaylists();
+    public ResponseEntity<List<PlaylistResponse>> findAll() {
+        return new ResponseEntity<>(service.getAllPlaylists(), HttpStatus.OK);
     }
-
     @GetMapping("/public/playlists/{id}")
-    public PlaylistResponse findDetails(@PathVariable("id") int id) {
-        return service.findById(id);
-    }
-
-    @DeleteMapping("/public/playlists/{id}")
-    public  ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-        if(service.deleteById(id)){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
+        try {
+            PlaylistResponse playlist = service.findById(id);
+            return new ResponseEntity<>(playlist, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Not found",
+                            "details", ex.getMessage()
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @DeleteMapping("/public/playlists/{id}")
+    public ResponseEntity<Object> delete(@PathVariable("id") int id) {
+        try {
+            service.deleteById(id);
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Deleted successfully"
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Not found",
+                            "details", e.getMessage()
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PostMapping("/public/playlists")
-    public Map<String, Object> add(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        NewOrUpdatePlaylist res = service.addNewPlaylist(request);
-        return Map.of(
-                "message", "Add success",
-                "data", res
-        );
+    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdatePlaylist request) {
+        try {
+            NewOrUpdatePlaylist newPlaylist = service.addNewPlaylist(request);
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Playlist added successfully",
+                            "data", newPlaylist
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Validation failed",
+                            "details", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @PutMapping("/public/playlists")
-    public Map<String, Object> update(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        NewOrUpdatePlaylist res = service.updatePlaylist(request);
-        return Map.of(
-                "message", "Update success",
-                "data", res
-        );
+    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdatePlaylist request) {
+        try {
+            NewOrUpdatePlaylist updatedPlaylist = service.updatePlaylist(request);
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Playlist updated successfully",
+                            "data", updatedPlaylist
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Validation failed",
+                            "details", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 }

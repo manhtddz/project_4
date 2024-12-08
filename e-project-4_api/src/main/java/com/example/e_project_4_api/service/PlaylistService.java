@@ -6,7 +6,9 @@ import com.example.e_project_4_api.dto.response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.PlaylistResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
+import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.AlbumRepository;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,45 +51,56 @@ public class PlaylistService {
 
     public boolean deleteById(int id) {
         Optional<Playlists> playlist = repo.findById(id);
-        if (playlist.isPresent()) {
-            Playlists existing = playlist.get();
-            existing.setIsDeleted(true);
-            repo.save(existing);
-            return true;
+        if (playlist.isEmpty()) {
+            throw new NotFoundException("Can't find any playlist with id: " + id);
         }
-        return false;
+        Playlists existing = playlist.get();
+        existing.setIsDeleted(true);
+        repo.save(existing);
+        return true;
     }
 
     public NewOrUpdatePlaylist addNewPlaylist(NewOrUpdatePlaylist request) {
-        Optional<Playlists> op = repo.findById(request.getId());
-        Optional<Users> users = userRepo.findById(request.getUserId());
-        if (op.isPresent()) {
-            throw new AlreadyExistedException("Found a album with Id: " + request.getId());
+        List<String> errors = new ArrayList<>();
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+            // playlist ko cần check unique title
         }
-        if (users.isEmpty()) {
-            throw new NotFoundException("Can't find any users with Id: " + request.getUserId());
+        Optional<Users> user = userRepo.findById(request.getUserId());
+
+        if (user.isEmpty()) {
+            errors.add("Can't find any user with id: " + request.getUserId());
         }
         Playlists newPlaylist = new Playlists(request.getTitle(), false, request.getCreatedAt(),
-                request.getModifiedAt(), users.get());
+                request.getModifiedAt(), user.get());
         repo.save(newPlaylist);
         return request;
-
     }
 
     public NewOrUpdatePlaylist updatePlaylist(NewOrUpdatePlaylist request) {
+        List<String> errors = new ArrayList<>();
+
         Optional<Playlists> op = repo.findById(request.getId());
-        Optional<Users> users = userRepo.findById(request.getUserId());
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any student with id: " + request.getId());
+            errors.add("Can't find any playlist with id: " + request.getId());
         }
-        if (users.isEmpty()) {
-            throw new NotFoundException("Can't find any users with id: " + request.getUserId());
+        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
+            //check null
+            errors.add("Title is required");
+            // playlist ko cần check unique title
+        }
+        Optional<Users> user = userRepo.findById(request.getUserId());
+        if (user.isEmpty()) {
+            errors.add("Can't find any user with id: " + request.getUserId());
+        }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
         Playlists playlist = op.get();
         playlist.setTitle(request.getTitle());
         playlist.setIsDeleted(request.getDeleted());
-        playlist.setModifiedAt(request.getModifiedAt());
-        playlist.setUserId(users.get());
+        playlist.setUserId(user.get());
         playlist.setIsDeleted(request.getDeleted());
         playlist.setModifiedAt(request.getModifiedAt());
         repo.save(playlist);

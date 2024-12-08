@@ -24,7 +24,7 @@ public class NewOrUpdateSong {
     public NewOrUpdateSong() {
     }
 
-    public NewOrUpdateSong(Integer id, String title, String audioPath, Integer listenAmount, Integer likeAmount, String lyricFilePath, String featureArtist, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Integer albumId, Integer artistId) {
+    public NewOrUpdateSong(Integer id, String title, String audioPath, Integer listenAmount, Integer likeAmount, String lyricFilePath, String featureArtist, Boolean isPending, Boolean isDeleted, Integer albumId, Integer artistId) {
         this.id = id;
         this.title = title;
         this.audioPath = audioPath;
