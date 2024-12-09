@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
 import com.example.e_project_4_api.dto.response.ArtistResponse;
+import com.example.e_project_4_api.dto.response.GenresResponse;
 import com.example.e_project_4_api.service.ArtistService;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -24,17 +25,23 @@ public class ArtistController {
     @GetMapping("/public/artists")
     public ResponseEntity<List<ArtistResponse>> getAllArtists() {
         List<ArtistResponse> artists = artistService.getAllArtists();
-        return ResponseEntity.ok(artists);
+        return new ResponseEntity<>(artistService.getAllArtists(), HttpStatus.OK);
     }
 
 
     @GetMapping("/public/artists/{id}")
-    public ResponseEntity<ArtistResponse> getArtistById(@PathVariable int id) {
+    public ResponseEntity<Object> getArtistById(@PathVariable int id) {
         try {
             ArtistResponse artist = artistService.findById(id);
-            return ResponseEntity.ok(artist);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return new ResponseEntity<>(artist, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Not found",
+                            "details", ex.getMessage()
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
         }
     }
 
@@ -73,16 +80,23 @@ public class ArtistController {
     }
 
     @DeleteMapping("/public/artists/{id}")
-    public ResponseEntity<String> deleteArtist(@PathVariable int id) {
+    public ResponseEntity<Object> deleteArtist(@PathVariable int id) {
         try {
-            boolean isDeleted = artistService.deleteById(id);
-            if (isDeleted) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Artist deleted successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Artist not found");
-            }
+            artistService.deleteById(id);
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Deleted successfully"
+                    ),
+                    HttpStatus.OK
+            );
         } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Artist not found");
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Not found",
+                            "details", e.getMessage()
+                    ),
+                    HttpStatus.NOT_FOUND
+            );
         }
     }
 }
