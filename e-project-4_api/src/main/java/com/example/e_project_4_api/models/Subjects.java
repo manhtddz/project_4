@@ -20,6 +20,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *
@@ -27,6 +30,9 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "subjects")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Subjects implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,81 +60,13 @@ public class Subjects implements Serializable {
     @OneToMany(mappedBy = "subjectId")
     private Collection<Albums> albumsCollection;
 
-    public Subjects() {
-    }
-
-    public Subjects(Integer id, String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
-        this.id = id;
+    public Subjects(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.title = title;
         this.image = image;
         this.description = description;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Collection<Albums> getAlbumsCollection() {
-        return albumsCollection;
-    }
-
-    public void setAlbumsCollection(Collection<Albums> albumsCollection) {
-        this.albumsCollection = albumsCollection;
     }
 
     @Override

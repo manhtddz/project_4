@@ -36,10 +36,11 @@ public class SecurityConfig {
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
                         .requestMatchers("api/login", "api/register").permitAll()
-                        .requestMatchers("/api/artist/**").hasAnyAuthority("ROLE_ARTIST")
-                        .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER")
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/public/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_ARTIST")
+                        .requestMatchers("/api/artist/**").permitAll()
+                        .requestMatchers("/api/user/**").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
+//                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_ARTIST")
                         .anyRequest().authenticated()).
 
                 httpBasic(Customizer.withDefaults()).

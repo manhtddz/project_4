@@ -127,8 +127,8 @@ public class SongService {
         song.setListenAmount(request.getListenAmount());
         song.setFeatureArtist(request.getFeatureArtist());
         song.setLyricFilePath(request.getLyricFilePath());
-        song.setIsPending(request.getPending());
-        song.setIsDeleted(request.getDeleted());
+        song.setIsPending(request.getIsPending());
+        song.setIsDeleted(request.getIsDeleted());
         song.setModifiedAt(request.getModifiedAt());
         song.setAlbumId(album.get());
         song.setArtistId(artist.get());
@@ -139,8 +139,8 @@ public class SongService {
     public SongResponse toSongResponse(Songs song) {
         SongResponse res = new SongResponse();
         BeanUtils.copyProperties(song, res);
-        res.setDeleted(song.getIsDeleted());
-        res.setPending(song.getIsPending());
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
         res.setAlbumId(song.getAlbumId().getId());
         res.setArtistId(song.getArtistId().getId());
         return res;

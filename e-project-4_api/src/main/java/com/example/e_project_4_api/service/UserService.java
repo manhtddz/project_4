@@ -102,7 +102,8 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setBio(request.getBio());
         user.setDob(request.getDob());
-        user.setIsDeleted(request.getDeleted());
+        user.setIsDeleted(request.getIsDeleted());
+        user.setIsActive(request.getIsActive());
         user.setCreatedAt(request.getCreatedAt());
         user.setModifiedAt(request.getModifiedAt());
         user.setArtistId(artist);
@@ -139,7 +140,8 @@ public class UserService {
     public UserResponse toUserResponse(Users user) {
         UserResponse res = new UserResponse();
         BeanUtils.copyProperties(user, res);
-        res.setDeleted(user.getIsDeleted());
+        res.setIsDeleted(user.getIsDeleted());
+        res.setIsActive(user.getIsActive());
         if (user.getArtistId() != null) {
             res.setArtistId(user.getArtistId().getId());
         }

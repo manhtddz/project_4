@@ -22,6 +22,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *
@@ -29,6 +32,9 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +67,8 @@ public class Users implements Serializable {
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
     private Date dob;
+    @Column(name = "is_active")
+    private Boolean isActive;
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     @Column(name = "created_at")
@@ -77,10 +85,7 @@ public class Users implements Serializable {
     @ManyToOne
     private Artists artistId;
 
-    public Users() {
-    }
-
-    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
+    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob ,Boolean isActive, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
         this.id = id;
         this.username = username;
         this.fullName = fullName;
@@ -91,140 +96,12 @@ public class Users implements Serializable {
         this.role = role;
         this.bio = bio;
         this.dob = dob;
+        this.isActive = isActive;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.artistId = artistId;
     }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Collection<FavouriteSongs> getFavouriteSongsCollection() {
-        return favouriteSongsCollection;
-    }
-
-    public void setFavouriteSongsCollection(Collection<FavouriteSongs> favouriteSongsCollection) {
-        this.favouriteSongsCollection = favouriteSongsCollection;
-    }
-
-    public Collection<Playlists> getPlaylistsCollection() {
-        return playlistsCollection;
-    }
-
-    public void setPlaylistsCollection(Collection<Playlists> playlistsCollection) {
-        this.playlistsCollection = playlistsCollection;
-    }
-
-    public Artists getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Artists artistId) {
-        this.artistId = artistId;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;

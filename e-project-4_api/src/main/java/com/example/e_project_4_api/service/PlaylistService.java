@@ -99,9 +99,9 @@ public class PlaylistService {
         }
         Playlists playlist = op.get();
         playlist.setTitle(request.getTitle());
-        playlist.setIsDeleted(request.getDeleted());
+        playlist.setIsDeleted(request.getIsDeleted());
         playlist.setUserId(user.get());
-        playlist.setIsDeleted(request.getDeleted());
+        playlist.setIsDeleted(request.getIsDeleted());
         playlist.setModifiedAt(request.getModifiedAt());
         repo.save(playlist);
         return request;
@@ -110,7 +110,7 @@ public class PlaylistService {
     public PlaylistResponse toPlayListResponse(Playlists playlist) {
         PlaylistResponse res = new PlaylistResponse();
         BeanUtils.copyProperties(playlist, res);
-        res.setDeleted(playlist.getIsDeleted());
+        res.setIsDeleted(playlist.getIsDeleted());
         res.setUserId(playlist.getUserId().getId());
         return res;
     }

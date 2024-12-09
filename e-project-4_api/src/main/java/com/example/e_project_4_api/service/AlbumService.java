@@ -132,9 +132,9 @@ public class AlbumService {
         album.setImage(request.getImage());
         album.setReleaseDate(request.getReleaseDate());
         album.setSubjectId(subject.get());
-        album.setIsReleased(request.getReleased());
+        album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
-        album.setIsDeleted(request.getDeleted());
+        album.setIsDeleted(request.getIsDeleted());
         album.setModifiedAt(request.getModifiedAt());
         repo.save(album);
 
@@ -144,8 +144,8 @@ public class AlbumService {
     public AlbumResponse toAlbumResponse(Albums album) {
         AlbumResponse res = new AlbumResponse();
         BeanUtils.copyProperties(album, res);
-        res.setDeleted(album.getIsDeleted());
-        res.setReleased(album.getIsReleased());
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
         res.setArtistId(album.getArtistId().getId());
         res.setSubjectId(album.getSubjectId().getId());
         return res;

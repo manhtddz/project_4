@@ -90,6 +90,7 @@ public class AuthenticationService {
                 Optional<Artists> artist = artistRepo.findById(request.getArtistId());
                 if (artist.isPresent()) {
                     newUser.setArtistId(artist.get());
+                    newUser.setIsActive(false);
                 } else {
                     errors.add("Can't find any artist with id: " + request.getArtistId());
                 }
@@ -110,6 +111,7 @@ public class AuthenticationService {
         newUser.setBio(request.getBio());
         newUser.setDob(request.getDob());
         newUser.setIsDeleted(false);
+        newUser.setIsActive(true);
         newUser.setCreatedAt(request.getCreatedAt());
         newUser.setModifiedAt(request.getModifiedAt());
 
@@ -126,6 +128,21 @@ public class AuthenticationService {
         if (request.getPassword().isEmpty() || (request.getPassword() == null)) {
             //check null
             errors.add("Password is required");
+        }
+        if (request.getRole().isEmpty() || (request.getRole() == null)) {
+            errors.add("Role is required");
+        } else {
+            if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
+                    && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
+                    && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
+                errors.add("Role is not valid");
+            }
+            if (request.getRole().equals(Role.ROLE_ARTIST.toString())) {
+                Optional<Users> user = repo.findByUsername(request.getUsername());
+                if (!user.get().getIsActive()) {
+                    errors.add("This user is not active");
+                }
+            }
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

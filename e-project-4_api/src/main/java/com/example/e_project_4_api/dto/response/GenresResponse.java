@@ -10,14 +10,13 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class PlaylistResponse {
+public class GenresResponse {
     private Integer id;
     private String title;
+    private String image;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
-    private Integer userId;
 
 
 }

@@ -21,6 +21,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *
@@ -28,6 +31,9 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "songs")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Songs implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -72,9 +78,6 @@ public class Songs implements Serializable {
     @OneToMany(mappedBy = "songId")
     private Collection<GenreSong> genreSongCollection;
 
-    public Songs() {
-    }
-
     public Songs(String title, String audioPath, Integer likeAmount, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
         this.title = title;
         this.audioPath = audioPath;
@@ -88,134 +91,6 @@ public class Songs implements Serializable {
         this.modifiedAt = modifiedAt;
         this.albumId = albumId;
         this.artistId = artistId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAudioPath() {
-        return audioPath;
-    }
-
-    public void setAudioPath(String audioPath) {
-        this.audioPath = audioPath;
-    }
-
-    public Integer getLikeAmount() {
-        return likeAmount;
-    }
-
-    public void setLikeAmount(Integer likeAmount) {
-        this.likeAmount = likeAmount;
-    }
-
-    public Integer getListenAmount() {
-        return listenAmount;
-    }
-
-    public void setListenAmount(Integer listenAmount) {
-        this.listenAmount = listenAmount;
-    }
-
-    public String getFeatureArtist() {
-        return featureArtist;
-    }
-
-    public void setFeatureArtist(String featureArtist) {
-        this.featureArtist = featureArtist;
-    }
-
-    public String getLyricFilePath() {
-        return lyricFilePath;
-    }
-
-    public void setLyricFilePath(String lyricFilePath) {
-        this.lyricFilePath = lyricFilePath;
-    }
-
-    public Boolean getIsPending() {
-        return isPending;
-    }
-
-    public void setIsPending(Boolean isPending) {
-        this.isPending = isPending;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Albums getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(Albums albumId) {
-        this.albumId = albumId;
-    }
-
-    public Artists getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Artists artistId) {
-        this.artistId = artistId;
-    }
-
-    public Collection<FavouriteSongs> getFavouriteSongsCollection() {
-        return favouriteSongsCollection;
-    }
-
-    public void setFavouriteSongsCollection(Collection<FavouriteSongs> favouriteSongsCollection) {
-        this.favouriteSongsCollection = favouriteSongsCollection;
-    }
-
-    public Collection<PlaylistSong> getPlaylistSongCollection() {
-        return playlistSongCollection;
-    }
-
-    public void setPlaylistSongCollection(Collection<PlaylistSong> playlistSongCollection) {
-        this.playlistSongCollection = playlistSongCollection;
-    }
-
-    public Collection<GenreSong> getGenreSongCollection() {
-        return genreSongCollection;
-    }
-
-    public void setGenreSongCollection(Collection<GenreSong> genreSongCollection) {
-        this.genreSongCollection = genreSongCollection;
     }
 
     @Override

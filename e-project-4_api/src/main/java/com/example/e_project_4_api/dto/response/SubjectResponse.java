@@ -6,18 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class PlaylistResponse {
+public class SubjectResponse {
     private Integer id;
     private String title;
+    private String image;
+    private String description;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
-    private Integer userId;
-
-
 }

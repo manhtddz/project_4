@@ -21,6 +21,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *
@@ -28,6 +31,9 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "albums")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Albums implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,8 +69,6 @@ public class Albums implements Serializable {
     @OneToMany(mappedBy = "albumId")
     private Collection<Songs> songsCollection;
 
-    public Albums() {
-    }
 
     public Albums(String title, String image, Boolean isReleased, Date releaseDate, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId, Subjects subjectId) {
         this.title = title;
@@ -76,94 +80,6 @@ public class Albums implements Serializable {
         this.modifiedAt = modifiedAt;
         this.artistId = artistId;
         this.subjectId = subjectId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Boolean getIsReleased() {
-        return isReleased;
-    }
-
-    public void setIsReleased(Boolean isReleased) {
-        this.isReleased = isReleased;
-    }
-
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Artists getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(Artists artistId) {
-        this.artistId = artistId;
-    }
-
-    public Subjects getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Subjects subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public Collection<Songs> getSongsCollection() {
-        return songsCollection;
-    }
-
-    public void setSongsCollection(Collection<Songs> songsCollection) {
-        this.songsCollection = songsCollection;
     }
 
     @Override

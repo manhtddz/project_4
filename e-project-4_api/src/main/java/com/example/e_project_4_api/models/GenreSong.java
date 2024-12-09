@@ -19,6 +19,9 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *
@@ -26,6 +29,9 @@ import jakarta.persistence.TemporalType;
  */
 @Entity
 @Table(name = "genre_song")
+@Getter
+@Setter
+@NoArgsConstructor
 public class GenreSong implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,63 +55,13 @@ public class GenreSong implements Serializable {
     @ManyToOne
     private Songs songId;
 
-    public GenreSong() {
-    }
 
-    public GenreSong(Integer id, Boolean isDeleted, Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
-        this.id = id;
+
+    public GenreSong(Boolean isDeleted, Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.genreId = genreId;
-        this.songId = songId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Genres getGenreId() {
-        return genreId;
-    }
-
-    public void setGenreId(Genres genreId) {
-        this.genreId = genreId;
-    }
-
-    public Songs getSongId() {
-        return songId;
-    }
-
-    public void setSongId(Songs songId) {
         this.songId = songId;
     }
 
