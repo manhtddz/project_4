@@ -14,8 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -57,7 +55,7 @@ public class Subjects implements Serializable {
     public Subjects() {
     }
 
-    public Subjects(Integer id, String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public Subjects(String title, String image, String description,Boolean isDeleted,Date createdAt,Date modifiedAt) {
         this.id = id;
         this.title = title;
         this.image = image;

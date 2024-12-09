@@ -1,0 +1,101 @@
+package com.example.e_project_4_api.service;
+
+import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylistSong;
+import com.example.e_project_4_api.dto.response.PlaylistSongResponse;
+import com.example.e_project_4_api.ex.AlreadyExistedException;
+import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.models.PlaylistSong;
+import com.example.e_project_4_api.models.Playlists;
+import com.example.e_project_4_api.models.Songs;
+import com.example.e_project_4_api.repositories.PlaylistRepository;
+import com.example.e_project_4_api.repositories.PlaylistSongRepository;
+import com.example.e_project_4_api.repositories.SongRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class PlaylistSongService {
+    @Autowired
+    PlaylistSongRepository repo;
+
+    @Autowired
+    SongRepository songRepo;
+    @Autowired
+    PlaylistRepository playlistRepo;
+
+    public List<PlaylistSongResponse> getAllPlaylistSong() {
+        return repo.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public PlaylistSongResponse findById(int id) {
+        Optional<PlaylistSong> op = repo.findById(id);
+        if (op.isPresent()) {
+            PlaylistSong PlaylistSong = op.get();
+            return toResponse(PlaylistSong);
+        } else {
+            throw new NotFoundException("Can't find any PlaylistSong with id: " + id);
+        }
+    }
+
+    public void deleteById(int id) {
+        if (!repo.existsById(id)) {
+            throw new NotFoundException("Can't find any PlaylistSong with id: " + id);
+        }
+        repo.deleteById(id);
+    }
+
+    public NewOrUpdatePlaylistSong addNewPS(NewOrUpdatePlaylistSong request) {
+        Optional<PlaylistSong> existingPlaylistSong = repo.findById(request.getId());
+        if (existingPlaylistSong.isPresent()) {
+            throw new AlreadyExistedException("A PlaylistSong already exists");
+        }
+        // Tìm thực thể Playlist và Song từ repo
+        Playlists playlist = playlistRepo.findById(request.getPlaylistId())
+                .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
+        Songs song = songRepo.findById(request.getSongId())
+                .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
+        Date currentDate = new Date();
+        PlaylistSong newPS = new PlaylistSong(false,currentDate,currentDate,playlist,song);
+        repo.save(newPS);
+        return request;
+    }
+
+    public NewOrUpdatePlaylistSong updatePS(NewOrUpdatePlaylistSong request) {
+        Optional<PlaylistSong> op = repo.findById(request.getId());
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any PlaylistSong with id: " + request.getId());
+        }
+        Playlists playlist = playlistRepo.findById(request.getPlaylistId())
+                .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
+        Songs song = songRepo.findById(request.getSongId())
+                .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
+        Date currentDate = new Date();
+        PlaylistSong ps = op.get();
+        ps.setPlaylistId(playlist);
+        ps.setSongId(song);
+        ps.setIsDeleted(false);
+        ps.setCreatedAt(currentDate);
+        ps.setModifiedAt(currentDate);
+
+        repo.save(ps);
+        return request;
+    }
+
+    private PlaylistSongResponse toResponse(PlaylistSong ps) {
+        PlaylistSongResponse res = new PlaylistSongResponse();
+        res.setPlaylistId(ps.getPlaylistId().getId());
+        res.setSongId(ps.getSongId().getId());
+        res.setIsDeleted(ps.getIsDeleted());
+        BeanUtils.copyProperties(ps, res);
+        return res;
+    }
+}
