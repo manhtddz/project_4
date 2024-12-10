@@ -1,25 +1,18 @@
 package com.example.e_project_4_api.service;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
-import com.example.e_project_4_api.dto.response.PlaylistResponse;
-import com.example.e_project_4_api.ex.AlreadyExistedException;
+import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Users;
-import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.PlaylistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +30,13 @@ public class PlaylistService {
     public List<PlaylistResponse> getAllPlaylists() {
         return repo.findAll()
                 .stream()
-                .map(this::toPlayListResponse)
+                .map(this::toPlaylistResponse)
+                .collect(Collectors.toList());
+    }
+    public List<PlaylistDisplay> getAllPlaylistsForDisplay() {
+        return repo.findAll()
+                .stream()
+                .map(this::toPlaylistDisplay)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +45,14 @@ public class PlaylistService {
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any playlists with id: " + id);
         }
-        return toPlayListResponse(op.get());
+        return toPlaylistResponse(op.get());
+    }
+    public PlaylistDisplay findDisplayById(int id) {
+        Optional<Playlists> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any playlists with id: " + id);
+        }
+        return toPlaylistDisplay(op.get());
     }
 
     public boolean deleteById(int id) {
@@ -72,8 +78,8 @@ public class PlaylistService {
         if (user.isEmpty()) {
             errors.add("Can't find any user with id: " + request.getUserId());
         }
-        Playlists newPlaylist = new Playlists(request.getTitle(), false, request.getCreatedAt(),
-                request.getModifiedAt(), user.get());
+        Playlists newPlaylist = new Playlists(request.getTitle(), false, new Date(),
+                new Date(), user.get());
         repo.save(newPlaylist);
         return request;
     }
@@ -102,16 +108,23 @@ public class PlaylistService {
         playlist.setIsDeleted(request.getIsDeleted());
         playlist.setUserId(user.get());
         playlist.setIsDeleted(request.getIsDeleted());
-        playlist.setModifiedAt(request.getModifiedAt());
+        playlist.setModifiedAt(new Date());
         repo.save(playlist);
         return request;
     }
 
-    public PlaylistResponse toPlayListResponse(Playlists playlist) {
+    public PlaylistResponse toPlaylistResponse(Playlists playlist) {
         PlaylistResponse res = new PlaylistResponse();
         BeanUtils.copyProperties(playlist, res);
         res.setIsDeleted(playlist.getIsDeleted());
         res.setUserId(playlist.getUserId().getId());
+        return res;
+    }
+    public PlaylistDisplay toPlaylistDisplay(Playlists playlist) {
+        PlaylistDisplay res = new PlaylistDisplay();
+        BeanUtils.copyProperties(playlist, res);
+        res.setIsDeleted(playlist.getIsDeleted());
+        res.setUsername(playlist.getUserId().getUsername());
         return res;
     }
 }

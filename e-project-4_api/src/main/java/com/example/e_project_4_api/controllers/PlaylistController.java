@@ -1,12 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
-import com.example.e_project_4_api.dto.response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.service.AlbumService;
 import com.example.e_project_4_api.service.PlaylistService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,40 +25,32 @@ public class PlaylistController {
     public ResponseEntity<List<PlaylistResponse>> findAll() {
         return new ResponseEntity<>(service.getAllPlaylists(), HttpStatus.OK);
     }
+
+    @GetMapping("/public/playlists/display")
+    public ResponseEntity<List<PlaylistDisplay>> findAllPlaylistsForDisplay() {
+        return new ResponseEntity<>(service.getAllPlaylistsForDisplay(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/playlists/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
-        try {
-            PlaylistResponse playlist = service.findById(id);
-            return new ResponseEntity<>(playlist, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        PlaylistResponse playlist = service.findById(id);
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
+    @GetMapping("/public/playlists/display/{id}")
+    public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
+        PlaylistDisplay playlist = service.findDisplayById(id);
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
+
     @DeleteMapping("/public/playlists/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
-        try {
-            service.deleteById(id);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Deleted successfully"
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", e.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        service.deleteById(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/public/playlists")
@@ -77,8 +67,7 @@ public class PlaylistController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -100,8 +89,7 @@ public class PlaylistController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

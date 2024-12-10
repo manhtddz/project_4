@@ -1,7 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylistSong;
-import com.example.e_project_4_api.dto.response.PlaylistSongResponse;
+import com.example.e_project_4_api.dto.response.common_response.PlaylistSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.models.PlaylistSong;

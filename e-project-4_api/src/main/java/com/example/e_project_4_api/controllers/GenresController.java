@@ -1,7 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
-import com.example.e_project_4_api.dto.response.GenresResponse;
+import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.GenresService;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class GenresController{
+public class GenresController {
 
     @Autowired
     private GenresService service;
@@ -31,40 +31,20 @@ public class GenresController{
 
     @GetMapping("/public/genres/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
-        try {
-            GenresResponse genre = service.findById(id);
-            return new ResponseEntity<>(genre, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        GenresResponse genre = service.findById(id);
+        return new ResponseEntity<>(genre, HttpStatus.OK);
     }
 
 
     @DeleteMapping("/public/genres/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
-        try {
-            service.deleteById(id);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Deleted successfully"
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", e.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        service.deleteById(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/public/genres")
@@ -81,8 +61,7 @@ public class GenresController{
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -104,8 +83,7 @@ public class GenresController{
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

@@ -1,5 +1,7 @@
 package com.example.e_project_4_api.config;
 
+import com.example.e_project_4_api.utilities.CustomAccessDeniedHandler;
+import com.example.e_project_4_api.utilities.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,16 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    public SecurityConfig(UserDetailsService userDetailsService, CustomAuthenticationEntryPoint authenticationEntryPoint,
+                          CustomAccessDeniedHandler accessDeniedHandler) {
+        this.userDetailsService = userDetailsService;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,13 +52,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
 //                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_ARTIST")
-                        .anyRequest().authenticated()).
-
-                httpBasic(Customizer.withDefaults()).
-                sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-//        http.formLogin(Customizer.withDefaults());
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).
+                build();
     }
 
     @Bean

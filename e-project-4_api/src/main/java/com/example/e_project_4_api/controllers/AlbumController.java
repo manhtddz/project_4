@@ -1,10 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
+import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
+import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.service.AlbumService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -27,41 +26,33 @@ public class AlbumController {
         return new ResponseEntity<>(service.getAllAlbums(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/albums/display")
+    public ResponseEntity<List<AlbumDisplay>> findAllAlbumsForDisplay() {
+        return new ResponseEntity<>(service.getAllAlbumsForDisplay(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
-        try {
-            AlbumResponse album = service.findById(id);
-            return new ResponseEntity<>(album, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        AlbumResponse album = service.findById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/public/albums/display/{id}")
+    public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
+        AlbumDisplay album = service.findDisplayById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
     }
 
     @DeleteMapping("/public/albums/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
-        try {
-            service.deleteById(id);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Deleted successfully"
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", e.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        service.deleteById(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/public/albums")
@@ -79,8 +70,7 @@ public class AlbumController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -102,8 +92,7 @@ public class AlbumController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

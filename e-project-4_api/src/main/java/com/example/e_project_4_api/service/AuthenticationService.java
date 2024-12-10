@@ -2,6 +2,10 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
+import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
+import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Users;
@@ -11,6 +15,7 @@ import com.example.e_project_4_api.utilities.EmailValidator;
 import com.example.e_project_4_api.utilities.PasswordValidator;
 import com.example.e_project_4_api.utilities.PhoneNumberValidator;
 import com.example.e_project_4_api.utilities.Role;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,70 +42,91 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public Users register(NewOrUpdateUser request) {
-        List<String> errors = new ArrayList<>();
+    public UserDisplay register(NewOrUpdateUser request) {
         Users newUser = new Users();
 
         if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
             //check null
-            errors.add("Username is required");
+            throw new ValidationException(Collections.singletonList("Username is required"));
+
         } else {
             // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
             Optional<Users> op = repo.findByUsername(request.getUsername());
             if (op.isPresent()) {
-                errors.add("Already exist user with username: " + request.getUsername());
+                throw new ValidationException(Collections.singletonList("Already exist user with username: " + request.getUsername()));
             }
         }
         if (request.getFullName().isEmpty() || (request.getFullName() == null)) {
-            errors.add("Fullname is required");
+            throw new ValidationException(Collections.singletonList("Fullname is required"));
+
         }
         if (request.getAvatar().isEmpty() || (request.getAvatar() == null)) {
-            errors.add("Avatar is required");
+            throw new ValidationException(Collections.singletonList("Avatar is required"));
+
         }
         if (request.getPassword().isEmpty() || (request.getPassword() == null)) {
-            errors.add("Password is required");
+            throw new ValidationException(Collections.singletonList("Password is required"));
+
         } else {
             if (!PasswordValidator.isValidPassword(request.getPassword())) {
-                errors.add("Password is not strong enough, at least 8 character with special character and number");
+                throw new ValidationException(Collections
+                        .singletonList("Password is not strong enough, at least 8 character with special character and number"));
             }
         }
         if (request.getPhone().isEmpty() || (request.getPhone() == null)) {
-            errors.add("Phone is required");
+            throw new ValidationException(Collections.singletonList("Phone is required"));
+
         } else {
             if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
-                errors.add("Phone number is not valid");
+                throw new ValidationException(Collections.singletonList("Phone number is not valid"));
+
             }
         }
         if (request.getEmail().isEmpty() || (request.getEmail() == null)) {
-            errors.add("Email is required");
+            throw new ValidationException(Collections.singletonList("Email is required"));
+
         } else {
             if (!EmailValidator.isValidEmail(request.getEmail())) {
-                errors.add("Email is not valid");
+                throw new ValidationException(Collections.singletonList("Email is not valid"));
+
             }
         }
         if (request.getRole().isEmpty() || (request.getRole() == null)) {
-            errors.add("Role is required");
+            throw new ValidationException(Collections.singletonList("Role is required"));
+
         } else {
             if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
                     && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
                     && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
-                errors.add("Role is not valid");
+                throw new ValidationException(Collections.singletonList("Role is not valid"));
+
             }
             if (request.getRole().equals(Role.ROLE_ARTIST.toString())) {
                 Optional<Artists> artist = artistRepo.findById(request.getArtistId());
                 if (artist.isPresent()) {
+                    newUser.setUsername(request.getUsername());
+                    newUser.setPassword(encoder.encode(request.getPassword()));
+                    newUser.setFullName(request.getFullName());
+                    newUser.setAvatar(request.getAvatar());
+                    newUser.setPhone(request.getPhone());
+                    newUser.setEmail(request.getEmail());
+                    newUser.setRole(request.getRole());
+                    newUser.setBio(request.getBio());
+                    newUser.setDob(request.getDob());
+                    newUser.setIsDeleted(false);
+                    newUser.setCreatedAt(new Date());
+                    newUser.setModifiedAt(new Date());
                     newUser.setArtistId(artist.get());
                     newUser.setIsActive(false);
+
+                    repo.save(newUser);
+                    return toUserDisplay(newUser);
                 } else {
-                    errors.add("Can't find any artist with id: " + request.getArtistId());
+                    throw new ValidationException(Collections.singletonList("Can't find any artist with id: " + request.getArtistId()));
                 }
             }
         }
 
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
         newUser.setUsername(request.getUsername());
         newUser.setPassword(encoder.encode(request.getPassword()));
         newUser.setFullName(request.getFullName());
@@ -116,42 +142,62 @@ public class AuthenticationService {
         newUser.setModifiedAt(request.getModifiedAt());
 
         repo.save(newUser);
-        return newUser;
+        return toUserDisplay(newUser);
     }
 
-    public String verify(LoginRequest request) {
+    public LoginResponse verify(LoginRequest request) {
         List<String> errors = new ArrayList<>();
-        if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
-            //check null
+
+        if (request.getUsername() == null || request.getUsername().isEmpty()) {
             errors.add("Username is required");
         }
-        if (request.getPassword().isEmpty() || (request.getPassword() == null)) {
-            //check null
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
             errors.add("Password is required");
         }
-        if (request.getRole().isEmpty() || (request.getRole() == null)) {
-            errors.add("Role is required");
-        } else {
-            if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
-                    && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
-                    && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
-                errors.add("Role is not valid");
-            }
-            if (request.getRole().equals(Role.ROLE_ARTIST.toString())) {
-                Optional<Users> user = repo.findByUsername(request.getUsername());
-                if (!user.get().getIsActive()) {
-                    errors.add("This user is not active");
-                }
-            }
-        }
+
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
+
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(request.getUsername());
-        } else {
-            return "Wrong password or username";
+            Users user = repo.findByUsername(request.getUsername())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+
+            if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
+                throw new ValidationException(Collections.singletonList("This user is not active"));
+            }
+
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));
         }
+
+        return null;
+    }
+
+
+    public UserResponse toUserResponse(Users user) {
+        UserResponse res = new UserResponse();
+        BeanUtils.copyProperties(user, res);
+        res.setIsDeleted(user.getIsDeleted());
+        res.setIsActive(user.getIsActive());
+        if (user.getArtistId() != null) {
+            res.setArtistId(user.getArtistId().getId());
+        }
+        return res;
+    }
+
+    public UserDisplay toUserDisplay(Users user) {
+        UserDisplay res = new UserDisplay();
+        BeanUtils.copyProperties(user, res);
+        res.setIsDeleted(user.getIsDeleted());
+        res.setIsActive(user.getIsActive());
+        if (user.getArtistId() != null) {
+            res.setArtistName(user.getArtistId().getArtistName());
+            res.setArtistImage(user.getArtistId().getImage());
+        }
+        return res;
     }
 }

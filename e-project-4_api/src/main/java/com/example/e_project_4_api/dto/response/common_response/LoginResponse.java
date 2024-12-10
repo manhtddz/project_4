@@ -1,4 +1,4 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.response.common_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,11 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
     private String token;
-
-    public LoginResponse(String token) {
-        this.token = token;
-    }
+    private UserResponse user;
 
 }

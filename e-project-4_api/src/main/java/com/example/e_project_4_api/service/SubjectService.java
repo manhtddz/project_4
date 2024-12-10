@@ -1,7 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateSubject;
-import com.example.e_project_4_api.dto.response.SubjectResponse;
+import com.example.e_project_4_api.dto.response.common_response.SubjectResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.models.Subjects;

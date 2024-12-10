@@ -2,6 +2,8 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
+import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
@@ -27,7 +29,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody NewOrUpdateUser user) {
         try {
-            Users newUser = service.register(user);
+            UserDisplay newUser = service.register(user);
             return new ResponseEntity<>(
                     Map.of(
                             "message", "Register successfully",
@@ -38,8 +40,7 @@ public class AuthController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -49,32 +50,21 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest user) {
         try {
-            String token = service.verify(user);
+            LoginResponse res = service.verify(user);
             return new ResponseEntity<>(
                     Map.of(
                             "message", "Login successfully",
-                            "token", token
+                            "token", res
                     ),
                     HttpStatus.OK
             );
         } catch (ValidationException ex) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", ex.getErrors()
+                            "error", ex.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Validation failed",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
         }
     }
-
-
 }

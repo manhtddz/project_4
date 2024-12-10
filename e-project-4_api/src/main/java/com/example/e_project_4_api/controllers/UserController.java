@@ -1,13 +1,11 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
-import com.example.e_project_4_api.dto.response.UserResponse;
+import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
-import com.example.e_project_4_api.service.AlbumService;
 import com.example.e_project_4_api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +27,21 @@ public class UserController {
         return new ResponseEntity<>(service.getAllUsers(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/users/display")
+    public ResponseEntity<List<UserDisplay>> findAllUsersForDisplay() {
+        return new ResponseEntity<>(service.getAllUsersForDisplay(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/users/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
-        try {
-            UserResponse album = service.findById(id);
-            return new ResponseEntity<>(album, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        UserResponse album = service.findById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/users/display/{id}")
+    public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
+        UserDisplay album = service.findDisplayById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
     }
 
     @DeleteMapping("/public/users/{id}")

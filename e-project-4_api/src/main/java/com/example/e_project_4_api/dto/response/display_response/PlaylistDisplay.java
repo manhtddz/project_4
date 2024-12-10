@@ -1,4 +1,4 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.response.display_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +11,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class GenreSongResponse {
+public class PlaylistDisplay {
     private Integer id;
-    private Integer genreId;
-    private Integer songId;
+    private String title;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
+    private String username;
 
 
 }

@@ -1,14 +1,12 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
-import com.example.e_project_4_api.dto.response.FavouriteSongResponse;
+import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.models.FavouriteSongs;
-import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
-import com.example.e_project_4_api.repositories.PlaylistRepository;
 import com.example.e_project_4_api.repositories.FavouriteSongRepository;
 import com.example.e_project_4_api.repositories.SongRepository;
 import com.example.e_project_4_api.repositories.UserRepository;

@@ -1,8 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
-import com.example.e_project_4_api.dto.response.ArtistResponse;
-import com.example.e_project_4_api.dto.response.GenresResponse;
+import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
 import com.example.e_project_4_api.service.ArtistService;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -31,18 +30,8 @@ public class ArtistController {
 
     @GetMapping("/public/artists/{id}")
     public ResponseEntity<Object> getArtistById(@PathVariable int id) {
-        try {
-            ArtistResponse artist = artistService.findById(id);
-            return new ResponseEntity<>(artist, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", ex.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        ArtistResponse artist = artistService.findById(id);
+        return new ResponseEntity<>(artist, HttpStatus.OK);
     }
 
 
@@ -54,8 +43,7 @@ public class ArtistController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -71,8 +59,7 @@ public class ArtistController {
         } catch (ValidationException ex) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", ex.getErrors()
+                            "error", ex.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -81,22 +68,12 @@ public class ArtistController {
 
     @DeleteMapping("/public/artists/{id}")
     public ResponseEntity<Object> deleteArtist(@PathVariable int id) {
-        try {
-            artistService.deleteById(id);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Deleted successfully"
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", e.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        artistService.deleteById(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 }

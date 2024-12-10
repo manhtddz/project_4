@@ -1,7 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
-import com.example.e_project_4_api.dto.response.GenresResponse;
+import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Genres;

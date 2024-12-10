@@ -24,6 +24,7 @@ CREATE TABLE users (
     bio text,
     dob DATE,
     artist_id INT(11),
+    is_active Boolean,
     is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,

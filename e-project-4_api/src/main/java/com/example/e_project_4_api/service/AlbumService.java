@@ -1,23 +1,20 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.response.AlbumResponse;
-import com.example.e_project_4_api.ex.AlreadyExistedException;
+import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
+import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Subjects;
-import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.SubjectRepository;
-import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +34,12 @@ public class AlbumService {
                 .map(this::toAlbumResponse)
                 .collect(Collectors.toList());
     }
+    public List<AlbumDisplay> getAllAlbumsForDisplay() {
+        return repo.findAll()
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
 
     public AlbumResponse findById(int id) {
         Optional<Albums> op = repo.findById(id);
@@ -44,6 +47,13 @@ public class AlbumService {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
         return toAlbumResponse(op.get());
+    }
+    public AlbumDisplay findDisplayById(int id) {
+        Optional<Albums> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + id);
+        }
+        return toAlbumDisplay(op.get());
     }
 
     public boolean deleteById(int id) {
@@ -87,7 +97,7 @@ public class AlbumService {
             throw new ValidationException(errors);
         }
         Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
-                false, request.getCreatedAt(), request.getModifiedAt(), artist.get(), subject.get());
+                false, new Date(), new Date(), artist.get(), subject.get());
         repo.save(newAlbum);
         return request;
     }
@@ -135,7 +145,7 @@ public class AlbumService {
         album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
         album.setIsDeleted(request.getIsDeleted());
-        album.setModifiedAt(request.getModifiedAt());
+        album.setModifiedAt(new Date());
         repo.save(album);
 
         return request;
@@ -148,6 +158,17 @@ public class AlbumService {
         res.setIsReleased(album.getIsReleased());
         res.setArtistId(album.getArtistId().getId());
         res.setSubjectId(album.getSubjectId().getId());
+        return res;
+    }
+
+    public AlbumDisplay toAlbumDisplay(Albums album) {
+        AlbumDisplay res = new AlbumDisplay();
+        BeanUtils.copyProperties(album, res);
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        res.setSubjectTitle(album.getSubjectId().getTitle());
         return res;
     }
 }

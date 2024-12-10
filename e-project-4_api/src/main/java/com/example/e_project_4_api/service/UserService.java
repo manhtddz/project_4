@@ -1,12 +1,11 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
-import com.example.e_project_4_api.dto.response.SongResponse;
-import com.example.e_project_4_api.dto.response.UserResponse;
+import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
@@ -19,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,8 +100,7 @@ public class UserService {
         user.setDob(request.getDob());
         user.setIsDeleted(request.getIsDeleted());
         user.setIsActive(request.getIsActive());
-        user.setCreatedAt(request.getCreatedAt());
-        user.setModifiedAt(request.getModifiedAt());
+        user.setModifiedAt(new Date());
         user.setArtistId(artist);
         repo.save(user);
         return user;
@@ -118,12 +113,27 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserDisplay> getAllUsersForDisplay() {
+        return repo.findAll()
+                .stream()
+                .map(this::toUserDisplay)
+                .collect(Collectors.toList());
+    }
+
     public UserResponse findById(int id) {
         Optional<Users> op = repo.findById(id);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any user with id: " + id);
         }
         return toUserResponse(op.get());
+    }
+
+    public UserDisplay findDisplayById(int id) {
+        Optional<Users> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any user with id: " + id);
+        }
+        return toUserDisplay(op.get());
     }
 
     public boolean deleteById(int id) {
@@ -144,6 +154,18 @@ public class UserService {
         res.setIsActive(user.getIsActive());
         if (user.getArtistId() != null) {
             res.setArtistId(user.getArtistId().getId());
+        }
+        return res;
+    }
+
+    public UserDisplay toUserDisplay(Users user) {
+        UserDisplay res = new UserDisplay();
+        BeanUtils.copyProperties(user, res);
+        res.setIsDeleted(user.getIsDeleted());
+        res.setIsActive(user.getIsActive());
+        if (user.getArtistId() != null) {
+            res.setArtistName(user.getArtistId().getArtistName());
+            res.setArtistImage(user.getArtistId().getImage());
         }
         return res;
     }

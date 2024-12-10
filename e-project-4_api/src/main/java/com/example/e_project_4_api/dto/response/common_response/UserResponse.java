@@ -1,15 +1,10 @@
-package com.example.e_project_4_api.dto.response;
+package com.example.e_project_4_api.dto.response.common_response;
 
-import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.FavouriteSongs;
-import com.example.e_project_4_api.models.Playlists;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Date;
 
 @Getter

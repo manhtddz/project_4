@@ -1,11 +1,9 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
-import com.example.e_project_4_api.dto.response.GenreSongResponse;
-import com.example.e_project_4_api.ex.AlreadyExistedException;
+import com.example.e_project_4_api.dto.response.common_response.GenreSongResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.FavouriteSongs;
 import com.example.e_project_4_api.models.GenreSong;
 import com.example.e_project_4_api.models.Genres;
 import com.example.e_project_4_api.models.Songs;
