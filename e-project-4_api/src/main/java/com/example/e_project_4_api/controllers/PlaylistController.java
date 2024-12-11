@@ -31,11 +31,17 @@ public class PlaylistController {
         return new ResponseEntity<>(service.getAllPlaylistsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/playlists/byUser/display/{id}")
+    public ResponseEntity<List<PlaylistDisplay>> findAllPlaylistsByUserIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllPlaylistsByUserIdForDisplay(id), HttpStatus.OK);
+    }
+
     @GetMapping("/public/playlists/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         PlaylistResponse playlist = service.findById(id);
         return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
+
     @GetMapping("/public/playlists/display/{id}")
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         PlaylistDisplay playlist = service.findDisplayById(id);

@@ -34,8 +34,23 @@ public class AlbumService {
                 .map(this::toAlbumResponse)
                 .collect(Collectors.toList());
     }
+
     public List<AlbumDisplay> getAllAlbumsForDisplay() {
         return repo.findAll()
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplay> getAllAlbumsByArtistIdForDisplay(int artistId) {
+        return repo.findAllByArtistId(artistId)
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int subjectId) {
+        return repo.findAllBySubjectId(subjectId)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
@@ -48,6 +63,7 @@ public class AlbumService {
         }
         return toAlbumResponse(op.get());
     }
+
     public AlbumDisplay findDisplayById(int id) {
         Optional<Albums> op = repo.findById(id);
         if (op.isEmpty()) {

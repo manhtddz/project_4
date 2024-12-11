@@ -31,6 +31,16 @@ public class AlbumController {
         return new ResponseEntity<>(service.getAllAlbumsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/albums/byArtist/display/{id}")
+    public ResponseEntity<List<AlbumDisplay>> findAllAlbumsByArtistIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllAlbumsByArtistIdForDisplay(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/public/albums/bySubject/display/{id}")
+    public ResponseEntity<List<AlbumDisplay>> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllAlbumsBySubjectIdForDisplay(id), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         AlbumResponse album = service.findById(id);

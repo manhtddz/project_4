@@ -33,8 +33,16 @@ public class PlaylistService {
                 .map(this::toPlaylistResponse)
                 .collect(Collectors.toList());
     }
+
     public List<PlaylistDisplay> getAllPlaylistsForDisplay() {
         return repo.findAll()
+                .stream()
+                .map(this::toPlaylistDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<PlaylistDisplay> getAllPlaylistsByUserIdForDisplay(int userId) {
+        return repo.findAllByUserId(userId)
                 .stream()
                 .map(this::toPlaylistDisplay)
                 .collect(Collectors.toList());
@@ -47,6 +55,7 @@ public class PlaylistService {
         }
         return toPlaylistResponse(op.get());
     }
+
     public PlaylistDisplay findDisplayById(int id) {
         Optional<Playlists> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -120,6 +129,7 @@ public class PlaylistService {
         res.setUserId(playlist.getUserId().getId());
         return res;
     }
+
     public PlaylistDisplay toPlaylistDisplay(Playlists playlist) {
         PlaylistDisplay res = new PlaylistDisplay();
         BeanUtils.copyProperties(playlist, res);

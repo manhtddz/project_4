@@ -31,6 +31,16 @@ public class SongController {
         return new ResponseEntity<>(service.getAllSongsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/songs/byArtist/display/{id}")
+    public ResponseEntity<List<SongDisplay>> findAllSongsByArtistIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllSongsByArtistIdForDisplay(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/public/songs/byAlbum/display/{id}")
+    public ResponseEntity<List<SongDisplay>> findAllSongsByAlbumIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllSongsByAlbumIdForDisplay(id), HttpStatus.OK);
+    }
+
     @GetMapping("/public/songs/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         SongResponse song = service.findById(id);

@@ -42,6 +42,20 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    public List<SongDisplay> getAllSongsByArtistIdForDisplay(int artistId) {
+        return repo.findAllByArtistId(artistId)
+                .stream()
+                .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
+        return repo.findAllByAlbumId(albumId)
+                .stream()
+                .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
     public SongResponse findById(int id) {
         Optional<Songs> op = repo.findById(id);
         if (op.isEmpty()) {
