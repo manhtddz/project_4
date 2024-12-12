@@ -22,7 +22,7 @@ public class SongResponse{
     private Integer id;
     private String title;
     private String audioPath;
-    private Integer amount;
+    private Integer listenAmount;
     private Integer likeAmount;
     private String lyricFilePath;
     private Boolean isPending;

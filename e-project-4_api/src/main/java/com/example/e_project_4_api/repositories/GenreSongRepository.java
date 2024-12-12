@@ -13,4 +13,7 @@ import java.util.Optional;
 public interface GenreSongRepository extends JpaRepository<GenreSong, Integer> {
     @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId AND gs.songId.id = :songId")
     Optional<GenreSong> findByGenreIdAndSongId(@Param("genreId") Integer genreId, @Param("songId") Integer songId);
+
+    @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId")
+    Optional<GenreSong> findByGenreId(@Param("genreId") Integer genreId);
 }

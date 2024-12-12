@@ -6,10 +6,7 @@ import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.*;
-import com.example.e_project_4_api.repositories.AlbumRepository;
-import com.example.e_project_4_api.repositories.ArtistRepository;
-import com.example.e_project_4_api.repositories.FavouriteSongRepository;
-import com.example.e_project_4_api.repositories.SongRepository;
+import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,10 @@ public class SongService {
     private ArtistRepository artistRepo;
     @Autowired
     private FavouriteSongRepository favRepo;
+    @Autowired
+    private GenreSongRepository genSongRepo;
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
 
     public List<SongResponse> getAllSongs() {
         return repo.findAll()
@@ -76,8 +77,22 @@ public class SongService {
         return toSongDisplay(op.get());
     }
 
-    public List<SongDisplay> getAllFavSongsByUserId(Integer id){
+    public List<SongDisplay> getAllFavSongsByUserId(Integer id) {
         return favRepo.findFSByUserId(id)
+                .stream()
+                .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplay> getAllSongsByGenreId(Integer id) {
+        return genSongRepo.findByGenreId(id)
+                .stream()
+                .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplay> getAllSongsByPlaylistId(Integer id) {
+        return playlistSongRepo.findByPlaylistId(id)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
@@ -197,6 +212,32 @@ public class SongService {
 
     public SongDisplay toSongDisplay(FavouriteSongs fsSong) {
         Songs song = repo.findById(fsSong.getSongId().getId()).get();
+
+        SongDisplay res = new SongDisplay();
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumImage(song.getAlbumId().getImage());
+        res.setArtistName(song.getArtistId().getArtistName());
+        return res;
+    }
+
+    public SongDisplay toSongDisplay(GenreSong genreSong) {
+        Songs song = repo.findById(genreSong.getSongId().getId()).get();
+
+        SongDisplay res = new SongDisplay();
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumImage(song.getAlbumId().getImage());
+        res.setArtistName(song.getArtistId().getArtistName());
+        return res;
+    }
+
+    public SongDisplay toSongDisplay(PlaylistSong playlistSong) {
+        Songs song = repo.findById(playlistSong.getSongId().getId()).get();
 
         SongDisplay res = new SongDisplay();
         BeanUtils.copyProperties(song, res);
