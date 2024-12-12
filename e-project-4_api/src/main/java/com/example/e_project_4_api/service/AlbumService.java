@@ -7,10 +7,8 @@ import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.Subjects;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
-import com.example.e_project_4_api.repositories.SubjectRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +23,6 @@ public class AlbumService {
     private AlbumRepository repo;
     @Autowired
     private ArtistRepository artistRepo;
-    @Autowired
-    private SubjectRepository subjectRepo;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAll()
@@ -49,12 +45,6 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
-    public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int subjectId) {
-        return repo.findAllBySubjectId(subjectId)
-                .stream()
-                .map(this::toAlbumDisplay)
-                .collect(Collectors.toList());
-    }
 
     public AlbumResponse findById(int id) {
         Optional<Albums> op = repo.findById(id);
@@ -104,16 +94,11 @@ public class AlbumService {
         if (artist.isEmpty()) {
             errors.add("Can't find any artist with id: " + request.getArtistId());
         }
-        //check sự tồn tại
-        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
-        if (subject.isEmpty()) {
-            errors.add("Can't find any subject with id: " + request.getSubjectId());
-        }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
         Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
-                false, new Date(), new Date(), artist.get(), subject.get());
+                false, new Date(), new Date(), artist.get());
         repo.save(newAlbum);
         return request;
     }
@@ -145,11 +130,6 @@ public class AlbumService {
         if (artist.isEmpty()) {
             errors.add("Can't find any artist with id: " + request.getArtistId());
         }
-        //check sự tồn tại
-        Optional<Subjects> subject = subjectRepo.findById(request.getSubjectId());
-        if (subject.isEmpty()) {
-            errors.add("Can't find any subject with id: " + request.getSubjectId());
-        }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
@@ -157,7 +137,6 @@ public class AlbumService {
         album.setTitle(request.getTitle());
         album.setImage(request.getImage());
         album.setReleaseDate(request.getReleaseDate());
-        album.setSubjectId(subject.get());
         album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
         album.setIsDeleted(request.getIsDeleted());
@@ -173,7 +152,6 @@ public class AlbumService {
         res.setIsDeleted(album.getIsDeleted());
         res.setIsReleased(album.getIsReleased());
         res.setArtistId(album.getArtistId().getId());
-        res.setSubjectId(album.getSubjectId().getId());
         return res;
     }
 
@@ -184,7 +162,6 @@ public class AlbumService {
         res.setIsReleased(album.getIsReleased());
         res.setArtistName(album.getArtistId().getArtistName());
         res.setArtistImage(album.getArtistId().getImage());
-        res.setSubjectTitle(album.getSubjectId().getTitle());
         return res;
     }
 }

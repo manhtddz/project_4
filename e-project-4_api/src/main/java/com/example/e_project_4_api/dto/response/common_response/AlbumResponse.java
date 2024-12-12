@@ -18,7 +18,6 @@ public class AlbumResponse {
     private Boolean isReleased;
     private Date releaseDate;
     private Integer artistId;
-    private Integer subjectId;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;

@@ -20,7 +20,6 @@ public class AlbumDisplay {
     private Date releaseDate;
     private String artistName;
     private String artistImage;
-    private String subjectTitle;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;

@@ -16,7 +16,4 @@ public interface AlbumRepository extends JpaRepository<Albums, Integer> {
 
     @Query("Select a from Albums a where a.artistId.id = :arId")
     List<Albums> findAllByArtistId(@Param("arId") Integer artistId);
-
-    @Query("Select a from Albums a where a.subjectId.id = :subjId")
-    List<Albums> findAllBySubjectId(@Param("subjId") Integer subjectId);
 }
