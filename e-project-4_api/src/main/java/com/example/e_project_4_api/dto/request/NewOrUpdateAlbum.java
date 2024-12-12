@@ -17,20 +17,18 @@ public class NewOrUpdateAlbum {
     private Boolean isReleased;
     private Date releaseDate;
     private Integer artistId;
-    private Integer subjectId;
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 
 
-    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Integer subjectId, Boolean isDeleted) {
+    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.image = image;
         this.isReleased = isReleased;
         this.releaseDate = releaseDate;
         this.artistId = artistId;
-        this.subjectId = subjectId;
         this.isDeleted = isDeleted;
         this.createdAt = Date.from(Instant.now());
         this.modifiedAt = Date.from(Instant.now());

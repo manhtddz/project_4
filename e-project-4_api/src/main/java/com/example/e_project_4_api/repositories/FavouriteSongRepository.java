@@ -14,4 +14,7 @@ import java.util.Optional;
 public interface FavouriteSongRepository extends JpaRepository<FavouriteSongs,Integer> {
     @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId AND fs.songId.id = :songId")
     Optional<FavouriteSongs> findByUserIdAndSongId(@Param("userId") Integer userId, @Param("songId") Integer songId);
+
+    @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId")
+    Optional<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId);
 }

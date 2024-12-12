@@ -4,9 +4,11 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.*;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
+import com.example.e_project_4_api.repositories.FavouriteSongRepository;
 import com.example.e_project_4_api.repositories.SongRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class SongService {
     private AlbumRepository albumRepo;
     @Autowired
     private ArtistRepository artistRepo;
+    @Autowired
+    private FavouriteSongRepository favRepo;
 
     public List<SongResponse> getAllSongs() {
         return repo.findAll()
@@ -72,6 +76,12 @@ public class SongService {
         return toSongDisplay(op.get());
     }
 
+    public List<SongDisplay> getAllFavSongsByUserId(Integer id){
+        return favRepo.findFSByUserId(id)
+                .stream()
+                .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
 
     public boolean deleteById(int id) {
         Optional<Songs> op = repo.findById(id);
@@ -111,6 +121,9 @@ public class SongService {
         }
         if (album.isEmpty()) {
             errors.add("Can't find any album with id: " + request.getAlbumId());
+        }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
         Songs newSong = new Songs(request.getTitle(), request.getAudioPath(), 0,
                 0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
@@ -172,6 +185,19 @@ public class SongService {
     }
 
     public SongDisplay toSongDisplay(Songs song) {
+        SongDisplay res = new SongDisplay();
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumImage(song.getAlbumId().getImage());
+        res.setArtistName(song.getArtistId().getArtistName());
+        return res;
+    }
+
+    public SongDisplay toSongDisplay(FavouriteSongs fsSong) {
+        Songs song = repo.findById(fsSong.getSongId().getId()).get();
+
         SongDisplay res = new SongDisplay();
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());

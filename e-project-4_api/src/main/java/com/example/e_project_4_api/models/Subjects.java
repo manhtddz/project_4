@@ -57,8 +57,6 @@ public class Subjects implements Serializable {
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
-    @OneToMany(mappedBy = "subjectId")
-    private Collection<Albums> albumsCollection;
 
     public Subjects(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.title = title;

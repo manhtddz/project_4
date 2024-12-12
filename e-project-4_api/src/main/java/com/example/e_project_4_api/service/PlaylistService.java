@@ -87,6 +87,9 @@ public class PlaylistService {
         if (user.isEmpty()) {
             errors.add("Can't find any user with id: " + request.getUserId());
         }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
         Playlists newPlaylist = new Playlists(request.getTitle(), false, new Date(),
                 new Date(), user.get());
         repo.save(newPlaylist);
