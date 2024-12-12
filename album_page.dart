@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/models/album.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-import '../components/my_drawer.dart';
-import '../models/playlist_provider.dart';
+import '../models/song_provider.dart';
 import '../models/song.dart';
 
 class AlbumPage extends StatefulWidget {
+  final Album currentAlbum;
+  AlbumPage({required this.currentAlbum});
+
   @override
   State<AlbumPage> createState() => _AlbumPageState();
 }
 
 class _AlbumPageState extends State<AlbumPage> {
-  late final dynamic playlistProvider;
+  late final dynamic songProvider;
   List<Song> _favorites = [];
 
   @override
   void initState() {
     super.initState();
-    playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
+    songProvider = Provider.of<SongProvider>(context, listen: false);
   }
 
   void goToSong(int songIndex) {
-    playlistProvider.currentSongIndex = songIndex;
+    songProvider.currentSongIndex = songIndex;
 
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => SongPage2()));
@@ -62,7 +65,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     padding: EdgeInsets.only(
                         left: 16, bottom: 30), // Adjust padding as needed
                     child: Text(
-                      'Son Tung 01',
+                      '${widget.currentAlbum.name}',
                       style: TextStyle(
                         color: Colors.white, // Or any desired color
                         fontSize: 24, // Adjust font size as needed
@@ -76,7 +79,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     padding: EdgeInsets.only(
                         left: 16, bottom: 10), // Adjust padding as needed
                     child: Text(
-                      '1:20:00',
+                      '${widget.currentAlbum.artistName}',
                       style: TextStyle(
                         color: Colors.white, // Or any desired color
                         fontSize: 16, // Adjust font size as needed
@@ -100,7 +103,7 @@ class _AlbumPageState extends State<AlbumPage> {
               ],
             ),
           ),
-          child: Consumer<PlaylistProvider>(
+          child: Consumer<SongProvider>(
             builder: (context, value, child) {
               List<Song> playlist = value.playlist;
               return ListView.builder(
@@ -112,11 +115,10 @@ class _AlbumPageState extends State<AlbumPage> {
                     leading: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.play_arrow),
                         SizedBox(
                           width: 2,
                         ),
-                        Text('1',
+                        Text('${song.songId}',
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black54)),
                         SizedBox(
@@ -135,7 +137,7 @@ class _AlbumPageState extends State<AlbumPage> {
                           fontFamily: 'San Francisco'),
                     ),
                     subtitle: Text(
-                      song.artistName + '   4:10',
+                      song.artistName + '   ${value.totalDuration}',
                       style: TextStyle(
                           color: Colors.black54, fontFamily: 'San Francisco'),
                     ),

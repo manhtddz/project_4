@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/keyword_provider.dart';
+import 'package:pj_demo/models/keyword.dart';
 import 'package:pj_demo/pages/search_result.dart';
+import 'package:provider/provider.dart';
+
+import '../models/album_provider.dart';
+import '../models/song_provider.dart';
 
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: SearchScreen()));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AlbumProvider()),
+        ChangeNotifierProvider(
+          create: (context) => SongProvider(),
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SearchScreen(),
+      // theme: Provider.of<ThemeProvider>(context)
+      //     .themeData, // Define this or replace with actual theme logic
+    );
+  }
 }
 
 class SearchScreen extends StatelessWidget {
@@ -66,7 +94,7 @@ class SearchScreen extends StatelessWidget {
                     borderSide: BorderSide(color: Colors.blue, width: 2.0),
                   ),
                 ),
-                // onSubmitted: _handleSearch(context, _txtSearch.text),
+                onSubmitted: (val) => _handleSearch(context, _txtSearch.text),
               ),
               SizedBox(height: 20.0),
               Text('Từ khóa phổ biến',
@@ -108,30 +136,6 @@ class SearchScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.wb_sunny),
-            label: 'Morning',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.brightness_high),
-            label: 'Afternoon',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.nightlight_round),
-            label: 'Night',
-          ),
-        ],
       ),
     );
   }
