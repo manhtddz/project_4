@@ -45,10 +45,6 @@ public class SubjectService {
     }
 
     public NewOrUpdateSubject addNewSubject(NewOrUpdateSubject request) {
-        Optional<Subjects> existingSubject = subjectRepository.findById(request.getId());
-        if (existingSubject.isPresent()) {
-            throw new AlreadyExistedException("A subject with this title already exists");
-        }
 
         Date currentDate = new Date();
         Subjects newSub = new Subjects(request.getTitle(), request.getImage(), request.getDescription(), false, currentDate, currentDate);

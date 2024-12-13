@@ -7,8 +7,11 @@ import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.Songs;
+import com.example.e_project_4_api.models.SubjectAlbum;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
+import com.example.e_project_4_api.repositories.SubjectAlbumRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ public class AlbumService {
     private AlbumRepository repo;
     @Autowired
     private ArtistRepository artistRepo;
+    @Autowired
+    private SubjectAlbumRepository subjectAlbumRepo;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAll()
@@ -40,6 +45,13 @@ public class AlbumService {
 
     public List<AlbumDisplay> getAllAlbumsByArtistIdForDisplay(int artistId) {
         return repo.findAllByArtistId(artistId)
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int subjectId) {
+        return subjectAlbumRepo.findAllBySubjectId(subjectId)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
@@ -158,6 +170,20 @@ public class AlbumService {
     public AlbumDisplay toAlbumDisplay(Albums album) {
         AlbumDisplay res = new AlbumDisplay();
         BeanUtils.copyProperties(album, res);
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        return res;
+    }
+    public AlbumDisplay toAlbumDisplay(SubjectAlbum subjectAlbum) {
+        Albums album = repo.findById(subjectAlbum.getAlbumId().getId()).get();
+
+        AlbumDisplay res = new AlbumDisplay();
+        BeanUtils.copyProperties(subjectAlbum, res);
+        res.setTitle(album.getTitle());
+        res.setImage(album.getImage());
+        res.setReleaseDate(album.getReleaseDate());
         res.setIsDeleted(album.getIsDeleted());
         res.setIsReleased(album.getIsReleased());
         res.setArtistName(album.getArtistId().getArtistName());

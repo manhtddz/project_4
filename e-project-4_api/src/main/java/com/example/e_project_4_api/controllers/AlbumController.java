@@ -48,6 +48,11 @@ public class AlbumController {
         AlbumDisplay album = service.findDisplayById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
+    @GetMapping("/public/albums/bySubject/display/{id}")
+    public ResponseEntity<Object> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
+        List<AlbumDisplay> album = service.getAllAlbumsBySubjectIdForDisplay(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
 
     @DeleteMapping("/public/albums/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
