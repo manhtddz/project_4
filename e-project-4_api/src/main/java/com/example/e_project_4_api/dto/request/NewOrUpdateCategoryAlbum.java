@@ -6,16 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class NewOrUpdateSubject {
+@NoArgsConstructor
+public class NewOrUpdateCategoryAlbum {
+
     private Integer id;
-    private String title;
-    private String image;
-    private String description;
-    private Boolean isDeleted;
+    private Integer albumId;
+    private Integer categoryId;
     private Date createdAt;
     private Date modifiedAt;
 }

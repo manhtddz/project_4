@@ -28,6 +28,5 @@ public class UserResponse {
     private Boolean isActive;
     private Date createdAt;
     private Date modifiedAt;
-    private Integer artistId;
 
 }

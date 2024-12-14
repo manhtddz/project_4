@@ -4,10 +4,8 @@ import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
-import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
@@ -42,7 +40,7 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public UserDisplay register(NewOrUpdateUser request) {
+    public UserResponse register(NewOrUpdateUser request) {
         Users newUser = new Users();
 
         if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
@@ -101,30 +99,6 @@ public class AuthenticationService {
                 throw new ValidationException(Collections.singletonList("Role is not valid"));
 
             }
-            if (request.getRole().equals(Role.ROLE_ARTIST.toString())) {
-                Optional<Artists> artist = artistRepo.findById(request.getArtistId());
-                if (artist.isPresent()) {
-                    newUser.setUsername(request.getUsername());
-                    newUser.setPassword(encoder.encode(request.getPassword()));
-                    newUser.setFullName(request.getFullName());
-                    newUser.setAvatar(request.getAvatar());
-                    newUser.setPhone(request.getPhone());
-                    newUser.setEmail(request.getEmail());
-                    newUser.setRole(request.getRole());
-                    newUser.setBio(request.getBio());
-                    newUser.setDob(request.getDob());
-                    newUser.setIsDeleted(false);
-                    newUser.setCreatedAt(new Date());
-                    newUser.setModifiedAt(new Date());
-                    newUser.setArtistId(artist.get());
-                    newUser.setIsActive(false);
-
-                    repo.save(newUser);
-                    return toUserDisplay(newUser);
-                } else {
-                    throw new ValidationException(Collections.singletonList("Can't find any artist with id: " + request.getArtistId()));
-                }
-            }
         }
 
         newUser.setUsername(request.getUsername());
@@ -142,7 +116,7 @@ public class AuthenticationService {
         newUser.setModifiedAt(request.getModifiedAt());
 
         repo.save(newUser);
-        return toUserDisplay(newUser);
+        return toUserResponse(newUser);
     }
 
     public LoginResponse verify(LoginRequest request) {
@@ -183,21 +157,8 @@ public class AuthenticationService {
         BeanUtils.copyProperties(user, res);
         res.setIsDeleted(user.getIsDeleted());
         res.setIsActive(user.getIsActive());
-        if (user.getArtistId() != null) {
-            res.setArtistId(user.getArtistId().getId());
-        }
         return res;
     }
 
-    public UserDisplay toUserDisplay(Users user) {
-        UserDisplay res = new UserDisplay();
-        BeanUtils.copyProperties(user, res);
-        res.setIsDeleted(user.getIsDeleted());
-        res.setIsActive(user.getIsActive());
-        if (user.getArtistId() != null) {
-            res.setArtistName(user.getArtistId().getArtistName());
-            res.setArtistImage(user.getArtistId().getImage());
-        }
-        return res;
-    }
+
 }

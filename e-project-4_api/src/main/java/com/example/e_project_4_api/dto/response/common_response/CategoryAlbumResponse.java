@@ -11,12 +11,11 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubjectAlbumResponse {
+public class CategoryAlbumResponse {
 
     private Integer id;
-    private Boolean isDeleted;
     private Integer albumId;
-    private Integer subjectId;
+    private Integer categoryId;
     private Date createdAt;
     private Date modifiedAt;
 }

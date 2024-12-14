@@ -7,25 +7,13 @@ package com.example.e_project_4_api.models;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- *
  * @author admin
  */
 @Entity
@@ -61,10 +49,19 @@ public class Artists implements Serializable {
     private Collection<Albums> albumsCollection;
     @OneToMany(mappedBy = "artistId")
     private Collection<Songs> songsCollection;
-    @OneToMany(mappedBy = "artistId")
-    private Collection<Users> usersCollection;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne
+    private Users userId;
 
-
+    public Artists(String artistName, String image, String bio, Boolean isDeleted, Date createdAt, Date modifiedAt, Users userId) {
+        this.artistName = artistName;
+        this.image = image;
+        this.bio = bio;
+        this.userId = userId;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
     public Artists(String artistName, String image, String bio, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.artistName = artistName;
         this.image = image;
@@ -98,5 +95,5 @@ public class Artists implements Serializable {
     public String toString() {
         return "models.Artists[ id=" + id + " ]";
     }
-    
+
 }

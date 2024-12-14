@@ -94,7 +94,6 @@ public class PlaylistSongService {
         PlaylistSongResponse res = new PlaylistSongResponse();
         res.setPlaylistId(ps.getPlaylistId().getId());
         res.setSongId(ps.getSongId().getId());
-        res.setIsDeleted(ps.getIsDeleted());
         BeanUtils.copyProperties(ps, res);
         return res;
     }

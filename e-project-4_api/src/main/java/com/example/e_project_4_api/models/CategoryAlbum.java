@@ -21,11 +21,11 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "subject_album")
+@Table(name = "category_album")
 @Getter
 @Setter
 @NoArgsConstructor
-public class SubjectAlbum implements Serializable {
+public class CategoryAlbum implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -33,8 +33,6 @@ public class SubjectAlbum implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -44,16 +42,15 @@ public class SubjectAlbum implements Serializable {
     @JoinColumn(name = "album_id", referencedColumnName = "id")
     @ManyToOne
     private Albums albumId;
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
-    private Subjects subjectId;
+    private Categories categoryId;
 
-    public SubjectAlbum(Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Subjects subjectId) {
-        this.isDeleted = isDeleted;
+    public CategoryAlbum(Date createdAt, Date modifiedAt, Albums albumId, Categories categoryId) {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.albumId = albumId;
-        this.subjectId = subjectId;
+        this.categoryId = categoryId;
     }
 
     @Override
@@ -66,10 +63,10 @@ public class SubjectAlbum implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SubjectAlbum)) {
+        if (!(object instanceof CategoryAlbum)) {
             return false;
         }
-        SubjectAlbum other = (SubjectAlbum) object;
+        CategoryAlbum other = (CategoryAlbum) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

@@ -2,16 +2,6 @@ create database epj_4;
 use epj_4;
 
 
-CREATE TABLE artists (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    artist_name VARCHAR(100) NOT NULL,
-    image VARCHAR(40),
-    bio TEXT,
-   is_deleted BOOLEAN,
-    created_at DATETIME ,
-    modified_at DATETIME
-);
--- Create `users` table
 CREATE TABLE users (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -23,14 +13,27 @@ CREATE TABLE users (
     role VARCHAR(20),
     bio text,
     dob DATE,
-    artist_id INT(11),
     is_active Boolean,
     is_deleted BOOLEAN,
     created_at DATETIME ,
-    modified_at DATETIME,
-    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
+    modified_at DATETIME
 );
-create table subjects(
+
+CREATE TABLE artists (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    artist_name VARCHAR(100) NOT NULL,
+    image VARCHAR(40),
+    bio TEXT,
+    user_id int unique,
+	is_deleted BOOLEAN,
+    created_at DATETIME ,
+    modified_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+-- Create `users` table
+
+
+create table categories(
  id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     image VARCHAR(150),
@@ -44,15 +47,13 @@ CREATE TABLE albums (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     artist_id INT(11),
-     subject_id INT(11),
     image VARCHAR(150),
 	is_released BOOLEAN,
     release_date DATE,
      is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
-    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
-	FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
 );
 -- Create `genres` table
 CREATE TABLE genres (
@@ -97,7 +98,6 @@ CREATE TABLE genre_song (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     genre_id INT(11),
     song_id INT(11),
-     is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE,
@@ -108,7 +108,6 @@ CREATE TABLE favourite_songs (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     user_id INT(11),
     song_id INT(11),
-    is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -119,13 +118,22 @@ CREATE TABLE playlist_song (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     playlist_id INT(11),
     song_id INT(11),
-    is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
--- Bảng artists:
+-- Create `playlist_song` table (many-to-many)
+CREATE TABLE category_album (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_id INT(11),
+    album_id INT(11),
+    created_at DATETIME ,
+    modified_at DATETIME,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
+);
+-- Bảng artists: 
 -- Thêm chỉ mục cho cột `artist_name` để tìm kiếm nghệ sĩ theo tên.
 CREATE INDEX idx_artists_name ON artists (artist_name);
 
@@ -133,18 +141,17 @@ CREATE INDEX idx_artists_name ON artists (artist_name);
 -- Thêm chỉ mục cho `username` để tìm kiếm người dùng theo tên.
 CREATE INDEX idx_users_username ON users (username);
 -- Thêm chỉ mục cho `artist_id` để tăng tốc truy vấn với liên kết nghệ sĩ.
-CREATE INDEX idx_users_artist ON users (artist_id);
+CREATE INDEX idx_artist_users ON artists (user_id);
 
 -- Bảng subjects:
 -- Thêm chỉ mục cho `title` để tìm kiếm hoặc lọc theo chủ đề.
-CREATE INDEX idx_subjects_title ON subjects (title);
+CREATE INDEX idx_categories_title ON categories (title);
 
 -- Bảng albums:
 -- Thêm chỉ mục cho `artist_id` để tăng tốc truy vấn liên kết với nghệ sĩ.
 CREATE INDEX idx_albums_artist ON albums (artist_id);
 -- Thêm chỉ mục cho `subject_id` để tăng tốc truy vấn liên kết với chủ đề.
-CREATE INDEX idx_albums_subject ON albums (subject_id);
--- Thêm chỉ mục cho `title` để tìm kiếm album theo tên.
+
 CREATE INDEX idx_albums_title ON albums (title);
 
 -- Bảng genres:
@@ -164,7 +171,7 @@ CREATE INDEX idx_songs_album ON songs (album_id);
 CREATE INDEX idx_songs_artist ON songs (artist_id);
 -- Thêm chỉ mục kết hợp `is_pending` và `is_deleted` để lọc bài hát trạng thái.
 CREATE INDEX idx_songs_status ON songs (is_pending, is_deleted);
--- Thêm chỉ mục cho `title` để tìm kiếm bài hát theo tên.
+-- Thêm chỉ mục cho `title` để tìm kiếm bài hát theo tên.albumssubjects
 CREATE INDEX idx_songs_title ON songs (title);
 
 -- Bảng genre_song:

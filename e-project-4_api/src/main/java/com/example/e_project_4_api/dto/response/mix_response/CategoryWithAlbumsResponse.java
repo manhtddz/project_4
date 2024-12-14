@@ -1,17 +1,19 @@
-package com.example.e_project_4_api.dto.response.common_response;
+package com.example.e_project_4_api.dto.response.mix_response;
 
+import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class SubjectResponse {
+public class CategoryWithAlbumsResponse {
     private Integer id;
     private String title;
     private String image;
@@ -19,4 +21,5 @@ public class SubjectResponse {
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
+    private List<AlbumDisplay> albums;
 }

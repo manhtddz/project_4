@@ -5,7 +5,6 @@
 package com.example.e_project_4_api.models;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -14,9 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -29,11 +25,11 @@ import lombok.Setter;
  * @author admin
  */
 @Entity
-@Table(name = "subjects")
+@Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Subjects implements Serializable {
+public class Categories implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -58,7 +54,7 @@ public class Subjects implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
 
-    public Subjects(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public Categories(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.title = title;
         this.image = image;
         this.description = description;
@@ -77,10 +73,10 @@ public class Subjects implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Subjects)) {
+        if (!(object instanceof Categories)) {
             return false;
         }
-        Subjects other = (Subjects) object;
+        Categories other = (Categories) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

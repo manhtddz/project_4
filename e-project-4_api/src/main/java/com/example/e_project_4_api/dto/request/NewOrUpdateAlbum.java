@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.dto.request;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,8 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class NewOrUpdateAlbum {
     private Integer id;
     private String title;
@@ -21,17 +24,5 @@ public class NewOrUpdateAlbum {
     private Date createdAt;
     private Date modifiedAt;
 
-
-    public NewOrUpdateAlbum(Integer id, String title, String image, Boolean isReleased, Date releaseDate, Integer artistId, Boolean isDeleted) {
-        this.id = id;
-        this.title = title;
-        this.image = image;
-        this.isReleased = isReleased;
-        this.releaseDate = releaseDate;
-        this.artistId = artistId;
-        this.isDeleted = isDeleted;
-        this.createdAt = Date.from(Instant.now());
-        this.modifiedAt = Date.from(Instant.now());
-    }
 
 }

@@ -2,10 +2,13 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
 import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
+import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
+import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ public class ArtistService {
 
     @Autowired
     private ArtistRepository repo;
+    @Autowired
+    private UserRepository userRepo;
 
 
     public List<ArtistResponse> getAllArtists() {
@@ -84,12 +89,25 @@ public class ArtistService {
     public NewOrUpdateArtist updateArtist(NewOrUpdateArtist request) {
         List<String> errors = new ArrayList<>();
 
-        Optional<Artists> op = repo.findById(request.getId()); // Tìm artist không bị xóa
+        Optional<Artists> op = repo.findById(request.getId());
+
         if (op.isEmpty()) {
             errors.add("Can't find any artist with id: " + request.getId());
         }
+        Artists artist = op.get();
 
-
+        if (request.getUserId() != null) {
+            Optional<Users> userOp = userRepo.findById(request.getUserId());
+            if(userOp.isEmpty()){
+                throw new NotFoundException("Can't find any user with id: " + request.getUserId());
+            }
+            Users foundUser =  userOp.get();
+            Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId());
+            if(foundArtistWithUID.isPresent()){
+                throw new AlreadyExistedException("This artist account already have owner");
+            }
+            artist.setUserId(foundUser);
+        }
         if (request.getArtistName() == null || request.getArtistName().isEmpty()) {
             errors.add("Artist name is required");
         } else {
@@ -99,7 +117,6 @@ public class ArtistService {
             }
         }
 
-
         if (request.getImage() == null || request.getImage().isEmpty()) {
             errors.add("ImageURL is required");
         }
@@ -108,7 +125,6 @@ public class ArtistService {
             throw new ValidationException(errors);
         }
 
-        Artists artist = op.get();
         artist.setArtistName(request.getArtistName());
         artist.setImage(request.getImage());
         artist.setBio(request.getBio());

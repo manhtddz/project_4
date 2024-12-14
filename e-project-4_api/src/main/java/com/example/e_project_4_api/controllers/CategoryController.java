@@ -1,10 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateSubject;
-import com.example.e_project_4_api.dto.response.common_response.SubjectResponse;
-import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
+import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
+import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.service.SubjectService;
+import com.example.e_project_4_api.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,22 +16,27 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-class SubjectController {
+public class CategoryController {
     @Autowired
-    public SubjectService service;
+    public CategoryService service;
 
-    @GetMapping("/public/subjects")
-    public ResponseEntity<List<SubjectResponse>> findAll() {
-        return new ResponseEntity<>(service.getAllSubjects(), HttpStatus.OK);
+    @GetMapping("/public/categories")
+    public ResponseEntity<List<CategoryResponse>> findAll() {
+        return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
     }
 
-    @GetMapping("/public/subjects/{id}")
+    @GetMapping("/public/categories/withAlbum")
+    public ResponseEntity<List<CategoryWithAlbumsResponse>> findAllCateWithAlbums() {
+        return new ResponseEntity<>(service.getAllCategoriesWithAlbums(), HttpStatus.OK);
+    }
+
+    @GetMapping("/public/categories/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
-        SubjectResponse sub = service.findById(id);
+        CategoryResponse sub = service.findById(id);
         return new ResponseEntity<>(sub, HttpStatus.OK);
     }
 
-    @DeleteMapping("/public/subjects/{id}")
+    @DeleteMapping("/public/categories/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
         service.deleteById(id);
         return new ResponseEntity<>(
@@ -42,14 +47,14 @@ class SubjectController {
         );
     }
 
-    @PostMapping("/public/subjects")
-    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdateSubject request) {
+    @PostMapping("/public/categories")
+    public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdateCategory request) {
         try {
-            NewOrUpdateSubject newSub = service.addNewSubject(request);
+            NewOrUpdateCategory newSub = service.addNewSubject(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Subject added successfully",
+                            "message", "Category added successfully",
                             "data", newSub
                     ),
                     HttpStatus.OK
@@ -64,14 +69,14 @@ class SubjectController {
         }
     }
 
-    @PutMapping("/public/subjects")
-    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateSubject request) {
+    @PutMapping("/public/categories")
+    public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateCategory request) {
         try {
-            NewOrUpdateSubject updatedSub = service.updateSubject(request);
+            NewOrUpdateCategory updatedSub = service.updateSubject(request);
 
             return new ResponseEntity<>(
                     Map.of(
-                            "message", "Subject updated successfully",
+                            "message", "Category updated successfully",
                             "data", updatedSub
                     ),
                     HttpStatus.OK

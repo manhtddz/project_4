@@ -51,8 +51,7 @@ public class GenreSongService {
             throw new NotFoundException("Can't find any genre-song relation with id: " + id);
         }
         GenreSong existing = genreSong.get();
-        existing.setIsDeleted(true);
-        genreSongRepo.save(existing);
+        genreSongRepo.delete(existing);
         return true;
     }
 
@@ -81,7 +80,6 @@ public class GenreSongService {
 
 
         GenreSong newGenreSong = new GenreSong(
-                request.getIsDeleted(),
                 new Date(),
                 new Date(),
                 genre.get(),
@@ -119,7 +117,6 @@ public class GenreSongService {
 
 
         GenreSong genreSong = existingGenreSong.get();
-        genreSong.setIsDeleted(request.getIsDeleted());
         genreSong.setModifiedAt(new Date());
         genreSong.setGenreId(genre.get());
         genreSong.setSongId(song.get());
@@ -133,7 +130,6 @@ public class GenreSongService {
         BeanUtils.copyProperties(genreSong, res);
         res.setGenreId(genreSong.getGenreId().getId());
         res.setSongId(genreSong.getSongId().getId());
-        res.setIsDeleted(genreSong.getIsDeleted());
         return res;
     }
 }

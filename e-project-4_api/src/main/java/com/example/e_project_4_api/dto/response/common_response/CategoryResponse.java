@@ -1,4 +1,4 @@
-package com.example.e_project_4_api.dto.request;
+package com.example.e_project_4_api.dto.response.common_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,14 +9,14 @@ import java.util.Date;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class NewOrUpdateSubjectAlbum {
-
+@AllArgsConstructor
+public class CategoryResponse {
     private Integer id;
+    private String title;
+    private String image;
+    private String description;
     private Boolean isDeleted;
-    private Integer albumId;
-    private Integer subjectId;
     private Date createdAt;
     private Date modifiedAt;
 }

@@ -93,7 +93,6 @@ public class FavouriteSongService {
         FavouriteSongResponse res = new FavouriteSongResponse();
         res.setUserId(ps.getUserId().getId());
         res.setSongId(ps.getSongId().getId());
-        res.setIsDeleted(ps.getIsDeleted());
         BeanUtils.copyProperties(ps, res);
         return res;
     }

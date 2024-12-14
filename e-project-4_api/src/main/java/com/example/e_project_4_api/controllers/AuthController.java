@@ -3,10 +3,8 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
-import com.example.e_project_4_api.dto.response.display_response.UserDisplay;
-import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +27,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody NewOrUpdateUser user) {
         try {
-            UserDisplay newUser = service.register(user);
+            UserResponse newUser = service.register(user);
             return new ResponseEntity<>(
                     Map.of(
                             "message", "Register successfully",

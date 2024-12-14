@@ -13,7 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class NewOrUpdatePlaylistSong {
     private Integer id;
-    private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
     private Integer playlistId;

@@ -6,6 +6,7 @@ package com.example.e_project_4_api.models;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +25,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- *
  * @author admin
  */
 @Entity
@@ -41,8 +41,6 @@ public class GenreSong implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
-    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "modified_at")
@@ -56,9 +54,7 @@ public class GenreSong implements Serializable {
     private Songs songId;
 
 
-
-    public GenreSong(Boolean isDeleted, Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
-        this.isDeleted = isDeleted;
+    public GenreSong(Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.genreId = genreId;
@@ -89,5 +85,5 @@ public class GenreSong implements Serializable {
     public String toString() {
         return "models.GenreSong[ id=" + id + " ]";
     }
-    
+
 }

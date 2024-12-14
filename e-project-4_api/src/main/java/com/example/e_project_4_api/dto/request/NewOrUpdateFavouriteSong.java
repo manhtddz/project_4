@@ -14,7 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class NewOrUpdateFavouriteSong {
     private Integer id;
-    private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
     private Integer songId;

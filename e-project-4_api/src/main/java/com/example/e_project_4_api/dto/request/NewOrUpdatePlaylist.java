@@ -2,6 +2,7 @@ package com.example.e_project_4_api.dto.request;
 
 import com.example.e_project_4_api.models.Users;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,8 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class NewOrUpdatePlaylist {
     private Integer id;
     private String title;
@@ -20,12 +23,4 @@ public class NewOrUpdatePlaylist {
     private Integer userId;
 
 
-    public NewOrUpdatePlaylist(Integer id, String title, Boolean isDeleted, Integer userId) {
-        this.id = id;
-        this.title = title;
-        this.isDeleted = isDeleted;
-        this.createdAt = Date.from(Instant.now());
-        this.modifiedAt = Date.from(Instant.now());
-        this.userId = userId;
-    }
 }

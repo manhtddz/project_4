@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,8 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class NewOrUpdateGenres {
     private Integer id;
     private String title;
@@ -17,13 +20,5 @@ public class NewOrUpdateGenres {
     private Date createdAt;
     private Date modifiedAt;
 
-    public NewOrUpdateGenres(Integer id, String title, String image, Boolean isDeleted) {
-        this.id = id;
-        this.title = title;
-        this.image = image;
-        this.isDeleted = isDeleted;
-        this.createdAt = Date.from(Instant.now());
-        this.modifiedAt = Date.from(Instant.now());
-    }
 
 }

@@ -81,11 +81,9 @@ public class Users implements Serializable {
     private Collection<FavouriteSongs> favouriteSongsCollection;
     @OneToMany(mappedBy = "userId")
     private Collection<Playlists> playlistsCollection;
-    @JoinColumn(name = "artist_id", referencedColumnName = "id")
-    @ManyToOne
-    private Artists artistId;
 
-    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob ,Boolean isActive, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
+
+    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob ,Boolean isActive, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.username = username;
         this.fullName = fullName;
@@ -100,7 +98,6 @@ public class Users implements Serializable {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.artistId = artistId;
     }
     @Override
     public int hashCode() {
