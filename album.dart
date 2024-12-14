@@ -5,3 +5,5 @@ class Album {
 
   Album({required this.name, required this.artistName, required this.imgUrl});
 }
+
+//test
