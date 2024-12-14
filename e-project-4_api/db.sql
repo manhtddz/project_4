@@ -186,3 +186,4 @@ CREATE UNIQUE INDEX idx_favourite_songs ON favourite_songs (user_id, song_id);
 -- Thêm chỉ mục kết hợp `playlist_id` và `song_id` để tối ưu hóa truy vấn bài hát trong danh sách phát.
 CREATE UNIQUE INDEX idx_playlist_song ON playlist_song (playlist_id, song_id);
 
+--ddd
