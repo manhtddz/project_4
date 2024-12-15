@@ -37,21 +37,21 @@ public class AlbumService {
     }
 
     public List<AlbumDisplay> getAllAlbumsForDisplay() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<AlbumDisplay> getAllAlbumsByArtistIdForDisplay(int artistId) {
-        return repo.findAllByArtistId(artistId)
+        return repo.findAllByArtistId(artistId, false)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
-        return categoryAlbumRepo.findAllByCategoryId(cateId)
+        return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class AlbumService {
     }
 
     public AlbumDisplay findDisplayById(int id) {
-        Optional<Albums> op = repo.findById(id);
+        Optional<Albums> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
@@ -176,6 +176,7 @@ public class AlbumService {
         res.setArtistImage(album.getArtistId().getImage());
         return res;
     }
+
     public AlbumDisplay toAlbumDisplay(CategoryAlbum categoryAlbum) {
         int albumId = categoryAlbum.getAlbumId().getId();
         Albums album = repo.findById(albumId).get();

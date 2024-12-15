@@ -14,6 +14,13 @@ import java.util.Optional;
 public interface AlbumRepository extends JpaRepository<Albums, Integer> {
     Optional<Albums> findByTitle(String title);
 
-    @Query("Select a from Albums a where a.artistId.id = :arId")
-    List<Albums> findAllByArtistId(@Param("arId") Integer artistId);
+    Optional<Albums> findByIdAndIsDeleted(Integer id, boolean isDeleted);
+
+    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted")
+    List<Albums> findAllByArtistId(@Param("arId") Integer artistId, @Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Albums a where a.isDeleted = :isDeleted")
+    List<Albums> findAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
+
 }

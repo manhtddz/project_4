@@ -41,21 +41,21 @@ public class SongService {
     }
 
     public List<SongDisplay> getAllSongsForDisplay() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<SongDisplay> getAllSongsByArtistIdForDisplay(int artistId) {
-        return repo.findAllByArtistId(artistId)
+        return repo.findAllByArtistId(artistId, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
-        return repo.findAllByAlbumId(albumId)
+        return repo.findAllByAlbumId(albumId, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
@@ -70,7 +70,7 @@ public class SongService {
     }
 
     public SongDisplay findDisplayById(int id) {
-        Optional<Songs> op = repo.findById(id);
+        Optional<Songs> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any song with id: " + id);
         }
@@ -78,21 +78,21 @@ public class SongService {
     }
 
     public List<SongDisplay> getAllFavSongsByUserId(Integer id) {
-        return favRepo.findFSByUserId(id)
+        return favRepo.findFSByUserId(id, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<SongDisplay> getAllSongsByGenreId(Integer id) {
-        return genSongRepo.findByGenreId(id)
+        return genSongRepo.findByGenreId(id, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<SongDisplay> getAllSongsByPlaylistId(Integer id) {
-        return playlistSongRepo.findByPlaylistId(id)
+        return playlistSongRepo.findByPlaylistId(id, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());

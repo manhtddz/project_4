@@ -35,14 +35,14 @@ public class PlaylistService {
     }
 
     public List<PlaylistDisplay> getAllPlaylistsForDisplay() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toPlaylistDisplay)
                 .collect(Collectors.toList());
     }
 
     public List<PlaylistDisplay> getAllPlaylistsByUserIdForDisplay(int userId) {
-        return repo.findAllByUserId(userId)
+        return repo.findAllByUserId(userId, false)
                 .stream()
                 .map(this::toPlaylistDisplay)
                 .collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class PlaylistService {
     }
 
     public PlaylistDisplay findDisplayById(int id) {
-        Optional<Playlists> op = repo.findById(id);
+        Optional<Playlists> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any playlists with id: " + id);
         }

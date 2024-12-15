@@ -40,8 +40,6 @@ public class PlaylistSong implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -56,8 +54,7 @@ public class PlaylistSong implements Serializable {
     private Songs songId;
 
 
-    public PlaylistSong(Boolean isDeleted, Date createdAt, Date modifiedAt, Playlists playlistId, Songs songId) {
-        this.isDeleted = isDeleted;
+    public PlaylistSong(Date createdAt, Date modifiedAt, Playlists playlistId, Songs songId) {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.playlistId = playlistId;

@@ -33,14 +33,14 @@ public class CategoryService {
     private AlbumRepository albumRepository;
 
     public List<CategoryResponse> getAllCategories() {
-        return cateRepository.findAll()
+        return cateRepository.findAllNotDeleted(false)
                 .stream()
                 .map(this::toCategoryResponse)
                 .collect(Collectors.toList());
     }
 
     public List<CategoryWithAlbumsResponse> getAllCategoriesWithAlbums() {
-        return cateRepository.findAll()
+        return cateRepository.findAllNotDeleted(false)
                 .stream()
                 .map(this::toCategoryWithAlbumsResponse)
                 .collect(Collectors.toList());
@@ -48,7 +48,7 @@ public class CategoryService {
 
 
     public CategoryResponse findById(int id) {
-        Optional<Categories> op = cateRepository.findById(id);
+        Optional<Categories> op = cateRepository.findByIdAndIsDeleted(id, false);
         if (op.isPresent()) {
             Categories subjects = op.get();
             return toCategoryResponse(subjects);
@@ -131,7 +131,7 @@ public class CategoryService {
     }
 
     private CategoryWithAlbumsResponse toCategoryWithAlbumsResponse(Categories category) {
-        List<CategoryAlbum> categoryAlbum = cateAlbumRepository.findAllByCategoryId(category.getId());
+        List<CategoryAlbum> categoryAlbum = cateAlbumRepository.findAllByCategoryId(category.getId(), false);
 
         List<AlbumDisplay> albumsOfCategory = categoryAlbum.stream()
                 .map(it -> it.getAlbumId())

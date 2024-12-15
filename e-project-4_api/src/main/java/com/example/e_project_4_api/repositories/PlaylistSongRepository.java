@@ -14,6 +14,6 @@ public interface PlaylistSongRepository extends JpaRepository<PlaylistSong, Inte
     @Query("SELECT ps FROM PlaylistSong ps WHERE ps.playlistId.id = :playlistId AND ps.songId.id = :songId")
     Optional<PlaylistSong> findByPlaylistIdAndSongId(@Param("playlistId") Integer playlistId, @Param("songId") Integer songId);
 
-    @Query("SELECT ps FROM PlaylistSong ps WHERE ps.playlistId.id = :playlistId")
-    Optional<PlaylistSong> findByPlaylistId(@Param("playlistId") Integer playlistId);
+    @Query("SELECT ps FROM PlaylistSong ps WHERE ps.playlistId.id = :playlistId AND ps.songId.isDeleted = :isDeleted")
+    Optional<PlaylistSong> findByPlaylistId(@Param("playlistId") Integer playlistId, @Param("isDeleted") boolean isDeleted);
 }

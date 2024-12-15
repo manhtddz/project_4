@@ -40,7 +40,6 @@ public class GenreSong implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "is_deleted")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "modified_at")

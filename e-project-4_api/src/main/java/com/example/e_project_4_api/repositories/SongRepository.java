@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.repositories;
 
 import com.example.e_project_4_api.models.Albums;
+import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Songs;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +15,16 @@ import java.util.Optional;
 public interface SongRepository extends JpaRepository<Songs, Integer> {
     Optional<Songs> findByTitle(String title);
 
-    @Query("Select a from Songs a where a.artistId.id = :arId")
-    List<Songs> findAllByArtistId(@Param("arId") Integer artistId);
+    Optional<Songs> findByIdAndIsDeleted(Integer id, boolean isDeleted);
 
-    @Query("Select a from Songs a where a.albumId.id = :alId")
-    List<Songs> findAllByAlbumId(@Param("alId") Integer albumId);
+    @Query("Select a from Songs a where a.artistId.id = :arId AND a.isDeleted = :isDeleted")
+    List<Songs> findAllByArtistId(@Param("arId") Integer artistId, @Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Songs a where a.albumId.id = :alId AND a.isDeleted = :isDeleted")
+    List<Songs> findAllByAlbumId(@Param("alId") Integer albumId, @Param("isDeleted") boolean isDeleted);
+
+
+    @Query("Select a from Songs a where a.isDeleted = :isDeleted")
+    List<Songs> findAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
 }

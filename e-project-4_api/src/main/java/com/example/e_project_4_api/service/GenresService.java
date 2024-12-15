@@ -20,7 +20,7 @@ public class GenresService {
 
 
     public List<GenresResponse> getAllGenres() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toGenreResponse)
                 .collect(Collectors.toList());
@@ -28,7 +28,7 @@ public class GenresService {
 
 
     public GenresResponse findById(int id) {
-        Optional<Genres> op = repo.findById(id);
+        Optional<Genres> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any genre with id: " + id);
         }

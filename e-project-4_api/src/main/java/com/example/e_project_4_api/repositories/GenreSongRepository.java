@@ -14,6 +14,6 @@ public interface GenreSongRepository extends JpaRepository<GenreSong, Integer> {
     @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId AND gs.songId.id = :songId")
     Optional<GenreSong> findByGenreIdAndSongId(@Param("genreId") Integer genreId, @Param("songId") Integer songId);
 
-    @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId")
-    Optional<GenreSong> findByGenreId(@Param("genreId") Integer genreId);
+    @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId AND gs.songId.isDeleted = :isDeleted")
+    Optional<GenreSong> findByGenreId(@Param("genreId") Integer genreId, @Param("isDeleted") boolean isDeleted);
 }

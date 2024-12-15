@@ -48,7 +48,7 @@ public class AlbumController {
         AlbumDisplay album = service.findDisplayById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
-    @GetMapping("/public/albums/bySubject/display/{id}")
+    @GetMapping("/public/albums/byCategory/display/{id}")
     public ResponseEntity<Object> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
         List<AlbumDisplay> album = service.getAllAlbumsBySubjectIdForDisplay(id);
         return new ResponseEntity<>(album, HttpStatus.OK);

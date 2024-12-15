@@ -138,7 +138,7 @@ public class AuthenticationService {
         );
 
         if (authentication.isAuthenticated()) {
-            Users user = repo.findByUsername(request.getUsername())
+            Users user = repo.findByUsernameAndIsDeleted(request.getUsername(), false)
                     .orElseThrow(() -> new NotFoundException("User not found"));
 
             if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {

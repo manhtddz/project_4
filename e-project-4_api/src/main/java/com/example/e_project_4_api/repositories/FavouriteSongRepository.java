@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 
-public interface FavouriteSongRepository extends JpaRepository<FavouriteSongs,Integer> {
+public interface FavouriteSongRepository extends JpaRepository<FavouriteSongs, Integer> {
     @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId AND fs.songId.id = :songId")
     Optional<FavouriteSongs> findByUserIdAndSongId(@Param("userId") Integer userId, @Param("songId") Integer songId);
 
-    @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId")
-    Optional<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId);
+    @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId AND fs.songId.isDeleted = :isDeleted")
+    Optional<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
 }

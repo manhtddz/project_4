@@ -40,9 +40,6 @@ public class FavouriteSongs implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Column(name = "modified_at")
@@ -56,8 +53,7 @@ public class FavouriteSongs implements Serializable {
     private Users userId;
 
 
-    public FavouriteSongs(Boolean isDeleted, Date createdAt, Date modifiedAt, Songs songId, Users userId) {
-        this.isDeleted = isDeleted;
+    public FavouriteSongs(Date createdAt, Date modifiedAt, Songs songId, Users userId) {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.songId = songId;

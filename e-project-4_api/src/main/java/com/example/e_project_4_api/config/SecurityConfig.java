@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/files/**").permitAll()
 //                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_ARTIST")
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception

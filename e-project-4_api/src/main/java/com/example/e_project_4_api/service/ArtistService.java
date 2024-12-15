@@ -29,7 +29,7 @@ public class ArtistService {
 
 
     public List<ArtistResponse> getAllArtists() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toArtistResponse)
                 .collect(Collectors.toList());
@@ -37,7 +37,7 @@ public class ArtistService {
 
 
     public ArtistResponse findById(int id) {
-        Optional<Artists> op = repo.findById(id);
+        Optional<Artists> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any artist with id: " + id);
         }
@@ -98,12 +98,12 @@ public class ArtistService {
 
         if (request.getUserId() != null) {
             Optional<Users> userOp = userRepo.findById(request.getUserId());
-            if(userOp.isEmpty()){
+            if (userOp.isEmpty()) {
                 throw new NotFoundException("Can't find any user with id: " + request.getUserId());
             }
-            Users foundUser =  userOp.get();
-            Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId());
-            if(foundArtistWithUID.isPresent()){
+            Users foundUser = userOp.get();
+            Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId(), false);
+            if (foundArtistWithUID.isPresent()) {
                 throw new AlreadyExistedException("This artist account already have owner");
             }
             artist.setUserId(foundUser);

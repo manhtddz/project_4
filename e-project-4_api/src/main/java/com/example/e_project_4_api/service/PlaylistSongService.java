@@ -64,7 +64,7 @@ public class PlaylistSongService {
         Songs song = songRepo.findById(request.getSongId())
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
         Date currentDate = new Date();
-        PlaylistSong newPS = new PlaylistSong(false,currentDate,currentDate,playlist,song);
+        PlaylistSong newPS = new PlaylistSong(currentDate,currentDate,playlist,song);
         repo.save(newPS);
         return request;
     }
@@ -82,7 +82,6 @@ public class PlaylistSongService {
         PlaylistSong ps = op.get();
         ps.setPlaylistId(playlist);
         ps.setSongId(song);
-        ps.setIsDeleted(false);
         ps.setCreatedAt(currentDate);
         ps.setModifiedAt(currentDate);
 
