@@ -5,15 +5,15 @@ import 'package:provider/provider.dart';
 import '../models/song_provider.dart';
 import '../models/song.dart';
 
-class AlbumPage extends StatefulWidget {
-  final Album currentAlbum;
-  AlbumPage({required this.currentAlbum});
+class FavouritePage extends StatefulWidget {
+  // final Album currentAlbum;
+  // AlbumPage({required this.currentAlbum});
 
   @override
-  State<AlbumPage> createState() => _AlbumPageState();
+  State<FavouritePage> createState() => _FavouritePageState();
 }
 
-class _AlbumPageState extends State<AlbumPage> {
+class _FavouritePageState extends State<FavouritePage> {
   late final dynamic songProvider;
   List<Song> _favorites = [];
 
@@ -30,13 +30,9 @@ class _AlbumPageState extends State<AlbumPage> {
         context, MaterialPageRoute(builder: (context) => SongPage2()));
   }
 
-  void addToFavorite(Song so) {
+  void removeFavourite(Song so) {
     setState(() {
-      if (_favorites.contains(so)) {
         _favorites.remove(so);
-      } else {
-        _favorites.add(so);
-      }
     });
   }
 
@@ -184,7 +180,7 @@ class _AlbumPageState extends State<AlbumPage> {
   Widget renderAddToFavoriteButton(Song so) {
     return IconButton(
       icon: getFavoriteIcon(_favorites.contains(so)),
-      onPressed: () => addToFavorite(so),
+      onPressed: () => removeFavourite(so),
     );
   }
 }

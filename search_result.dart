@@ -177,7 +177,7 @@ class _SearchResultState extends State<SearchResult> {
               width: 90,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(album.imgUrl),
+                  image: AssetImage(album.imageUrl!),
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.circular(10),
@@ -187,7 +187,7 @@ class _SearchResultState extends State<SearchResult> {
         ),
         SizedBox(height: 5),
         Text(
-          album.name,
+          album.title,
           textAlign: TextAlign.left,
           style: TextStyle(
             fontSize: 18,

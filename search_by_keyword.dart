@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pj_demo/models/keyword.dart';
 import 'package:pj_demo/pages/search_result.dart';
+import 'package:pj_demo/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../models/album_provider.dart';
@@ -13,6 +14,9 @@ void main() {
         ChangeNotifierProvider(create: (context) => AlbumProvider()),
         ChangeNotifierProvider(
           create: (context) => SongProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
         ),
       ],
       child: const MainApp(),

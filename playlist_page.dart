@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/album.dart';
+import 'package:pj_demo/models/playlist.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
 import '../models/song_provider.dart';
 import '../models/song.dart';
 
-class AlbumPage extends StatefulWidget {
-  final Album currentAlbum;
-  AlbumPage({required this.currentAlbum});
+class PlaylistPage extends StatefulWidget {
+  final Playlist currentPlaylist;
+  PlaylistPage({required this.currentPlaylist});
 
   @override
-  State<AlbumPage> createState() => _AlbumPageState();
+  State<PlaylistPage> createState() => _PlaylistPageState();
 }
 
-class _AlbumPageState extends State<AlbumPage> {
+class _PlaylistPageState extends State<PlaylistPage> {
   late final dynamic songProvider;
   List<Song> _favorites = [];
 
@@ -43,51 +43,12 @@ class _AlbumPageState extends State<AlbumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(250.0),
-          child: AppBar(
-            flexibleSpace: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/3.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 30), // Adjust padding as needed
-                    child: Text(
-                      '${widget.currentAlbum.title}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 24, // Adjust font size as needed
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 10), // Adjust padding as needed
-                    child: Text(
-                      '${widget.currentAlbum.artistName}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 16, // Adjust font size as needed
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+        appBar: AppBar(
+          title: Text(
+            '${widget.currentPlaylist.title}',
+            style: TextStyle(
+              color: Colors.white, // Or any desired color
+              fontSize: 24, // Adjust font size as needed
             ),
           ),
         ),
