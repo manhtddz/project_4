@@ -151,6 +151,41 @@ public class AuthenticationService {
         return null;
     }
 
+    public LoginResponse verifyForAdmin(LoginRequest request) {
+        List<String> errors = new ArrayList<>();
+
+        if (request.getUsername() == null || request.getUsername().isEmpty()) {
+            errors.add("Username is required");
+        }
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            errors.add("Password is required");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
+
+        if (authentication.isAuthenticated()) {
+            Users user = repo.findByUsernameAndIsDeleted(request.getUsername(), false)
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+
+            if(user.getRole().equals(Role.ROLE_USER.toString())){
+                throw new ValidationException(Collections.singletonList("You don't have permission"));
+            }
+            if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
+                throw new ValidationException(Collections.singletonList("This user is not active"));
+            }
+
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));
+        }
+
+        return null;
+    }
+
 
     public UserResponse toUserResponse(Users user) {
         UserResponse res = new UserResponse();

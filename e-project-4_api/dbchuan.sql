@@ -69,11 +69,13 @@ CREATE TABLE playlists (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     user_id INT(11),
-	idx_playlists_useris_deletedis_deleted BOOLEAN,
+    is_deleted boolean,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
 -- Create `songs` table
 CREATE TABLE songs (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -133,6 +135,27 @@ CREATE TABLE category_album (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
 );
+
+CREATE TABLE keywords (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    content VARCHAR(100),
+    is_active  Boolean,
+    created_at DATETIME ,
+    modified_at DATETIME
+);
+CREATE TABLE news (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100),
+    image VARCHAR(100),
+    content TEXT,
+    is_active  Boolean,
+    created_at DATETIME ,
+    modified_at DATETIME
+);
+
+
+
+
 -- Bảng artists: 
 -- Thêm chỉ mục cho cột `artist_name` để tìm kiếm nghệ sĩ theo tên.
 CREATE INDEX idx_artists_name ON artists (artist_name);
@@ -186,4 +209,3 @@ CREATE UNIQUE INDEX idx_favourite_songs ON favourite_songs (user_id, song_id);
 -- Thêm chỉ mục kết hợp `playlist_id` và `song_id` để tối ưu hóa truy vấn bài hát trong danh sách phát.
 CREATE UNIQUE INDEX idx_playlist_song ON playlist_song (playlist_id, song_id);
 
---ddd
