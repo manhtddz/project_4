@@ -30,7 +30,7 @@ class SongPage2 extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(currentSong.albumArtImagePath), // Background image
+                  image: AssetImage(currentSong.albumImagePath!), // Background image
                   fit: BoxFit.cover,
                 ),
               ),
@@ -67,7 +67,7 @@ class SongPage2 extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              currentSong.albumArtImagePath,
+                              currentSong.albumImagePath!,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -80,7 +80,7 @@ class SongPage2 extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      currentSong.songName,
+                                      currentSong.title,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 24,
@@ -88,7 +88,7 @@ class SongPage2 extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      currentSong.artistName,
+                                      currentSong.artistName!,
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ],

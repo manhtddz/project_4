@@ -65,7 +65,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     padding: EdgeInsets.only(
                         left: 16, bottom: 30), // Adjust padding as needed
                     child: Text(
-                      '${widget.currentAlbum.name}',
+                      '${widget.currentAlbum.title}',
                       style: TextStyle(
                         color: Colors.white, // Or any desired color
                         fontSize: 24, // Adjust font size as needed
@@ -118,26 +118,26 @@ class _AlbumPageState extends State<AlbumPage> {
                         SizedBox(
                           width: 2,
                         ),
-                        Text('${song.songId}',
+                        Text('${song.id}',
                             style:
                             TextStyle(fontSize: 16, color: Colors.black54)),
                         SizedBox(
                             width:
                             5.0), // Add some spacing between the number and the avatar
                         CircleAvatar(
-                          backgroundImage: NetworkImage(song.albumArtImagePath),
+                          backgroundImage: NetworkImage(song.albumImagePath!),
                         ),
                       ],
                     ),
                     title: Text(
-                      song.songName,
+                      song.title,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black54,
                           fontFamily: 'San Francisco'),
                     ),
                     subtitle: Text(
-                      song.artistName + '   ${value.totalDuration}',
+                      song.artistName! + '   ${value.totalDuration}',
                       style: TextStyle(
                           color: Colors.black54, fontFamily: 'San Francisco'),
                     ),

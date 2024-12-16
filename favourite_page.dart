@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/playlist.dart';
+import 'package:pj_demo/models/album.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
 import '../models/song_provider.dart';
 import '../models/song.dart';
 
-class PlaylistPage extends StatefulWidget {
-  final Playlist currentPlaylist;
-  PlaylistPage({required this.currentPlaylist});
+class FavouritePage extends StatefulWidget {
+  // final Album currentAlbum;
+  // AlbumPage({required this.currentAlbum});
 
   @override
-  State<PlaylistPage> createState() => _PlaylistPageState();
+  State<FavouritePage> createState() => _FavouritePageState();
 }
 
-class _PlaylistPageState extends State<PlaylistPage> {
+class _FavouritePageState extends State<FavouritePage> {
   late final dynamic songProvider;
   List<Song> _favorites = [];
 
@@ -30,25 +30,60 @@ class _PlaylistPageState extends State<PlaylistPage> {
         context, MaterialPageRoute(builder: (context) => SongPage2()));
   }
 
-  void addToFavorite(Song so) {
+  void removeFavourite(Song so) {
     setState(() {
-      if (_favorites.contains(so)) {
         _favorites.remove(so);
-      } else {
-        _favorites.add(so);
-      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '${widget.currentPlaylist.title}',
-            style: TextStyle(
-              color: Colors.white, // Or any desired color
-              fontSize: 24, // Adjust font size as needed
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(250.0),
+          child: AppBar(
+            flexibleSpace: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/3.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: 16, bottom: 30), // Adjust padding as needed
+                    child: Text(
+                      '${widget.currentAlbum.title}',
+                      style: TextStyle(
+                        color: Colors.white, // Or any desired color
+                        fontSize: 24, // Adjust font size as needed
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: 16, bottom: 10), // Adjust padding as needed
+                    child: Text(
+                      '${widget.currentAlbum.artistName}',
+                      style: TextStyle(
+                        color: Colors.white, // Or any desired color
+                        fontSize: 16, // Adjust font size as needed
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -145,7 +180,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget renderAddToFavoriteButton(Song so) {
     return IconButton(
       icon: getFavoriteIcon(_favorites.contains(so)),
-      onPressed: () => addToFavorite(so),
+      onPressed: () => removeFavourite(so),
     );
   }
 }
