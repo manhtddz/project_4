@@ -43,13 +43,19 @@ public class AlbumController {
 
     }
 
+    @GetMapping("/public/albums/search/{text}")
+    public ResponseEntity<List<AlbumDisplay>> search(@PathVariable("text") String searchTxt) {
+        return new ResponseEntity<>(service.search(searchTxt), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/display/{id}")
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         AlbumDisplay album = service.findDisplayById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
+
     @GetMapping("/public/albums/byCategory/display/{id}")
-    public ResponseEntity<Object> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
+    public ResponseEntity<List<AlbumDisplay>> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
         List<AlbumDisplay> album = service.getAllAlbumsBySubjectIdForDisplay(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }

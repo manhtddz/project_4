@@ -8,7 +8,6 @@ import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.CategoryAlbum;
-import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.repositories.AlbumRepository;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.CategoryAlbumRepository;
@@ -72,6 +71,13 @@ public class AlbumService {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
         return toAlbumDisplay(op.get());
+    }
+
+    public List<AlbumDisplay> search(String text) {
+        return repo.findAll(AlbumSearchSpecifications.search(text))
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
     }
 
     public boolean deleteById(int id) {
