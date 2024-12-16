@@ -1,70 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:pj_demo/models/user.dart';
+import 'package:pj_demo/models/user_api.dart';
 
 class UserProvider with ChangeNotifier {
-  final List<User> _users = [
-    User(
-      id: '1',
-      fullname: 'JVKE',
-      username: 'jvke',
-      image: 'assets/images/6.jpg',
-      password: 'password123',
-      phone: '1234567890',
-      email: 'johndoe@example.com',
-      role: 'artist',
-      bio: 'An artist who loves to create music.',
-      dob: DateTime(2000, 5, 10),
-      artistId: '1',
-    ),
-    User(
-      id: '2',
-      fullname: 'Jane Smith',
-      username: 'janesmith',
-      image: 'https://example.com/images/jane.jpg',
-      password: 'password123',
-      phone: '9876543210',
-      email: 'janesmith@example.com',
-      role: 'normal',
-      bio: 'A music enthusiast who loves listening to new tunes.',
-      dob: DateTime(1995, 8, 22),
-      artistId: null,
-    ),
-    User(
-      id: '3',
-      fullname: 'Emily Johnson',
-      username: 'emilyj',
-      image: 'https://example.com/images/emily.jpg',
-      password: 'password123',
-      phone: '1231231234',
-      email: 'emilyj@example.com',
-      role: 'artist',
-      bio: 'Singer and songwriter. Exploring the beauty of melodies.',
-      dob: DateTime(1992, 3, 18),
-      artistId: '2',
-    )
-  ];
-  User? _currentUser;
-  User? get currentUser => _currentUser;
+  final UserApi _userApi = UserApi();
 
+  User? _currentUser;
+  List<User> _users = [];
+  List<User> _artists = [];
+
+  User? get currentUser => _currentUser;
   List<User> get users => _users;
-  List<User> get artists =>
-      _users.where((user) => user.role == 'artist').toList();
-  void findUserById(String id) {
-    _users.firstWhere((user) => user.id == id);
+  List<User> get artists => _artists;
+
+  // Fetch all users
+  void fetchUsers() {
+    _users = _userApi.getAllUsers();
     notifyListeners();
   }
 
+  // Fetch all artists
+  void fetchArtists() {
+    _artists = _userApi.getArtists();
+    notifyListeners();
+  }
+
+  // Find user by ID
+  void findUser(String id) {
+    final user = _userApi.findUserById(id);
+    if (user != null) {
+      _currentUser = user;
+      notifyListeners();
+    }
+  }
+
+  // Fetch current user
+  Future<User?> fetchCurrentUser() async {
+    _currentUser = await _userApi.fetchCurrentUser();
+    notifyListeners();
+    return _currentUser;
+  }
+
+  // Login user
   Future<bool> login(String username, String password) async {
-    await Future.delayed(
-        const Duration(seconds: 1)); // Simulate a delay (e.g., network request)
+    final success = await _userApi.login(username, password);
+    if (success) {
+      // Await the result of fetchCurrentUser() to get the actual user data
+      _currentUser = await _userApi.fetchCurrentUser();
+      notifyListeners();
+    }
+    return success;
+  }
 
-    final user = _users.firstWhere(
-      (user) => user.username == username && user.password == password,
-      // Return null if no matching user found
-    );
-
-    _currentUser = user; // Set the current user if login is successful
-    notifyListeners(); // Notify listeners about the change
-    return true; // Login success
+  Future<void> signOut() async {
+    // Implement logic to sign out (e.g., remove user from storage, clear session)
+    _currentUser = null;
+    notifyListeners();
   }
 }

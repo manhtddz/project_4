@@ -9,7 +9,7 @@ class User {
   final String role; // 'artist' or 'normal'
   final String bio;
   final DateTime dob;
-  final String? artistId; // Nullable, only for artists
+  // final String? artistId; // Nullable, only for artists
 
   User({
     required this.id,
@@ -22,7 +22,7 @@ class User {
     required this.role,
     required this.bio,
     required this.dob,
-    this.artistId,
+    // this.artistId,
   });
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
@@ -36,7 +36,7 @@ class User {
       role: map['role'],
       bio: map['bio'],
       dob: DateTime.parse(map['dob']),
-      artistId: map['artist_id'],
+      // artistId: map['artist_id'],
     );
   }
 
@@ -53,7 +53,7 @@ class User {
       'role': role,
       'bio': bio,
       'dob': dob.toIso8601String(),
-      'artist_id': artistId,
+      // 'artist_id': artistId,
     };
   }
 }
