@@ -1,9 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/album.dart';
+import 'package:pj_demo/models/playlist_provider.dart';
+import 'package:pj_demo/models/user_provider.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
 import '../models/song_provider.dart';
 import '../models/song.dart';
+import '../themes/theme_provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        // ChangeNotifierProvider(create: (context) => AlbumProvider()),
+        ChangeNotifierProvider(
+          create: (context) => SongProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => PlaylistProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        ),
+      ],
+      child: MainApp(),
+    ),
+  );
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FavouritePage(),
+      // theme: Provider.of<ThemeProvider>(context)
+      //     .themeData, // Define this or replace with actual theme logic
+    );
+  }
+}
 
 class FavouritePage extends StatefulWidget {
   // final Album currentAlbum;
@@ -15,12 +51,14 @@ class FavouritePage extends StatefulWidget {
 
 class _FavouritePageState extends State<FavouritePage> {
   late final dynamic songProvider;
+  late final dynamic userProvider;
   List<Song> _favorites = [];
 
   @override
   void initState() {
     super.initState();
     songProvider = Provider.of<SongProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
   }
 
   void goToSong(int songIndex) {
@@ -32,7 +70,7 @@ class _FavouritePageState extends State<FavouritePage> {
 
   void removeFavourite(Song so) {
     setState(() {
-        _favorites.remove(so);
+      _favorites.remove(so);
     });
   }
 
@@ -41,6 +79,9 @@ class _FavouritePageState extends State<FavouritePage> {
     return Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(250.0),
+          // child: Consumer<UserProvider>(builder: (context, value, child) {
+          //   var currentUser = value.currentUser;
+          //   return AppBar(
           child: AppBar(
             flexibleSpace: Stack(
               children: [
@@ -49,9 +90,41 @@ class _FavouritePageState extends State<FavouritePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/3.jpg'),
+                        image: AssetImage('assets/images/favourite.png'),
                         fit: BoxFit.cover,
+                        opacity: 0.7,
                       ),
+                    ),
+                  ),
+                ),
+                // Align(
+                //   alignment: Alignment.bottomLeft,
+                //   child: Container(
+                //     padding: EdgeInsets.only(
+                //         left: 16, bottom: 40), // Adjust padding as needed
+                //     child: Text(
+                //       'Playlist',
+                //       style: TextStyle(
+                //         color: Colors.black, // Or any desired color
+                //         fontSize: 16, // Adjust font size as needed
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: 16, bottom: 50), // Adjust padding as needed
+                    child: Text(
+                      // "${currentUser!.username}'s Favourites",
+                      "Thu Thuy's Favourites",
+                      style: TextStyle(
+                          color: Colors.white, // Or any desired color
+                          fontSize: 26,
+                          fontWeight:
+                              FontWeight.bold // Adjust font size as needed
+                          ),
                     ),
                   ),
                 ),
@@ -59,32 +132,32 @@ class _FavouritePageState extends State<FavouritePage> {
                   alignment: Alignment.bottomLeft,
                   child: Container(
                     padding: EdgeInsets.only(
-                        left: 16, bottom: 30), // Adjust padding as needed
-                    child: Text(
-                      '${widget.currentAlbum.title}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 24, // Adjust font size as needed
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 10), // Adjust padding as needed
-                    child: Text(
-                      '${widget.currentAlbum.artistName}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 16, // Adjust font size as needed
-                      ),
+                        left: 16,
+                        bottom: 10,
+                    ), // Adjust padding as needed
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage('assets/images/3.jpg'),
+                        ), // Image.asset('${currentUser.image}'),
+                        SizedBox(width: 10,),
+                        Text(
+                          // '${currentUser.username}',
+                          'Thu Thuy',
+                          style: TextStyle(
+                            color: Colors.white, // Or any desired color
+                            fontSize: 16, // Adjust font size as needed
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
+            // );
+            // }),
           ),
         ),
         // drawer: MyDrawer(),
@@ -116,10 +189,10 @@ class _FavouritePageState extends State<FavouritePage> {
                         ),
                         Text('${song.id}',
                             style:
-                            TextStyle(fontSize: 16, color: Colors.black54)),
+                                TextStyle(fontSize: 16, color: Colors.black54)),
                         SizedBox(
                             width:
-                            5.0), // Add some spacing between the number and the avatar
+                                5.0), // Add some spacing between the number and the avatar
                         CircleAvatar(
                           backgroundImage: NetworkImage(song.albumImagePath!),
                         ),
@@ -140,7 +213,7 @@ class _FavouritePageState extends State<FavouritePage> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment:
-                      MainAxisAlignment.end, // Align to the end
+                          MainAxisAlignment.end, // Align to the end
                       children: [
                         CircleAvatar(
                           backgroundColor: Colors.white,
@@ -148,9 +221,7 @@ class _FavouritePageState extends State<FavouritePage> {
                         ),
                         IconButton(
                           icon: Icon(Icons.more_vert),
-                          onPressed: () {
-                            // Handle more options
-                          },
+                          onPressed: () => renderAddToFavoriteButton(playlist[index]),
                         ),
                       ],
                     ),
@@ -165,16 +236,16 @@ class _FavouritePageState extends State<FavouritePage> {
   Icon getFavoriteIcon(bool isFavorite) {
     return isFavorite
         ? Icon(
-      Icons.favorite, color: Colors.grey, // Set the icon color to grey
-      size: 22.0, // Set the icon size to 30 pixels
-      semanticLabel: 'Favorite',
-    )
+            Icons.favorite, color: Colors.grey, // Set the icon color to grey
+            size: 22.0, // Set the icon size to 30 pixels
+            semanticLabel: 'Favorite',
+          )
         : Icon(
-      Icons.favorite_border,
-      color: Colors.grey, // Set the icon color to grey
-      size: 22.0, // Set the icon size to 30 pixels
-      semanticLabel: 'Favorite',
-    );
+            Icons.favorite_border,
+            color: Colors.grey, // Set the icon color to grey
+            size: 22.0, // Set the icon size to 30 pixels
+            semanticLabel: 'Favorite',
+          );
   }
 
   Widget renderAddToFavoriteButton(Song so) {
