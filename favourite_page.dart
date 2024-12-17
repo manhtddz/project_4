@@ -97,20 +97,6 @@ class _FavouritePageState extends State<FavouritePage> {
                     ),
                   ),
                 ),
-                // Align(
-                //   alignment: Alignment.bottomLeft,
-                //   child: Container(
-                //     padding: EdgeInsets.only(
-                //         left: 16, bottom: 40), // Adjust padding as needed
-                //     child: Text(
-                //       'Playlist',
-                //       style: TextStyle(
-                //         color: Colors.black, // Or any desired color
-                //         fontSize: 16, // Adjust font size as needed
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 Align(
                   alignment: Alignment.bottomLeft,
                   child: Container(
@@ -139,7 +125,7 @@ class _FavouritePageState extends State<FavouritePage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage('assets/images/3.jpg'),
+                          backgroundImage: NetworkImage('assets/images/avatar.png'),
                         ), // Image.asset('${currentUser.image}'),
                         SizedBox(width: 10,),
                         Text(
