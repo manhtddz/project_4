@@ -16,7 +16,6 @@ public class NewOrUpdateSong {
     private String title;
     private String audioPath;
     private Integer listenAmount;
-    private Integer likeAmount;
     private String lyricFilePath;
     private String featureArtist;
     private Boolean isPending;

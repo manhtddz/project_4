@@ -83,7 +83,6 @@ CREATE TABLE songs (
     album_id INT(11),
     artist_id INT(11),
     audio_path VARCHAR(150),
-    like_amount INT(11) ,
     listen_amount INT(11) ,
     feature_artist VARCHAR(150),
     lyric_file_path VARCHAR(150),

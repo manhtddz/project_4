@@ -22,7 +22,6 @@ public class SongDisplay {
     private Integer id;
     private String title;
     private String audioPath;
-    private Integer listenAmount;
     private Integer likeAmount;
     private String lyricFilePath;
     private Boolean isPending;

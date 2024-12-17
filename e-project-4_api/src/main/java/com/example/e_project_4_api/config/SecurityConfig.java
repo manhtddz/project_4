@@ -85,7 +85,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("*")); // Domain được phép
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // HTTP Methods được phép
         configuration.setAllowedHeaders(List.of("*")); // Headers được phép
-        configuration.setAllowCredentials(true); // Cho phép gửi thông tin xác thực (như cookies)
+        configuration.setAllowCredentials(false); // Cho phép gửi thông tin xác thực (như cookies)
 
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả các endpoint

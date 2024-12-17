@@ -140,7 +140,7 @@ public class SongService {
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(), 0,
+        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(),
                 0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
                 new Date(), new Date(), album.get(), artist.get());
         repo.save(newSong);
@@ -176,7 +176,6 @@ public class SongService {
         Songs song = op.get();
         song.setTitle(request.getTitle());
         song.setAudioPath(request.getAudioPath());
-        song.setLikeAmount(request.getLikeAmount());
         song.setListenAmount(request.getListenAmount());
         song.setFeatureArtist(request.getFeatureArtist());
         song.setLyricFilePath(request.getLyricFilePath());

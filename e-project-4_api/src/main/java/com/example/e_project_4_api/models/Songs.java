@@ -47,8 +47,6 @@ public class Songs implements Serializable {
     private String title;
     @Column(name = "audio_path")
     private String audioPath;
-    @Column(name = "like_amount")
-    private Integer likeAmount;
     @Column(name = "listen_amount")
     private Integer listenAmount;
     @Column(name = "feature_artist")
@@ -78,10 +76,9 @@ public class Songs implements Serializable {
     @OneToMany(mappedBy = "songId")
     private Collection<GenreSong> genreSongCollection;
 
-    public Songs(String title, String audioPath, Integer likeAmount, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
+    public Songs(String title, String audioPath, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
         this.title = title;
         this.audioPath = audioPath;
-        this.likeAmount = likeAmount;
         this.listenAmount = listenAmount;
         this.featureArtist = featureArtist;
         this.lyricFilePath = lyricFilePath;
