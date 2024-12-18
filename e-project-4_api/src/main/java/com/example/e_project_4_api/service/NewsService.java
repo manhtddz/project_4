@@ -14,10 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,28 +52,16 @@ public class NewsService {
 
 
     public NewOrUpdateNews addNew(NewOrUpdateNews request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
-
-        if (request.getTitle() == null || request.getTitle().isEmpty()) {
-            errors.add("Title is required");
-        } else {
-            Optional<News> op = repo.findByTitle(request.getTitle());
-            if (op.isPresent()) {
-                errors.add("Already exist news with title: " + request.getTitle());
-            }
+        Optional<News> op = repo.findByTitle(request.getTitle());
+        if (op.isPresent()) {
+            errors.add(Map.of("titleError", "Already exist news with title: " + request.getTitle()));
         }
-
-
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("Image URL is required");
-        }
-
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-
 
         News newNews = new News(
                 request.getTitle(),
@@ -94,30 +79,18 @@ public class NewsService {
 
 
     public NewOrUpdateNews updateNews(NewOrUpdateNews request) {
-        List<String> errors = new ArrayList<>();
-
+        List<Map<String, String>> errors = new ArrayList<>();
 
         Optional<News> op = repo.findById(request.getId());
         if (op.isEmpty()) {
-            errors.add("Can't find any news with id: " + request.getId());
+            throw new NotFoundException("Can't find any news with id: " + request.getId());
+
         }
 
-
-        if (request.getTitle() == null || request.getTitle().isEmpty()) {
-            errors.add("Title is required");
-        } else {
-
-            Optional<News> opTitle = repo.findByTitle(request.getTitle());
-            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-                errors.add("Already exist news with title: " + request.getTitle());
-            }
+        Optional<News> opTitle = repo.findByTitle(request.getTitle());
+        if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+            errors.add(Map.of("titleError", "Already exist news with title: " + request.getTitle()));
         }
-
-
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("Image URL is required");
-        }
-
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

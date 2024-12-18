@@ -123,4 +123,16 @@ public class SongController {
             );
         }
     }
+
+    @PutMapping("/public/songs/listenAmount/{id}")
+    public ResponseEntity<Object> updateListenAmount(@PathVariable("id") int id) {
+        service.plusOneListenAmount(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Increased successfully"
+                ),
+                HttpStatus.OK
+        );
+
+    }
 }

@@ -11,10 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,32 +107,19 @@ public class SongService {
     }
 
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
-        List<String> errors = new ArrayList<>();
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Songs> op = repo.findByTitle(request.getTitle());
-            if (op.isPresent()) {
-                errors.add("Already exist song with title: " + request.getTitle());
-            }
+        List<Map<String, String>> errors = new ArrayList<>();
+
+        Optional<Songs> op = repo.findByTitle(request.getTitle());
+        if (op.isPresent()) {
+            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
         }
-        //check null
-        if (request.getAudioPath().isEmpty() || (request.getAudioPath() == null)) {
-            errors.add("Audio path is required");
-        }
-        //check null
-        if (request.getLyricFilePath().isEmpty() || (request.getLyricFilePath() == null)) {
-            errors.add("Lyric file path is required");
-        }
-        Optional<Albums> album = albumRepo.findById(request.getAlbumId());
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
+        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
+        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getArtistId());
+            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
         }
         if (album.isEmpty()) {
-            errors.add("Can't find any album with id: " + request.getAlbumId());
+            errors.add(Map.of("albumError", "Can't find any album with id: " + request.getAlbumId()));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -148,30 +132,26 @@ public class SongService {
     }
 
     public NewOrUpdateSong updateSong(NewOrUpdateSong request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
         Optional<Songs> op = repo.findById(request.getId());
         //check sự tồn tại
         if (op.isEmpty()) {
-            errors.add("Can't find any song with id: " + request.getId());
+            throw new NotFoundException("Can't find any song with id: " + request.getId());
         }
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Songs> opTitle = repo.findByTitle(request.getTitle());
-            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-                errors.add("Already exist song with title: " + request.getTitle());
-            }
+
+        Optional<Songs> opTitle = repo.findByTitle(request.getTitle());
+        if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
         }
-        Optional<Albums> album = albumRepo.findById(request.getAlbumId());
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
+
+        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
+        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getArtistId());
+            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
         }
         if (album.isEmpty()) {
-            errors.add("Can't find any album with id: " + request.getAlbumId());
+            errors.add(Map.of("albumError", "Can't find any album with id: " + request.getAlbumId()));
         }
         Songs song = op.get();
         song.setTitle(request.getTitle());
@@ -180,12 +160,22 @@ public class SongService {
         song.setFeatureArtist(request.getFeatureArtist());
         song.setLyricFilePath(request.getLyricFilePath());
         song.setIsPending(request.getIsPending());
-        song.setIsDeleted(request.getIsDeleted());
         song.setModifiedAt(new Date());
         song.setAlbumId(album.get());
         song.setArtistId(artist.get());
         repo.save(song);
         return request;
+    }
+
+    public void plusOneListenAmount(int songId) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(songId, false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + songId);
+        }
+        Songs song = op.get();
+        song.setListenAmount(song.getListenAmount() + 1);
+        repo.save(song);
     }
 
     public SongResponse toSongResponse(Songs song) {
@@ -203,7 +193,7 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         return res;
@@ -216,7 +206,7 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         return res;
@@ -229,7 +219,7 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         return res;
@@ -242,7 +232,7 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTilte(song.getAlbumId().getTitle());
+        res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         return res;

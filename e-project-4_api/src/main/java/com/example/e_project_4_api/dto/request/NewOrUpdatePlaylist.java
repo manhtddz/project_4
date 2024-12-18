@@ -2,6 +2,8 @@ package com.example.e_project_4_api.dto.request;
 
 import com.example.e_project_4_api.models.Users;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +18,11 @@ import java.util.Date;
 
 public class NewOrUpdatePlaylist {
     private Integer id;
+    @NotBlank(message = "title is required")
     private String title;
-    private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
+    @NotNull(message = "userId is required")
     private Integer userId;
 
 

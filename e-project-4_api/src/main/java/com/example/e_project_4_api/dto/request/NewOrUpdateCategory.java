@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,11 @@ import java.util.Date;
 @AllArgsConstructor
 public class NewOrUpdateCategory {
     private Integer id;
+    @NotBlank(message = "title is required")
     private String title;
+    @NotBlank(message = "image is required")
     private String image;
     private String description;
-    private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
 }

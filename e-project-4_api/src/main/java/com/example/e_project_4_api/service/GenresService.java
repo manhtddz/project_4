@@ -49,22 +49,12 @@ public class GenresService {
 
 
     public NewOrUpdateGenres addNewGenre(NewOrUpdateGenres request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
 
-        if (request.getTitle() == null || request.getTitle().isEmpty()) {
-            errors.add("Title is required");
-        } else {
-
-            Optional<Genres> op = repo.findByTitle(request.getTitle());
-            if (op.isPresent()) {
-                errors.add("Already exist genre with title: " + request.getTitle());
-            }
-        }
-
-
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("Image URL is required");
+        Optional<Genres> op = repo.findByTitle(request.getTitle());
+        if (op.isPresent()) {
+            errors.add(Map.of("titleError", "Already exist genre with title: " + request.getTitle()));
         }
 
 
@@ -88,28 +78,18 @@ public class GenresService {
 
 
     public NewOrUpdateGenres updateGenre(NewOrUpdateGenres request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
 
-        Optional<Genres> op = repo.findById(request.getId());
+        Optional<Genres> op = repo.findByIdAndIsDeleted(request.getId(),false);
         if (op.isEmpty()) {
-            errors.add("Can't find any genre with id: " + request.getId());
+            throw new NotFoundException("Can't find any genre with id: " + request.getId());
         }
 
 
-        if (request.getTitle() == null || request.getTitle().isEmpty()) {
-            errors.add("Title is required");
-        } else {
-
-            Optional<Genres> opTitle = repo.findByTitle(request.getTitle());
-            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-                errors.add("Already exist genre with title: " + request.getTitle());
-            }
-        }
-
-
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("Image URL is required");
+        Optional<Genres> opTitle = repo.findByTitle(request.getTitle());
+        if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+            errors.add(Map.of("titleError", "Already exist genre with title: " + request.getTitle()));
         }
 
 
@@ -122,7 +102,6 @@ public class GenresService {
         genre.setTitle(request.getTitle());
         genre.setImage(request.getImage());
         genre.setModifiedAt(new Date());
-        genre.setIsDeleted(request.getIsDeleted());
         repo.save(genre);
 
         return request;

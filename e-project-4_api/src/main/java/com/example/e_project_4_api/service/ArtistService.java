@@ -13,10 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,21 +55,11 @@ public class ArtistService {
 
 
     public NewOrUpdateArtist addNewArtist(NewOrUpdateArtist request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
-
-        if (request.getArtistName() == null || request.getArtistName().isEmpty()) {
-            errors.add("Artist name is required");
-        } else {
-            Optional<Artists> op = repo.findByArtistName(request.getArtistName());
-            if (op.isPresent()) {
-                errors.add("Already exist artist with name: " + request.getArtistName());
-            }
-        }
-
-
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("ImageURL is required");
+        Optional<Artists> op = repo.findByArtistName(request.getArtistName());
+        if (op.isPresent()) {
+            errors.add(Map.of("artistNameError", "Already exist artist with name: " + request.getArtistName()));
         }
 
         if (!errors.isEmpty()) {
@@ -87,39 +74,33 @@ public class ArtistService {
 
 
     public NewOrUpdateArtist updateArtist(NewOrUpdateArtist request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
-        Optional<Artists> op = repo.findById(request.getId());
+        Optional<Artists> op = repo.findByIdAndIsDeleted(request.getId(), false);
 
         if (op.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getId());
+            throw new NotFoundException("Can't find any artist with id: " + request.getId());
         }
         Artists artist = op.get();
 
         if (request.getUserId() != null) {
-            Optional<Users> userOp = userRepo.findById(request.getUserId());
+            Optional<Users> userOp = userRepo.findByIdAndIsDeleted(request.getUserId(),false);
             if (userOp.isEmpty()) {
-                throw new NotFoundException("Can't find any user with id: " + request.getUserId());
+                errors.add(Map.of("userNotExistedError", "Can't find any user with id: " + request.getUserId()));
             }
             Users foundUser = userOp.get();
             Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId(), false);
             if (foundArtistWithUID.isPresent()) {
-                throw new AlreadyExistedException("This artist account already have owner");
+                errors.add(Map.of("accountAssignedError", "This artist account already have owner"));
             }
             artist.setUserId(foundUser);
         }
-        if (request.getArtistName() == null || request.getArtistName().isEmpty()) {
-            errors.add("Artist name is required");
-        } else {
-            Optional<Artists> opName = repo.findByArtistName(request.getArtistName());
-            if (opName.isPresent() && opName.get().getArtistName() != op.get().getArtistName()) {
-                errors.add("Already exist artist with name: " + request.getArtistName());
-            }
+
+        Optional<Artists> opName = repo.findByArtistName(request.getArtistName());
+        if (opName.isPresent() && opName.get().getArtistName() != op.get().getArtistName()) {
+            errors.add(Map.of("artistNameError", "Already exist artist with name: " + request.getArtistName()));
         }
 
-        if (request.getImage() == null || request.getImage().isEmpty()) {
-            errors.add("ImageURL is required");
-        }
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -128,7 +109,6 @@ public class ArtistService {
         artist.setArtistName(request.getArtistName());
         artist.setImage(request.getImage());
         artist.setBio(request.getBio());
-        artist.setIsDeleted(request.getIsDeleted());
         artist.setModifiedAt(new Date());
         repo.save(artist);
 

@@ -41,66 +41,45 @@ public class AuthenticationService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public UserResponse register(NewOrUpdateUser request) {
+        List<Map<String, String>> errors = new ArrayList<>();
         Users newUser = new Users();
 
-        if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
-            //check null
-            throw new ValidationException(Collections.singletonList("Username is required"));
-
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Users> op = repo.findByUsername(request.getUsername());
-            if (op.isPresent()) {
-                throw new ValidationException(Collections.singletonList("Already exist user with username: " + request.getUsername()));
-            }
-        }
-        if (request.getFullName().isEmpty() || (request.getFullName() == null)) {
-            throw new ValidationException(Collections.singletonList("Fullname is required"));
-
-        }
-        if (request.getAvatar().isEmpty() || (request.getAvatar() == null)) {
-            throw new ValidationException(Collections.singletonList("Avatar is required"));
-
-        }
-        if (request.getPassword().isEmpty() || (request.getPassword() == null)) {
-            throw new ValidationException(Collections.singletonList("Password is required"));
-
-        } else {
-            if (!PasswordValidator.isValidPassword(request.getPassword())) {
-                throw new ValidationException(Collections
-                        .singletonList("Password is not strong enough, at least 8 character with special character and number"));
-            }
-        }
-        if (request.getPhone().isEmpty() || (request.getPhone() == null)) {
-            throw new ValidationException(Collections.singletonList("Phone is required"));
-
-        } else {
-            if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
-                throw new ValidationException(Collections.singletonList("Phone number is not valid"));
-
-            }
-        }
-        if (request.getEmail().isEmpty() || (request.getEmail() == null)) {
-            throw new ValidationException(Collections.singletonList("Email is required"));
-
-        } else {
-            if (!EmailValidator.isValidEmail(request.getEmail())) {
-                throw new ValidationException(Collections.singletonList("Email is not valid"));
-
-            }
-        }
-        if (request.getRole().isEmpty() || (request.getRole() == null)) {
-            throw new ValidationException(Collections.singletonList("Role is required"));
-
-        } else {
-            if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
-                    && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
-                    && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
-                throw new ValidationException(Collections.singletonList("Role is not valid"));
-
-            }
+        // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+        Optional<Users> op = repo.findByUsername(request.getUsername());
+        if (op.isPresent()) {
+            errors.add(Map.of("usernameError", "Already exist user with username: " + request.getUsername()));
         }
 
+        if (!PasswordValidator.isValidPassword(request.getPassword())) {
+            errors.add(Map.of("passwordError",
+                    "Password is not strong enough, at least 8 character with special character and number"));
+        }
+
+        if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
+            errors.add(Map.of("phoneError", "Phone number is not valid"));
+        }
+        Optional<Users> opPhone = repo.findByPhone(request.getPhone());
+        if (op.isPresent()) {
+            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
+        }
+
+        if (!EmailValidator.isValidEmail(request.getEmail())) {
+            errors.add(Map.of("emailError", "Email is not valid"));
+        }
+        Optional<Users> opEmail = repo.findByEmail(request.getEmail());
+        if (op.isPresent()) {
+            errors.add(Map.of("emailError", "Already exist user with email: " + request.getEmail()));
+        }
+
+        if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
+                && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
+                && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
+            errors.add(Map.of("roleError", "Role is not valid"));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
         newUser.setUsername(request.getUsername());
         newUser.setPassword(encoder.encode(request.getPassword()));
         newUser.setFullName(request.getFullName());
@@ -120,18 +99,6 @@ public class AuthenticationService {
     }
 
     public LoginResponse verify(LoginRequest request) {
-        List<String> errors = new ArrayList<>();
-
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            errors.add("Username is required");
-        }
-        if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            errors.add("Password is required");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -142,7 +109,7 @@ public class AuthenticationService {
                     .orElseThrow(() -> new NotFoundException("User not found"));
 
             if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
-                throw new ValidationException(Collections.singletonList("This user is not active"));
+                throw new NotFoundException("This user is not active");
             }
 
             return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));
@@ -152,18 +119,6 @@ public class AuthenticationService {
     }
 
     public LoginResponse verifyForAdmin(LoginRequest request) {
-        List<String> errors = new ArrayList<>();
-
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            errors.add("Username is required");
-        }
-        if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            errors.add("Password is required");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -173,11 +128,11 @@ public class AuthenticationService {
             Users user = repo.findByUsernameAndIsDeleted(request.getUsername(), false)
                     .orElseThrow(() -> new NotFoundException("User not found"));
 
-            if(user.getRole().equals(Role.ROLE_USER.toString())){
-                throw new ValidationException(Collections.singletonList("You don't have permission"));
+            if (user.getRole().equals(Role.ROLE_USER.toString())) {
+                throw new ValidationException(Collections.singletonList(Map.of("permissionError", "You don't have permission")));
             }
             if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
-                throw new ValidationException(Collections.singletonList("This user is not active"));
+                throw new ValidationException(Collections.singletonList(Map.of("activateError", "This user is not active")));
             }
 
             return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));

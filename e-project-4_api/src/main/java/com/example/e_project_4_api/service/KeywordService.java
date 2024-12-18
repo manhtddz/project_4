@@ -14,10 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,17 +52,13 @@ public class KeywordService {
 
 
     public NewOrUpdateKeyword addNew(NewOrUpdateKeyword request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
-
-        if (request.getContent() == null || request.getContent().isEmpty()) {
-            errors.add("Content is required");
-        } else {
-            Optional<Keywords> op = repo.findByContent(request.getContent());
-            if (op.isPresent()) {
-                errors.add("Already exist keyword : " + request.getContent());
-            }
+        Optional<Keywords> op = repo.findByContent(request.getContent());
+        if (op.isPresent()) {
+            errors.add(Map.of("contentError", "Already exist keyword: " + request.getContent()));
         }
+
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
@@ -85,25 +78,18 @@ public class KeywordService {
 
 
     public NewOrUpdateKeyword updateKeyword(NewOrUpdateKeyword request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
 
         Optional<Keywords> op = repo.findById(request.getId());
         if (op.isEmpty()) {
-            errors.add("Can't find any keywords with id: " + request.getId());
+            throw new NotFoundException("Can't find any keywords with id: " + request.getId());
         }
 
-
-        if (request.getContent() == null || request.getContent().isEmpty()) {
-            errors.add("Content is required");
-        } else {
-
-            Optional<Keywords> opTitle = repo.findByContent(request.getContent());
-            if (opTitle.isPresent() && opTitle.get().getContent() != op.get().getContent()) {
-                errors.add("Already exist keyword: " + request.getContent());
-            }
+        Optional<Keywords> opTitle = repo.findByContent(request.getContent());
+        if (opTitle.isPresent() && opTitle.get().getContent() != op.get().getContent()) {
+            errors.add(Map.of("contentError", "Already exist keyword: " + request.getContent()));
         }
-
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

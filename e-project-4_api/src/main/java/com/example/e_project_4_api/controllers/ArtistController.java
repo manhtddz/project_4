@@ -5,6 +5,7 @@ import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
 import com.example.e_project_4_api.service.ArtistService;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ArtistController {
 
 
     @PostMapping("/public/artists")
-    public ResponseEntity<Object> addNewArtist(@RequestBody NewOrUpdateArtist request) {
+    public ResponseEntity<Object> addNewArtist(@RequestBody @Valid NewOrUpdateArtist request) {
         try {
             NewOrUpdateArtist newArtist = artistService.addNewArtist(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(newArtist);
@@ -52,7 +53,7 @@ public class ArtistController {
 
 
     @PutMapping("/public/artists")
-    public ResponseEntity<Object> updateArtist(@RequestBody NewOrUpdateArtist request) {
+    public ResponseEntity<Object> updateArtist(@RequestBody @Valid NewOrUpdateArtist request) {
         try {
             NewOrUpdateArtist updatedArtist = artistService.updateArtist(request);
             return ResponseEntity.ok(updatedArtist);

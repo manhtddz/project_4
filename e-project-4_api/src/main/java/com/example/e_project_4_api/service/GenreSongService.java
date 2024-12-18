@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
 import com.example.e_project_4_api.dto.response.common_response.GenreSongResponse;
+import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.GenreSong;
@@ -57,25 +58,20 @@ public class GenreSongService {
 
 
     public NewOrUpdateGenreSong addNewGenreSong(NewOrUpdateGenreSong request) {
-        List<String> errors = new ArrayList<>();
 
         Optional<GenreSong> existingGenreSong = genreSongRepo.findByGenreIdAndSongId(request.getGenreId(), request.getSongId());
         if (existingGenreSong.isPresent()) {
-            errors.add("A GenreSong already exists");
+            throw new AlreadyExistedException("A GenreSong already exists");
         }
         Optional<Genres> genre = genreRepo.findById(request.getGenreId());
         if (genre.isEmpty()) {
-            errors.add("Can't find any genre with id: " + request.getGenreId());
+            throw new NotFoundException("Can't find any genre with id: " + request.getGenreId());
         }
 
 
         Optional<Songs> song = songRepo.findById(request.getSongId());
         if (song.isEmpty()) {
-            errors.add("Can't find any song with id: " + request.getSongId());
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
+            throw new NotFoundException("Can't find any song with id: " + request.getSongId());
         }
 
 
@@ -92,27 +88,22 @@ public class GenreSongService {
 
 
     public NewOrUpdateGenreSong updateGenreSong(NewOrUpdateGenreSong request) {
-        List<String> errors = new ArrayList<>();
 
         Optional<GenreSong> existingGenreSong = genreSongRepo.findById(request.getId());
         if (existingGenreSong.isEmpty()) {
-            errors.add("Can't find any genre-song relation with id: " + request.getId());
+            throw new NotFoundException("Can't find any genre-song relation with id: " + request.getId());
         }
 
 
         Optional<Genres> genre = genreRepo.findById(request.getGenreId());
         if (genre.isEmpty()) {
-            errors.add("Can't find any genre with id: " + request.getGenreId());
+            throw new NotFoundException("Can't find any genre with id: " + request.getGenreId());
         }
 
 
         Optional<Songs> song = songRepo.findById(request.getSongId());
         if (song.isEmpty()) {
-            errors.add("Can't find any song with id: " + request.getSongId());
-        }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
+            throw new NotFoundException("Can't find any song with id: " + request.getSongId());
         }
 
 

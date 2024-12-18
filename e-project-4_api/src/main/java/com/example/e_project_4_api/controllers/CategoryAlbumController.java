@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
 import com.example.e_project_4_api.dto.response.common_response.CategoryAlbumResponse;
 import com.example.e_project_4_api.service.CategoryAlbumService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,13 @@ public class CategoryAlbumController {
     }
 
     @PostMapping("/public/category-album")
-    public ResponseEntity<NewOrUpdateCategoryAlbum> createSubjectAlbum(@RequestBody NewOrUpdateCategoryAlbum request) {
+    public ResponseEntity<NewOrUpdateCategoryAlbum> createSubjectAlbum(@RequestBody @Valid NewOrUpdateCategoryAlbum request) {
         NewOrUpdateCategoryAlbum createdSubjectAlbum = subjectAlbumService.addNewCategoryAlbum(request);
         return new ResponseEntity<>(createdSubjectAlbum, HttpStatus.CREATED);
     }
 
     @PutMapping("public/category-album")
-    public ResponseEntity<NewOrUpdateCategoryAlbum> updateSubjectAlbum(@RequestBody NewOrUpdateCategoryAlbum request) {
+    public ResponseEntity<NewOrUpdateCategoryAlbum> updateSubjectAlbum(@RequestBody @Valid NewOrUpdateCategoryAlbum request) {
         NewOrUpdateCategoryAlbum updatedSubjectAlbum = subjectAlbumService.updateCategoryAlbum(request);
         return new ResponseEntity<>(updatedSubjectAlbum, HttpStatus.OK);
     }

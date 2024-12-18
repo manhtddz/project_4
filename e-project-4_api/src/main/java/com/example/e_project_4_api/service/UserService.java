@@ -30,48 +30,42 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public Users updateUser(NewOrUpdateUser request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
         Optional<Users> op = repo.findById(request.getId());
         Artists artist = null;
         if (op.isEmpty()) {
-            errors.add("Can't find any user with id: " + request.getId());
+            throw new NotFoundException("Can't find any user with id: " + request.getId());
         }
-        if (request.getUsername().isEmpty() || (request.getUsername() == null)) {
-            //check null
-            errors.add("Username is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Users> opTitle = repo.findByUsername(request.getUsername());
-            if (op.isPresent() && opTitle.get().getUsername() != op.get().getUsername()) {
-                errors.add("Already exist user with username: " + request.getUsername());
-            }
+
+        // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+        Optional<Users> opTitle = repo.findByUsername(request.getUsername());
+        if (op.isPresent() && opTitle.get().getUsername() != op.get().getUsername()) {
+            errors.add(Map.of("usernameError", "Already exist user with username: " + request.getUsername()));
         }
-        if (request.getFullName().isEmpty() || (request.getFullName() == null)) {
-            errors.add("Fullname is required");
+
+
+        if (!PasswordValidator.isValidPassword(request.getPassword())) {
+            errors.add(Map.of("passwordError",
+                    "Password is not strong enough, at least 8 character with special character and number"));
         }
-        if (request.getAvatar().isEmpty() || (request.getAvatar() == null)) {
-            errors.add("Avatar is required");
+
+        if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
+            errors.add(Map.of("phoneError", "Phone number is not valid"));
+
         }
-        if (request.getPassword().isEmpty() || (request.getPassword() == null)) {
-            errors.add("Password is required");
-        } else {
-            if (!PasswordValidator.isValidPassword(request.getPassword())) {
-                errors.add("Password is not strong enough, at least 8 character with special character and number");
-            }
+        Optional<Users> opPhone = repo.findByPhone(request.getPhone());
+        if (op.isPresent() && opPhone.get().getPhone() != op.get().getPhone()) {
+            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
         }
-        if (request.getPhone().isEmpty() || (request.getPhone() == null)) {
-            errors.add("Phone is required");
-        } else {
-            if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
-                errors.add("Phone number is not valid");
-            }
+
+
+        if (!EmailValidator.isValidEmail(request.getEmail())) {
+            errors.add(Map.of("emailError", "Email is not valid"));
+
         }
-        if (request.getEmail().isEmpty() || (request.getEmail() == null)) {
-            errors.add("Email is required");
-        } else {
-            if (!EmailValidator.isValidEmail(request.getEmail())) {
-                errors.add("Email is not valid");
-            }
+        Optional<Users> opEmail = repo.findByEmail(request.getEmail());
+        if (op.isPresent() && opEmail.get().getEmail() != op.get().getEmail()) {
+            errors.add(Map.of("emailError", "Already exist user with email: " + request.getEmail()));
         }
 
 

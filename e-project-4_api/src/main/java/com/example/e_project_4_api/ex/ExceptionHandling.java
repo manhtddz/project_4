@@ -23,6 +23,7 @@ public class ExceptionHandling {
         return ResponseEntity.status(404)
                 .body(res);
     }
+
     @ExceptionHandler(AlreadyExistedException.class)
     public ResponseEntity<Map<String, String>> handleAlreadyExistedException(AlreadyExistedException ex) {
         var res = Map.of("message", ex.getMessage());
@@ -32,19 +33,19 @@ public class ExceptionHandling {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errrorsssss = new HashMap<>();
         List<ObjectError> allErrors = ex.getAllErrors();
-        for(ObjectError error: allErrors){
+        for (ObjectError error : allErrors) {
             FieldError err = (FieldError) error;
             errrorsssss.put(err.getField(), err.getDefaultMessage());
         }
-        var res = Map.of("message", "Some field is missing",
-                "errors", errrorsssss);
+        var res = errrorsssss;
 
         return ResponseEntity.badRequest()
                 .body(res);
     }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException exc) {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)

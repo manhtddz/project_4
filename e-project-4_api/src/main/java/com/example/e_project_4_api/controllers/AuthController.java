@@ -6,6 +6,7 @@ import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody NewOrUpdateUser user) {
+    public ResponseEntity<Object> register(@RequestBody @Valid NewOrUpdateUser user) {
         try {
             UserResponse newUser = service.register(user);
             return new ResponseEntity<>(
@@ -46,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest user) {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequest user) {
         try {
             LoginResponse res = service.verify(user);
             return new ResponseEntity<>(

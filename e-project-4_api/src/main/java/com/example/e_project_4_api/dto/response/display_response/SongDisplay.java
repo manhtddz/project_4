@@ -28,7 +28,7 @@ public class SongDisplay {
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
-    private String albumTilte;
+    private String albumTitle;
     private String albumImage;
     private String artistName;
 

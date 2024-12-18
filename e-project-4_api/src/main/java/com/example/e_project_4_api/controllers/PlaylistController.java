@@ -61,44 +61,26 @@ public class PlaylistController {
 
     @PostMapping("/public/playlists")
     public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        try {
-            NewOrUpdatePlaylist newPlaylist = service.addNewPlaylist(request);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Playlist added successfully",
-                            "data", newPlaylist
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (ValidationException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", e.getErrors()
-                    ),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
+        NewOrUpdatePlaylist newPlaylist = service.addNewPlaylist(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Playlist added successfully",
+                        "data", newPlaylist
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/public/playlists")
     public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        try {
-            NewOrUpdatePlaylist updatedPlaylist = service.updatePlaylist(request);
+        NewOrUpdatePlaylist updatedPlaylist = service.updatePlaylist(request);
 
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Playlist updated successfully",
-                            "data", updatedPlaylist
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (ValidationException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", e.getErrors()
-                    ),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Playlist updated successfully",
+                        "data", updatedPlaylist
+                ),
+                HttpStatus.OK
+        );
     }
 }

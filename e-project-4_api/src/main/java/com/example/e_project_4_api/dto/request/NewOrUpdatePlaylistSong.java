@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,9 @@ public class NewOrUpdatePlaylistSong {
     private Integer id;
     private Date createdAt;
     private Date modifiedAt;
+    @NotNull(message = "playlistId is required")
     private Integer playlistId;
+    @NotNull(message = "songId is required")
     private Integer songId;
 
 }

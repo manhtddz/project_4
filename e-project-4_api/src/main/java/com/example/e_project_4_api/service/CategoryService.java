@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
 import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
+import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
@@ -17,10 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,20 +63,13 @@ public class CategoryService {
     }
 
     public NewOrUpdateCategory addNewSubject(NewOrUpdateCategory request) {
-        List<String> errors = new ArrayList<>();
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Categories> op = cateRepository.findByTitle(request.getTitle());
-            if (op.isPresent()) {
-                errors.add("Already exist category with title: " + request.getTitle());
-            }
+        List<Map<String, String>> errors = new ArrayList<>();
+
+        Optional<Categories> op = cateRepository.findByTitle(request.getTitle());
+        if (op.isPresent()) {
+            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
         }
-        if (request.getImage().isEmpty() || (request.getImage() == null)) {
-            errors.add("ImageURL is required");
-        }
+
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
@@ -89,30 +80,22 @@ public class CategoryService {
     }
 
     public NewOrUpdateCategory updateSubject(NewOrUpdateCategory request) {
-        Optional<Categories> op = cateRepository.findById(request.getId());
+        List<Map<String, String>> errors = new ArrayList<>();
+
+        Optional<Categories> op = cateRepository.findByIdAndIsDeleted(request.getId(),false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any category with id: " + request.getId());
         }
-        List<String> errors = new ArrayList<>();
 
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Categories> opTitle = cateRepository.findByTitle(request.getTitle());
-            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-                errors.add("Already exist category with title: " + request.getTitle());
-            }
-        }
-        //check null
-        if (request.getImage().isEmpty() || (request.getImage() == null)) {
-            errors.add("ImageURL is required");
+        Optional<Categories> opTitle = cateRepository.findByTitle(request.getTitle());
+        if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
         }
 
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
+
         Date currentDate = new Date();
         Categories sub = op.get();
         sub.setTitle(request.getTitle());

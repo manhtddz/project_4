@@ -92,25 +92,16 @@ public class AlbumService {
     }
 
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
-        List<String> errors = new ArrayList<>();
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Albums> op = repo.findByTitle(request.getTitle());
-            if (op.isPresent()) {
-                errors.add("Already exist album with title: " + request.getTitle());
-            }
+        List<Map<String, String>> errors = new ArrayList<>();
+
+        Optional<Albums> op = repo.findByTitle(request.getTitle());
+        if (op.isPresent()) {
+            errors.add(Map.of("titleError", "Already exist album with title: " + request.getTitle()));
         }
-        //check null
-        if (request.getImage().isEmpty() || (request.getImage() == null)) {
-            errors.add("ImageURL is required");
-        }
-        //check sự tồn tại
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
+
+        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getArtistId());
+            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -122,31 +113,22 @@ public class AlbumService {
     }
 
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
-        List<String> errors = new ArrayList<>();
+        List<Map<String, String>> errors = new ArrayList<>();
 
-        Optional<Albums> op = repo.findById(request.getId());
+        Optional<Albums> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
-            errors.add("Can't find any album with id: " + request.getId());
+            throw new NotFoundException("Can't find any album with id: " + request.getId());
         }
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-        } else {
-            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
-            Optional<Albums> opTitle = repo.findByTitle(request.getTitle());
-            if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-                errors.add("Already exist album with title: " + request.getTitle());
-            }
+
+        Optional<Albums> opTitle = repo.findByTitle(request.getTitle());
+        if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
+            errors.add(Map.of("titleError", "Already exist album with title: " + request.getTitle()));
         }
-        //check null
-        if (request.getImage().isEmpty() || (request.getImage() == null)) {
-            errors.add("ImageURL is required");
-        }
-        //check sự tồn tại
-        Optional<Artists> artist = artistRepo.findById(request.getArtistId());
+
+        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add("Can't find any artist with id: " + request.getArtistId());
+            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -157,7 +139,6 @@ public class AlbumService {
         album.setReleaseDate(request.getReleaseDate());
         album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
-        album.setIsDeleted(request.getIsDeleted());
         album.setModifiedAt(new Date());
         repo.save(album);
 

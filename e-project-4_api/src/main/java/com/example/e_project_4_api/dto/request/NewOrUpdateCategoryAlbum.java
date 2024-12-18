@@ -1,5 +1,7 @@
 package com.example.e_project_4_api.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,9 @@ import java.util.Date;
 public class NewOrUpdateCategoryAlbum {
 
     private Integer id;
+    @NotNull(message = "albumId is required")
     private Integer albumId;
+    @NotNull(message = "categoryId is required")
     private Integer categoryId;
     private Date createdAt;
     private Date modifiedAt;

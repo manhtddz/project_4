@@ -13,10 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,16 +73,11 @@ public class PlaylistService {
     }
 
     public NewOrUpdatePlaylist addNewPlaylist(NewOrUpdatePlaylist request) {
-        List<String> errors = new ArrayList<>();
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-            // playlist ko cần check unique title
-        }
-        Optional<Users> user = userRepo.findById(request.getUserId());
+        List<Map<String, String>> errors = new ArrayList<>();
+        Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
 
         if (user.isEmpty()) {
-            errors.add("Can't find any user with id: " + request.getUserId());
+            errors.add(Map.of("userError", "Can't find any user with id: " + request.getUserId()));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -97,29 +89,22 @@ public class PlaylistService {
     }
 
     public NewOrUpdatePlaylist updatePlaylist(NewOrUpdatePlaylist request) {
-        List<String> errors = new ArrayList<>();
-
-        Optional<Playlists> op = repo.findById(request.getId());
+        List<Map<String, String>> errors = new ArrayList<>();
+        Optional<Playlists> op = repo.findByIdAndIsDeleted(request.getId(), false);
         if (op.isEmpty()) {
-            errors.add("Can't find any playlist with id: " + request.getId());
+            throw new NotFoundException("Can't find any playlist with id: " + request.getId());
         }
-        if (request.getTitle().isEmpty() || (request.getTitle() == null)) {
-            //check null
-            errors.add("Title is required");
-            // playlist ko cần check unique title
-        }
-        Optional<Users> user = userRepo.findById(request.getUserId());
+
+        Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
         if (user.isEmpty()) {
-            errors.add("Can't find any user with id: " + request.getUserId());
+            errors.add(Map.of("userError", "Can't find any user with id: " + request.getUserId()));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
         Playlists playlist = op.get();
         playlist.setTitle(request.getTitle());
-        playlist.setIsDeleted(request.getIsDeleted());
         playlist.setUserId(user.get());
-        playlist.setIsDeleted(request.getIsDeleted());
         playlist.setModifiedAt(new Date());
         repo.save(playlist);
         return request;
