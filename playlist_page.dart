@@ -44,11 +44,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0xFF314A5EFF),
+          leading: IconButton(onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back)),
           title: Text(
-            '${widget.currentPlaylist.title}',
+            'Playlist 1',
+            // '${widget.currentPlaylist.title}',
             style: TextStyle(
-              color: Colors.white, // Or any desired color
-              fontSize: 24, // Adjust font size as needed
+              color: Colors.black, // Or any desired color
+              fontSize: 26, // Adjust font size as needed
             ),
           ),
         ),
