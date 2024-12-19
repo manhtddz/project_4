@@ -4,35 +4,23 @@
  */
 package com.example.e_project_4_api.models;
 
-import java.io.Serializable;
-import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  *
  * @author admin
  */
 @Entity
-@Table(name = "favourite_songs")
+@Table(name = "favourite_albums")
 @Getter
 @Setter
 @NoArgsConstructor
-public class FavouriteSongs implements Serializable {
+public class FavouriteAlbums implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -40,16 +28,16 @@ public class FavouriteSongs implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "song_id", referencedColumnName = "id")
+    @JoinColumn(name = "album_id", referencedColumnName = "id")
     @ManyToOne
-    private Songs songId;
+    private Albums albumId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne
     private Users userId;
 
 
-    public FavouriteSongs( Songs songId, Users userId) {
-        this.songId = songId;
+    public FavouriteAlbums(Albums albumId, Users userId) {
+        this.albumId = albumId;
         this.userId = userId;
     }
 
@@ -63,10 +51,10 @@ public class FavouriteSongs implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FavouriteSongs)) {
+        if (!(object instanceof FavouriteAlbums)) {
             return false;
         }
-        FavouriteSongs other = (FavouriteSongs) object;
+        FavouriteAlbums other = (FavouriteAlbums) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -75,7 +63,7 @@ public class FavouriteSongs implements Serializable {
 
     @Override
     public String toString() {
-        return "models.FavouriteSongs[ id=" + id + " ]";
+        return "models.FavouriteAlbums[ id=" + id + " ]";
     }
     
 }

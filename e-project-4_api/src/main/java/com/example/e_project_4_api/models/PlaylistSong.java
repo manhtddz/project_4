@@ -40,12 +40,6 @@ public class PlaylistSong implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
     @JoinColumn(name = "playlist_id", referencedColumnName = "id")
     @ManyToOne
     private Playlists playlistId;
@@ -54,9 +48,7 @@ public class PlaylistSong implements Serializable {
     private Songs songId;
 
 
-    public PlaylistSong(Date createdAt, Date modifiedAt, Playlists playlistId, Songs songId) {
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+    public PlaylistSong(Playlists playlistId, Songs songId) {
         this.playlistId = playlistId;
         this.songId = songId;
     }

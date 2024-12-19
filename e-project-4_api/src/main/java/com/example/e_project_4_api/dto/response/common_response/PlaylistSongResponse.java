@@ -12,8 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class PlaylistSongResponse {
     private Integer id;
-    private Date createdAt;
-    private Date modifiedAt;
     private Integer playlistId;
     private Integer songId;
 

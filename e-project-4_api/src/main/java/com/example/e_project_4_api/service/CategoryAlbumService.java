@@ -74,8 +74,6 @@ public class CategoryAlbumService {
         }
 
         CategoryAlbum newSubjectAlbum = new CategoryAlbum(
-                new Date(),
-                new Date(),
                 album.get(),
                 cate.get()
         );
@@ -106,7 +104,6 @@ public class CategoryAlbumService {
         CategoryAlbum categoryAlbum = op.get();
         categoryAlbum.setAlbumId(album.get());
         categoryAlbum.setCategoryId(cate.get());
-        categoryAlbum.setModifiedAt(new Date());
         cateAlbumRepo.save(categoryAlbum);
 
         return request;

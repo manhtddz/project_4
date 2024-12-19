@@ -3,14 +3,14 @@ package com.example.e_project_4_api.service;
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
+import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.CategoryAlbum;
-import com.example.e_project_4_api.repositories.AlbumRepository;
-import com.example.e_project_4_api.repositories.ArtistRepository;
-import com.example.e_project_4_api.repositories.CategoryAlbumRepository;
+import com.example.e_project_4_api.models.FavouriteAlbums;
+import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,8 @@ public class AlbumService {
     private ArtistRepository artistRepo;
     @Autowired
     private CategoryAlbumRepository categoryAlbumRepo;
+    @Autowired
+    private FavouriteAlbumRepository favRepo;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAll()
@@ -72,7 +74,12 @@ public class AlbumService {
         }
         return toAlbumDisplay(op.get());
     }
-
+    public List<AlbumDisplay> getAllFavAlbumsByUserId(Integer id) {
+        return favRepo.findFAByUserId(id, false)
+                .stream()
+                .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
     public List<AlbumDisplay> search(String text) {
         return repo.findAll(AlbumSearchSpecifications.search(text))
                 .stream()
@@ -166,6 +173,23 @@ public class AlbumService {
 
     public AlbumDisplay toAlbumDisplay(CategoryAlbum categoryAlbum) {
         int albumId = categoryAlbum.getAlbumId().getId();
+        Albums album = repo.findById(albumId).get();
+
+        AlbumDisplay res = new AlbumDisplay();
+        res.setTitle(album.getTitle());
+        res.setImage(album.getImage());
+        res.setReleaseDate(album.getReleaseDate());
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        res.setId(albumId);
+        res.setCreatedAt(album.getCreatedAt());
+        res.setModifiedAt(album.getModifiedAt());
+        return res;
+    }
+    public AlbumDisplay toAlbumDisplay(FavouriteAlbums favAlbum) {
+        int albumId = favAlbum.getAlbumId().getId();
         Albums album = repo.findById(albumId).get();
 
         AlbumDisplay res = new AlbumDisplay();

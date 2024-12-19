@@ -76,8 +76,6 @@ public class GenreSongService {
 
 
         GenreSong newGenreSong = new GenreSong(
-                new Date(),
-                new Date(),
                 genre.get(),
                 song.get()
         );
@@ -108,7 +106,6 @@ public class GenreSongService {
 
 
         GenreSong genreSong = existingGenreSong.get();
-        genreSong.setModifiedAt(new Date());
         genreSong.setGenreId(genre.get());
         genreSong.setSongId(song.get());
         genreSongRepo.save(genreSong);

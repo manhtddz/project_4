@@ -15,8 +15,6 @@ import java.util.Date;
 public class FavouriteSongResponse {
 
     private Integer id;
-    private Date createdAt;
-    private Date modifiedAt;
     private Integer songId;
     private Integer userId;
 }

@@ -67,8 +67,6 @@ public class Users implements Serializable {
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
     private Date dob;
-    @Column(name = "is_active")
-    private Boolean isActive;
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     @Column(name = "created_at")
@@ -83,7 +81,7 @@ public class Users implements Serializable {
     private Collection<Playlists> playlistsCollection;
 
 
-    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob ,Boolean isActive, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public Users(Integer id, String username, String fullName, String avatar, String password, String phone, String email, String role, String bio, Date dob , Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.id = id;
         this.username = username;
         this.fullName = fullName;
@@ -94,7 +92,6 @@ public class Users implements Serializable {
         this.role = role;
         this.bio = bio;
         this.dob = dob;
-        this.isActive = isActive;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;

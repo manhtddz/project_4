@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
+import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.AlbumService;
@@ -52,6 +53,11 @@ public class AlbumController {
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         AlbumDisplay album = service.findDisplayById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/albums/byUser/display/{id}")
+    public ResponseEntity<List<AlbumDisplay>> findAllAlbumsByUserIdForDisplay(@PathVariable("id") int id) {
+        return new ResponseEntity<>(service.getAllFavAlbumsByUserId(id), HttpStatus.OK);
     }
 
     @GetMapping("/public/albums/byCategory/display/{id}")

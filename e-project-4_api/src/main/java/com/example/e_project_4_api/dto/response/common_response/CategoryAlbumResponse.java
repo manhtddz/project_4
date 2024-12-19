@@ -16,6 +16,4 @@ public class CategoryAlbumResponse {
     private Integer id;
     private Integer albumId;
     private Integer categoryId;
-    private Date createdAt;
-    private Date modifiedAt;
 }

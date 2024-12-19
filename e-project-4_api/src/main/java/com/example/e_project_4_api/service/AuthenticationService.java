@@ -2,8 +2,9 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
-import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
+import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.auth_response.UserForLogin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
@@ -90,7 +91,6 @@ public class AuthenticationService {
         newUser.setBio(request.getBio());
         newUser.setDob(request.getDob());
         newUser.setIsDeleted(false);
-        newUser.setIsActive(true);
         newUser.setCreatedAt(request.getCreatedAt());
         newUser.setModifiedAt(request.getModifiedAt());
 
@@ -108,11 +108,7 @@ public class AuthenticationService {
             Users user = repo.findByUsernameAndIsDeleted(request.getUsername(), false)
                     .orElseThrow(() -> new NotFoundException("User not found"));
 
-            if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
-                throw new NotFoundException("This user is not active");
-            }
-
-            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserForLogin(user), 60 * 60 * 1000);
         }
 
         return null;
@@ -131,11 +127,8 @@ public class AuthenticationService {
             if (user.getRole().equals(Role.ROLE_USER.toString())) {
                 throw new ValidationException(Collections.singletonList(Map.of("permissionError", "You don't have permission")));
             }
-            if (user.getRole().equals(Role.ROLE_ARTIST.toString()) && !user.getIsActive()) {
-                throw new ValidationException(Collections.singletonList(Map.of("activateError", "This user is not active")));
-            }
 
-            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserResponse(user));
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserForLogin(user), 60 * 60 * 1000);
         }
 
         return null;
@@ -146,7 +139,12 @@ public class AuthenticationService {
         UserResponse res = new UserResponse();
         BeanUtils.copyProperties(user, res);
         res.setIsDeleted(user.getIsDeleted());
-        res.setIsActive(user.getIsActive());
+        return res;
+    }
+
+    public UserForLogin toUserForLogin(Users user) {
+        UserForLogin res = new UserForLogin();
+        BeanUtils.copyProperties(user, res);
         return res;
     }
 

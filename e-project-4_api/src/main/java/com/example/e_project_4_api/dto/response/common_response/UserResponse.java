@@ -25,7 +25,6 @@ public class UserResponse {
     private String bio;
     private Date dob;
     private Boolean isDeleted;
-    private Boolean isActive;
     private Date createdAt;
     private Date modifiedAt;
 

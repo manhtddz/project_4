@@ -82,7 +82,6 @@ public class UserService {
         user.setBio(request.getBio());
         user.setDob(request.getDob());
         user.setIsDeleted(request.getIsDeleted());
-        user.setIsActive(request.getIsActive());
         user.setModifiedAt(new Date());
         repo.save(user);
         return user;
@@ -119,7 +118,6 @@ public class UserService {
         UserResponse res = new UserResponse();
         BeanUtils.copyProperties(user, res);
         res.setIsDeleted(user.getIsDeleted());
-        res.setIsActive(user.getIsActive());
         return res;
     }
 

@@ -33,12 +33,6 @@ public class CategoryAlbum implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
     @JoinColumn(name = "album_id", referencedColumnName = "id")
     @ManyToOne
     private Albums albumId;
@@ -46,9 +40,7 @@ public class CategoryAlbum implements Serializable {
     @ManyToOne
     private Categories categoryId;
 
-    public CategoryAlbum(Date createdAt, Date modifiedAt, Albums albumId, Categories categoryId) {
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+    public CategoryAlbum(Albums albumId, Categories categoryId) {
         this.albumId = albumId;
         this.categoryId = categoryId;
     }

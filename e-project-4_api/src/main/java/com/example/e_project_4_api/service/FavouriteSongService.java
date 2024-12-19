@@ -62,8 +62,7 @@ public class FavouriteSongService {
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getUserId()));
         Songs song = songRepo.findById(request.getSongId())
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
-        Date currentDate = new Date();
-        FavouriteSongs newPS = new FavouriteSongs( currentDate, currentDate, song, u);
+        FavouriteSongs newPS = new FavouriteSongs( song, u);
         repo.save(newPS);
         return request;
     }
@@ -77,12 +76,9 @@ public class FavouriteSongService {
                 .orElseThrow(() -> new NotFoundException("Users not found with id: " + request.getUserId()));
         Songs song = songRepo.findById(request.getSongId())
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
-        Date currentDate = new Date();
         FavouriteSongs ps = op.get();
         ps.setUserId(u);
         ps.setSongId(song);
-        ps.setCreatedAt(currentDate);
-        ps.setModifiedAt(currentDate);
 
         repo.save(ps);
         return request;

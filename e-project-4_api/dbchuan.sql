@@ -13,7 +13,6 @@ CREATE TABLE users (
     role VARCHAR(20),
     bio text,
     dob DATE,
-    is_active Boolean,
     is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME
@@ -50,7 +49,7 @@ CREATE TABLE albums (
     image VARCHAR(150),
 	is_released BOOLEAN,
     release_date DATE,
-     is_deleted BOOLEAN,
+    is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
@@ -87,7 +86,7 @@ CREATE TABLE songs (
     feature_artist VARCHAR(150),
     lyric_file_path VARCHAR(150),
     is_pending BOOLEAN,
-     is_deleted BOOLEAN,
+    is_deleted BOOLEAN,
     created_at DATETIME ,
     modified_at DATETIME,
     FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE,
@@ -99,8 +98,6 @@ CREATE TABLE genre_song (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     genre_id INT(11),
     song_id INT(11),
-    created_at DATETIME ,
-    modified_at DATETIME,
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
@@ -109,18 +106,21 @@ CREATE TABLE favourite_songs (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     user_id INT(11),
     song_id INT(11),
-    created_at DATETIME ,
-    modified_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
+);
+CREATE TABLE favourite_albums (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11),
+    album_id INT(11),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
 );
 -- Create `playlist_song` table (many-to-many)
 CREATE TABLE playlist_song (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     playlist_id INT(11),
     song_id INT(11),
-    created_at DATETIME ,
-    modified_at DATETIME,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
@@ -129,8 +129,6 @@ CREATE TABLE category_album (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     category_id INT(11),
     album_id INT(11),
-    created_at DATETIME ,
-    modified_at DATETIME,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
 );

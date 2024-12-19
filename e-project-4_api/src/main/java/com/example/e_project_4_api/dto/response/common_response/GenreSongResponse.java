@@ -15,8 +15,6 @@ public class GenreSongResponse {
     private Integer id;
     private Integer genreId;
     private Integer songId;
-    private Date createdAt;
-    private Date modifiedAt;
 
 
 }

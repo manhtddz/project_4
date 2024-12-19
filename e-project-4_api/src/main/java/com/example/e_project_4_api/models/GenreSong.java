@@ -40,11 +40,6 @@ public class GenreSong implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
     @JoinColumn(name = "genre_id", referencedColumnName = "id")
     @ManyToOne
     private Genres genreId;
@@ -53,9 +48,7 @@ public class GenreSong implements Serializable {
     private Songs songId;
 
 
-    public GenreSong(Date createdAt, Date modifiedAt, Genres genreId, Songs songId) {
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+    public GenreSong( Genres genreId, Songs songId) {
         this.genreId = genreId;
         this.songId = songId;
     }

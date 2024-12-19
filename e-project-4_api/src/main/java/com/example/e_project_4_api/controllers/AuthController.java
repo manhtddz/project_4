@@ -2,7 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
-import com.example.e_project_4_api.dto.response.common_response.LoginResponse;
+import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.AuthenticationService;
@@ -51,10 +51,7 @@ public class AuthController {
         try {
             LoginResponse res = service.verify(user);
             return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Login successfully",
-                            "token", res
-                    ),
+                    res,
                     HttpStatus.OK
             );
         } catch (ValidationException ex) {
