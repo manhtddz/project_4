@@ -60,7 +60,7 @@ public class AuthenticationService {
             errors.add(Map.of("phoneError", "Phone number is not valid"));
         }
         Optional<Users> opPhone = repo.findByPhone(request.getPhone());
-        if (op.isPresent()) {
+        if (opPhone.isPresent()) {
             errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
         }
 
@@ -68,7 +68,7 @@ public class AuthenticationService {
             errors.add(Map.of("emailError", "Email is not valid"));
         }
         Optional<Users> opEmail = repo.findByEmail(request.getEmail());
-        if (op.isPresent()) {
+        if (opEmail.isPresent()) {
             errors.add(Map.of("emailError", "Already exist user with email: " + request.getEmail()));
         }
 
@@ -91,8 +91,8 @@ public class AuthenticationService {
         newUser.setBio(request.getBio());
         newUser.setDob(request.getDob());
         newUser.setIsDeleted(false);
-        newUser.setCreatedAt(request.getCreatedAt());
-        newUser.setModifiedAt(request.getModifiedAt());
+        newUser.setCreatedAt(new Date());
+        newUser.setModifiedAt(new Date());
 
         repo.save(newUser);
         return toUserResponse(newUser);

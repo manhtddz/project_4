@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -57,12 +58,33 @@ public class UserController {
     @PutMapping("/public/users")
     public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateUser request) {
         try {
-            Users updatedUser = service.updateUser(request);
+            UserResponse updatedUser = service.updateUser(request);
 
             return new ResponseEntity<>(
                     Map.of(
                             "message", "User updated successfully",
                             "data", updatedUser
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "error", "Validation failed",
+                            "details", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+    @PutMapping("/public/users/updatePart")
+    public ResponseEntity<Object> update(@RequestBody @Valid UpdateUserWithAttribute request) {
+        try {
+            service.updateEachPartOfUser(request);
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "User updated successfully"
                     ),
                     HttpStatus.OK
             );

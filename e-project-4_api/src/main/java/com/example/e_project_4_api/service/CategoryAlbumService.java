@@ -56,7 +56,6 @@ public class CategoryAlbumService {
 
 
     public NewOrUpdateCategoryAlbum addNewCategoryAlbum(NewOrUpdateCategoryAlbum request) {
-        List<String> errors = new ArrayList<>();
         Optional<CategoryAlbum> existingCategoryAlbum = cateAlbumRepo.findByCategoryIdAndAlbumId(request.getCategoryId(), request.getAlbumId());
         if (existingCategoryAlbum.isPresent()) {
             throw new AlreadyExistedException("A CategoryAlbum already exists");

@@ -34,9 +34,5 @@ public class NewOrUpdateUser {
     private String bio;
     @NotNull(message = "DOB is required")
     private Date dob;
-    private Boolean isDeleted;
-    private Date createdAt;
-    private Date modifiedAt;
-
 
 }
