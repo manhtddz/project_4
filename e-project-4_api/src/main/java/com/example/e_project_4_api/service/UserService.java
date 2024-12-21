@@ -83,7 +83,6 @@ public class UserService {
         user.setAvatar(request.getAvatar());
         user.setPhone(request.getPhone());
         user.setEmail(request.getEmail());
-        user.setBio(request.getBio());
         user.setDob(request.getDob());
         user.setModifiedAt(new Date());
         repo.save(user);
@@ -140,9 +139,6 @@ public class UserService {
                     errors.add(Map.of("emailError", "Already exist user with email: " + request.getValue()));
                 }
                 user.setEmail(request.getValue());
-                break;
-            case "bio":
-                user.setBio(request.getValue());
                 break;
             case "dob":
                 String dateString = request.getValue(); // Chuỗi định dạng "yyyy-MM-dd"

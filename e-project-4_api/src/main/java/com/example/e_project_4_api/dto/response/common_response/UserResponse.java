@@ -22,7 +22,6 @@ public class UserResponse {
     private String phone;
     private String email;
     private String role;
-    private String bio;
     private Date dob;
     private Boolean isDeleted;
     private Date createdAt;

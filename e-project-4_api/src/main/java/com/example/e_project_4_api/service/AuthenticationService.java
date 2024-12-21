@@ -88,7 +88,6 @@ public class AuthenticationService {
         newUser.setPhone(request.getPhone());
         newUser.setEmail(request.getEmail());
         newUser.setRole(request.getRole());
-        newUser.setBio(request.getBio());
         newUser.setDob(request.getDob());
         newUser.setIsDeleted(false);
         newUser.setCreatedAt(new Date());

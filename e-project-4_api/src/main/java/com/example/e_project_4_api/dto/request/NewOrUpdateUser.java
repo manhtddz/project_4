@@ -31,7 +31,6 @@ public class NewOrUpdateUser {
     private String email;
     @NotBlank(message = "role is required")
     private String role;
-    private String bio;
     @NotNull(message = "DOB is required")
     private Date dob;
 
