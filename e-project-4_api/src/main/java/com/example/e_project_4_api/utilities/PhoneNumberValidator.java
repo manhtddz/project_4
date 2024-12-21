@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 public class PhoneNumberValidator {
 
     // Regex cho số điện thoại có dấu gạch ngang hoặc khoảng trắng
-    private static final String PHONE_REGEX= "^0\\d{1,3}[- ]?\\d{3,4}[- ]?\\d{3,4}$";
+    private static final String PHONE_REGEX = "^\\d{10,11}$|^(\\d{3,4}[- ]?\\d{3,4}[- ]?\\d{3,4})$";
 
     // Phương thức kiểm tra số điện thoại
     public static boolean isValidPhoneNumber(String phoneNumber) {

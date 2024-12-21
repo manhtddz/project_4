@@ -11,7 +11,6 @@ CREATE TABLE users (
     phone VARCHAR(10),
     email VARCHAR(100),
     role VARCHAR(20),
-    bio text,
     dob DATE,
     is_deleted BOOLEAN,
     created_at DATETIME ,
