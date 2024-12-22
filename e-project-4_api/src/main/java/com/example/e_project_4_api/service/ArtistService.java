@@ -11,6 +11,8 @@ import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,7 +26,7 @@ public class ArtistService {
     @Autowired
     private UserRepository userRepo;
 
-
+    @Cacheable("artistsDisplay")
     public List<ArtistResponse> getAllArtists() {
         return repo.findAllNotDeleted(false)
                 .stream()
@@ -41,7 +43,7 @@ public class ArtistService {
         return toArtistResponse(op.get());
     }
 
-
+    @CacheEvict("artistsDisplay")
     public boolean deleteById(int id) {
         Optional<Artists> artistOptional = repo.findById(id);
         if (artistOptional.isEmpty()) {
@@ -53,7 +55,7 @@ public class ArtistService {
         return true;
     }
 
-
+    @CacheEvict("artistsDisplay")
     public NewOrUpdateArtist addNewArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -72,7 +74,7 @@ public class ArtistService {
         return request;
     }
 
-
+    @CacheEvict("artistsDisplay")
     public NewOrUpdateArtist updateArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

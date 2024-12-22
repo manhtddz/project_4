@@ -8,6 +8,8 @@ import com.example.e_project_4_api.models.Genres;
 import com.example.e_project_4_api.repositories.GenresRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,7 +20,7 @@ public class GenresService {
     @Autowired
     private GenresRepository repo;
 
-
+    @Cacheable("genresDisplay")
     public List<GenresResponse> getAllGenres() {
         return repo.findAllNotDeleted(false)
                 .stream()
@@ -35,7 +37,7 @@ public class GenresService {
         return toGenreResponse(op.get());
     }
 
-
+    @CacheEvict("genresDisplay")
     public boolean deleteById(int id) {
         Optional<Genres> genre = repo.findById(id);
         if (genre.isEmpty()) {
@@ -47,7 +49,7 @@ public class GenresService {
         return true;
     }
 
-
+    @CacheEvict("genresDisplay")
     public NewOrUpdateGenres addNewGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -76,7 +78,7 @@ public class GenresService {
         return request;
     }
 
-
+    @CacheEvict("genresDisplay")
     public NewOrUpdateGenres updateGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

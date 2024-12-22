@@ -11,6 +11,8 @@ import com.example.e_project_4_api.repositories.PlaylistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +33,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("playlistsDisplay")
     public List<PlaylistDisplay> getAllPlaylistsForDisplay() {
         return repo.findAllNotDeleted(false)
                 .stream()
@@ -38,6 +41,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "playlistsByUser", key = "#userId")
     public List<PlaylistDisplay> getAllPlaylistsByUserIdForDisplay(int userId) {
         return repo.findAllByUserId(userId, false)
                 .stream()
@@ -61,6 +65,7 @@ public class PlaylistService {
         return toPlaylistDisplay(op.get());
     }
 
+    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Playlists> playlist = repo.findById(id);
         if (playlist.isEmpty()) {
@@ -72,6 +77,7 @@ public class PlaylistService {
         return true;
     }
 
+    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public NewOrUpdatePlaylist addNewPlaylist(NewOrUpdatePlaylist request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
@@ -88,6 +94,7 @@ public class PlaylistService {
         return request;
     }
 
+    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public NewOrUpdatePlaylist updatePlaylist(NewOrUpdatePlaylist request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Optional<Playlists> op = repo.findByIdAndIsDeleted(request.getId(), false);

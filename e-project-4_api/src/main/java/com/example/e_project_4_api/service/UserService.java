@@ -15,6 +15,9 @@ import com.example.e_project_4_api.utilities.PasswordValidator;
 import com.example.e_project_4_api.utilities.PhoneNumberValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,10 @@ public class UserService {
     private ArtistRepository artistRepo;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+            @CacheEvict(value = "user", key = "#request.id") // Xóa cache user cụ thể
+    })
     public UserResponse updateUser(NewOrUpdateUser request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Optional<Users> op = repo.findById(request.getId());
@@ -89,6 +95,10 @@ public class UserService {
         return toUserResponse(user);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+            @CacheEvict(value = "user", key = "#request.id") // Xóa cache user cụ thể
+    })
     public void updateEachPartOfUser(UpdateUserWithAttribute request) {
         Optional<Users> op = repo.findById(request.getId());
         List<Map<String, String>> errors = new ArrayList<>();
@@ -167,6 +177,7 @@ public class UserService {
         repo.save(user);
     }
 
+    @Cacheable(value = "users")
     public List<UserResponse> getAllUsers() {
         return repo.findAll()
                 .stream()
@@ -174,7 +185,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-
+    @Cacheable(value = "user", key = "#id")
     public UserResponse findById(int id) {
         Optional<Users> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -183,6 +194,10 @@ public class UserService {
         return toUserResponse(op.get());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+            @CacheEvict(value = "user", key = "#id") // Xóa cache user cụ thể
+    })
     public boolean deleteById(int id) {
         Optional<Users> op = repo.findById(id);
         if (op.isEmpty()) {

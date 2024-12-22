@@ -9,6 +9,8 @@ import com.example.e_project_4_api.models.*;
 import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,6 +39,7 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("songsDisplay")
     public List<SongDisplay> getAllSongsForDisplay() {
         return repo.findAllNotDeleted(false)
                 .stream()
@@ -44,6 +47,7 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "songsByArtist", key = "#artistId")
     public List<SongDisplay> getAllSongsByArtistIdForDisplay(int artistId) {
         return repo.findAllByArtistId(artistId, false)
                 .stream()
@@ -51,6 +55,7 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "songsByAlbum", key = "#albumId")
     public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
         return repo.findAllByAlbumId(albumId, false)
                 .stream()
@@ -74,6 +79,7 @@ public class SongService {
         return toSongDisplay(op.get());
     }
 
+    @Cacheable(value = "favSongs", key = "#id")
     public List<SongDisplay> getAllFavSongsByUserId(Integer id) {
         return favRepo.findFSByUserId(id, false)
                 .stream()
@@ -81,6 +87,7 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "songsByGenre", key = "#id")
     public List<SongDisplay> getAllSongsByGenreId(Integer id) {
         return genSongRepo.findByGenreId(id, false)
                 .stream()
@@ -88,13 +95,14 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "songsByPlaylist", key = "#id")
     public List<SongDisplay> getAllSongsByPlaylistId(Integer id) {
         return playlistSongRepo.findByPlaylistId(id, false)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
-
+    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Songs> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -106,6 +114,7 @@ public class SongService {
         return true;
     }
 
+    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum","songsByGenre" }, allEntries = true)
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -131,6 +140,7 @@ public class SongService {
         return request;
     }
 
+    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateSong updateSong(NewOrUpdateSong request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -167,6 +177,7 @@ public class SongService {
         return request;
     }
 
+    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public void plusOneListenAmount(int songId) {
         Optional<Songs> op = repo.findByIdAndIsDeleted(songId, false);
         //check sự tồn tại

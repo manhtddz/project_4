@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeywordResponse {
+public class KeywordResponse implements Serializable {
     private Integer id;
     private String content;
     private Boolean isDeleted;

@@ -12,6 +12,8 @@ import com.example.e_project_4_api.repositories.GenresRepository;
 import com.example.e_project_4_api.repositories.NewsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,7 +24,7 @@ public class NewsService {
     @Autowired
     private NewsRepository repo;
 
-
+    @Cacheable("newsDisplay")
     public List<NewsResponse> getAllNews() {
         return repo.findAll()
                 .stream()
@@ -39,7 +41,7 @@ public class NewsService {
         return toNewsResponse(op.get());
     }
 
-
+    @CacheEvict("newsDisplay")
     public boolean deleteById(int id) {
         Optional<News> news = repo.findById(id);
         if (news.isEmpty()) {
@@ -50,7 +52,7 @@ public class NewsService {
         return true;
     }
 
-
+    @CacheEvict("newsDisplay")
     public NewOrUpdateNews addNew(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -77,7 +79,7 @@ public class NewsService {
         return request;
     }
 
-
+    @CacheEvict("newsDisplay")
     public NewOrUpdateNews updateNews(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

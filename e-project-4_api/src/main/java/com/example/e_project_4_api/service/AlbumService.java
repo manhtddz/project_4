@@ -13,6 +13,8 @@ import com.example.e_project_4_api.models.FavouriteAlbums;
 import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,6 +39,7 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("albumsDisplay")
     public List<AlbumDisplay> getAllAlbumsForDisplay() {
         return repo.findAllNotDeleted(false)
                 .stream()
@@ -44,6 +47,7 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "albumsByArtist", key = "#artistId")
     public List<AlbumDisplay> getAllAlbumsByArtistIdForDisplay(int artistId) {
         return repo.findAllByArtistId(artistId, false)
                 .stream()
@@ -51,6 +55,7 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "albumsByCate", key = "#cateId")
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
         return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
@@ -74,12 +79,15 @@ public class AlbumService {
         }
         return toAlbumDisplay(op.get());
     }
+
+    @Cacheable(value = "favAlbumsByUser", key = "#id")
     public List<AlbumDisplay> getAllFavAlbumsByUserId(Integer id) {
         return favRepo.findFAByUserId(id, false)
                 .stream()
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
+
     public List<AlbumDisplay> search(String text) {
         return repo.findAll(AlbumSearchSpecifications.search(text))
                 .stream()
@@ -87,6 +95,7 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = {"albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Albums> album = repo.findById(id);
         if (album.isEmpty()) {
@@ -98,6 +107,7 @@ public class AlbumService {
         return true;
     }
 
+    @CacheEvict(value = {"albumsByCate", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -119,6 +129,7 @@ public class AlbumService {
         return request;
     }
 
+    @CacheEvict(value = {"albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -188,6 +199,7 @@ public class AlbumService {
         res.setModifiedAt(album.getModifiedAt());
         return res;
     }
+
     public AlbumDisplay toAlbumDisplay(FavouriteAlbums favAlbum) {
         int albumId = favAlbum.getAlbumId().getId();
         Albums album = repo.findById(albumId).get();

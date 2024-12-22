@@ -16,6 +16,8 @@ import com.example.e_project_4_api.repositories.CategoryAlbumRepository;
 import com.example.e_project_4_api.repositories.CategoryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,9 +29,8 @@ public class CategoryService {
     CategoryRepository cateRepository;
     @Autowired
     CategoryAlbumRepository cateAlbumRepository;
-    @Autowired
-    private AlbumRepository albumRepository;
 
+    @Cacheable("categoriesDisplay")
     public List<CategoryResponse> getAllCategories() {
         return cateRepository.findAllNotDeleted(false)
                 .stream()
@@ -37,6 +38,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("categoriesWithAlbumDisplay")
     public List<CategoryWithAlbumsResponse> getAllCategoriesWithAlbums() {
         return cateRepository.findAllNotDeleted(false)
                 .stream()
@@ -55,6 +57,7 @@ public class CategoryService {
         }
     }
 
+    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public void deleteById(int id) {
         if (!cateRepository.existsById(id)) {
             throw new NotFoundException("Can't find any category with id: " + id);
@@ -62,6 +65,7 @@ public class CategoryService {
         cateRepository.deleteById(id);
     }
 
+    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public NewOrUpdateCategory addNewSubject(NewOrUpdateCategory request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -79,6 +83,7 @@ public class CategoryService {
         return request;
     }
 
+    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public NewOrUpdateCategory updateSubject(NewOrUpdateCategory request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
