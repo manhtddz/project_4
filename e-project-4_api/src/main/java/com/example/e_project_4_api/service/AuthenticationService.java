@@ -48,7 +48,7 @@ public class AuthenticationService {
         // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
         Optional<Users> op = repo.findByUsername(request.getUsername());
         if (op.isPresent()) {
-            errors.add(Map.of("usernameError", "Already exist user with username: " + request.getUsername()));
+            errors.add(Map.of("usernameError", "Already exist username"));
         }
 
         if (!PasswordValidator.isValidPassword(request.getPassword())) {
@@ -61,7 +61,8 @@ public class AuthenticationService {
         }
         Optional<Users> opPhone = repo.findByPhone(request.getPhone());
         if (opPhone.isPresent()) {
-            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
+//            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
+            errors.add(Map.of("phoneError", "Already exist phone number"));
         }
 
         if (!EmailValidator.isValidEmail(request.getEmail())) {
@@ -69,7 +70,7 @@ public class AuthenticationService {
         }
         Optional<Users> opEmail = repo.findByEmail(request.getEmail());
         if (opEmail.isPresent()) {
-            errors.add(Map.of("emailError", "Already exist user with email: " + request.getEmail()));
+            errors.add(Map.of("emailError", "Already exist email"));
         }
 
         if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())

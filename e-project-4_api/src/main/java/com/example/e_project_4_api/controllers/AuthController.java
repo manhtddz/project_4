@@ -39,7 +39,7 @@ public class AuthController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "list_error", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
