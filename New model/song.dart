@@ -46,13 +46,16 @@ class Song {
     return {
       'id': id,
       'title': title,
-      'audio_path': audioPath,
       'album_id': albumId,
       'artist_id': artistId,
+      'audio_path': audioPath,
       'listen_amount': listenAmount,
       'feature_artist': featureArtist,
       'lyric_file_path': lyricsFilePath,
       'is_active': isActive,
+      'albumImagePath':albumImagePath,
+      'artistName': artistName,
+      'albumTitle': albumTitle,
     };
   }
 }

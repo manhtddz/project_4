@@ -1,193 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:pj_demo/models/song.dart';
+import 'package:pj_demo/models/song_api.dart';
 
 class SongProvider extends ChangeNotifier {
-  final List<Song> _album = [
-    Song(
-        id: 1,
-        title: 'Limbo',
-        artistId: 1,
-        albumTitle: 'ABC',
-        artistName: "Keshi",
-        listenAmount: 12,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumId: 1),
-    Song(
-        id: 2,
-        title: 'Limbo',
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        artistName: "Keshi",
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 3,
-        title: 'Limbo',
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        artistName: "Keshi",
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 4,
-        title: 'Limbo',
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        artistName: "Keshi",
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 5,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-  ];
+  List<Song> _songList = [];
+  bool _isLoading = false;
 
-  final List<Song> _playlist = [
-    Song(
-        id: 1,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 2,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 3,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 4,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 5,
-        title: 'Limbo',
-        artistName: "Keshi",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.webp",
-        audioPath: "audio/Limbo.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 6,
-        title: 'Señorita',
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        artistName: "Shawn Mendes",
-        albumImagePath: "assets/images/3.jpg",
-        audioPath: "audio/Señorita.mp3",
-        lyricsFilePath: "lyrics/Senorita.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 7,
-        title: 'As You Fade Away',
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        artistName: "NEFFEX",
-        albumImagePath: "assets/images/3.jpg",
-        audioPath: "audio/music1.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 8,
-        title: 'Exit Sign',
-        artistName: "HIEUTHUHAI",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/4.jpg",
-        audioPath: "audio/Exit Sign.mp3",
-        lyricsFilePath: "lyrics/ExitSign.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 9,
-        title: 'Không Thể Say',
-        artistName: "HIEUTHUHAI",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.jpg",
-        audioPath: "audio/Không Thể Say.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-    Song(
-        id: 10,
-        title: 'NOLOVENOLIFE',
-        artistName: "HIEUTHUHAI",
-        artistId: 1,
-        listenAmount: 12,
-        albumId: 1,
-        albumImagePath: "assets/images/2.jpg",
-        audioPath: "audio/NOLOVENOLIFE.mp3",
-        lyricsFilePath: "lyrics/Limbo.lrc",
-        isActive: true,
-        albumTitle: 'No name'),
-  ];
+  bool get isLoading => _isLoading;
+  List<Song> get songList => _songList;
+
   int? _currentSongIndex;
   /* Audio Player*/
 //audio player
@@ -198,16 +20,15 @@ class SongProvider extends ChangeNotifier {
   Duration _currentDuration = Duration.zero;
   Duration _totalDuration = Duration.zero;
 //constructor
-  PlaylistProvider() {
+  SongProvider() {
     listenToDuration();
   }
 //initiallity not playing
-
   bool _isPlaying = false;
 
 //play the song
   void play() async {
-    final String path = _playlist[currentSongIndex!].audioPath;
+    final String path = _songList[currentSongIndex!].audioPath;
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(path));
     _isPlaying = true;
@@ -246,7 +67,7 @@ class SongProvider extends ChangeNotifier {
 //play next song
   void playNextSong() {
     if (_currentSongIndex != null) {
-      if (_currentSongIndex! < _playlist.length - 1) {
+      if (_currentSongIndex! < _songList.length - 1) {
         currentSongIndex = _currentSongIndex! + 1;
       } else {
         currentSongIndex = 0;
@@ -262,7 +83,7 @@ class SongProvider extends ChangeNotifier {
       if (_currentSongIndex! > 0) {
         currentSongIndex = _currentSongIndex! - 1;
       } else {
-        currentSongIndex = _playlist.length - 1;
+        currentSongIndex = _songList.length - 1;
       }
     }
   }
@@ -287,14 +108,6 @@ class SongProvider extends ChangeNotifier {
 
   int? get currentSongIndex => _currentSongIndex;
 
-  List<Song> get playlist => _playlist;
-  // List<Song> get album => _album;
-
-  Future<List<Song>?> fetchAlbum() async {
-    final album = await _album;
-    notifyListeners();
-  }
-
   bool get isPlaying => _isPlaying;
   Duration get currentDuration => _currentDuration;
   Duration get totalDuration => _totalDuration;
@@ -304,6 +117,42 @@ class SongProvider extends ChangeNotifier {
     if (newIndex != null) {
       play();
     }
+    notifyListeners();
+  }
+
+  Future<List<Song>> fetchSongOfAlbum(int albumId) async {
+    _isLoading = true;
+
+    await Future.delayed(Duration(milliseconds: 100));
+    notifyListeners();
+
+    return await SongApi().filterSongOfAlbum(albumId);
+
+    // if (result.isNotEmpty) {
+    //   _songList = result;
+    // } else {
+    //   _songList = [];
+    // }
+    // _isLoading = false;
+    //
+    // notifyListeners();
+  }
+
+  Future<void> fetchFavouriteSongOfUser(int userId) async {
+    _isLoading = true;
+
+    await Future.delayed(Duration(milliseconds: 100));
+    notifyListeners();
+
+    final result = await SongApi().filterFavouriteSongOfUser(userId);
+
+    if (result.isNotEmpty) {
+      _songList = result;
+    } else {
+      _songList = [];
+    }
+    _isLoading = false;
+
     notifyListeners();
   }
 }

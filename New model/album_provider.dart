@@ -3,39 +3,56 @@ import 'package:pj_demo/models/album_api.dart';
 import 'album.dart';
 
 class AlbumProvider extends ChangeNotifier {
-  final AlbumApi _albumApi = AlbumApi();
+  List<Album> _albumList = [];
+  bool _isLoading = false;
 
-  Album? _currentAlbum;
-  List<Album?>? _searchResults = [];
-  List<Album?>? _albumList = [];
+  bool get isLoading => _isLoading;
+  List<Album> get albumList => _albumList;
 
-  Album? get currentAlbum => _currentAlbum;
-  List<Album?>? get albumList => _albumList;
-  List<Album?>? get searchResults => _searchResults;
+  Future<void> searchAlbums(String keyword) async {
+    _isLoading = true;
 
-  void fetchAlbums() {
-    _albumList = _albumApi.getAllAlbums();
-  }
-
-  Future<Album?> fetchCurrentAlbum(int id) async {
-    _currentAlbum = await _albumApi.findAlbumById(id);
+    await Future.delayed(Duration(milliseconds: 100));
     notifyListeners();
-    return _currentAlbum;
-  }
 
-  Future<List<Album>?> findAlbumsByArtistId(int id) async {
-    final albumList = await _albumApi.findAlbumsByArtistId(id);
-    notifyListeners();
-    return albumList;
-  }
+    final searchResults = await AlbumApi().searchAlbums(keyword);
 
-  Future<List<Album?>?> searchAlbumByKeyWord(String keyword) async {
-    if (keyword.isNotEmpty) {
-      _searchResults = await _albumApi.searchAlbumsByKeyword(keyword);
-      notifyListeners();
+    if (searchResults.isNotEmpty) {
+      _albumList = searchResults;
+    } else {
+      _albumList = [];
     }
-    _searchResults = _albumList;
+    _isLoading = false;
+
     notifyListeners();
-    return _searchResults;
+  }
+
+  Future<void> fetchFavouriteAlbumsOfUser(int userId) async {
+    _isLoading = true;
+
+    await Future.delayed(Duration(milliseconds: 100));
+    notifyListeners();
+
+    final results = await AlbumApi().findFavouriteAlbumsOfUser(userId);
+    if (results.isNotEmpty) {
+      _albumList = results;
+    } else {
+      _albumList = [];
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchAllAlbums() async {
+    _isLoading = true;
+    notifyListeners();
+
+    _albumList = await AlbumApi().fetchAllAlbums();
+    _isLoading = false;
+    notifyListeners();
+  }
+  void clearAlbums() {
+    _albumList = [];
+    notifyListeners();
   }
 }
