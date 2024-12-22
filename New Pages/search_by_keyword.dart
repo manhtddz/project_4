@@ -126,7 +126,7 @@ class SearchScreen extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Color(0xFF14A3C7)),
                                     onPressed: () =>
-                                        _handleSearchByDefaultKeyword(
+                                        _handleSearch(
                                             context, word.word),
                                     child: Text(
                                       word.word,
@@ -143,11 +143,6 @@ class SearchScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-void _handleSearchByDefaultKeyword(BuildContext context, String val) {
-  Navigator.push(context,
-      MaterialPageRoute(builder: (context) => SearchResult(txtSearch: val)));
 }
 
 void _handleSearch(BuildContext context, String val) {
