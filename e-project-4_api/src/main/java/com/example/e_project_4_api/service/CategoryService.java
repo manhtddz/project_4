@@ -71,7 +71,7 @@ public class CategoryService {
 
         Optional<Categories> op = cateRepository.findByTitle(request.getTitle());
         if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         if (!errors.isEmpty()) {
@@ -94,7 +94,7 @@ public class CategoryService {
 
         Optional<Categories> opTitle = cateRepository.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         if (!errors.isEmpty()) {

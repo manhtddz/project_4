@@ -56,7 +56,7 @@ public class GenresService {
 
         Optional<Genres> op = repo.findByTitle(request.getTitle());
         if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist genre with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
 
@@ -91,7 +91,7 @@ public class GenresService {
 
         Optional<Genres> opTitle = repo.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-            errors.add(Map.of("titleError", "Already exist genre with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
 

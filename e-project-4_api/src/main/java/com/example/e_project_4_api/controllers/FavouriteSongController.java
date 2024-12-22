@@ -60,7 +60,7 @@ class FavouriteSongController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -82,7 +82,7 @@ class FavouriteSongController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

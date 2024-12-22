@@ -12,6 +12,8 @@ import com.example.e_project_4_api.repositories.KeywordRepository;
 import com.example.e_project_4_api.repositories.NewsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,7 +24,7 @@ public class KeywordService {
     @Autowired
     private KeywordRepository repo;
 
-
+    @Cacheable("keywordsDisplay")
     public List<KeywordResponse> getAllKeywords() {
         return repo.findAll()
                 .stream()
@@ -39,7 +41,7 @@ public class KeywordService {
         return toKeywordResponse(op.get());
     }
 
-
+    @CacheEvict("keywordsDisplay")
     public boolean deleteById(int id) {
         Optional<Keywords> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -50,13 +52,13 @@ public class KeywordService {
         return true;
     }
 
-
+    @CacheEvict("keywordsDisplay")
     public NewOrUpdateKeyword addNew(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
         Optional<Keywords> op = repo.findByContent(request.getContent());
         if (op.isPresent()) {
-            errors.add(Map.of("contentError", "Already exist keyword: " + request.getContent()));
+            errors.add(Map.of("contentError", "Already exist keyword"));
         }
 
         if (!errors.isEmpty()) {
@@ -76,7 +78,7 @@ public class KeywordService {
         return request;
     }
 
-
+    @CacheEvict("keywordsDisplay")
     public NewOrUpdateKeyword updateKeyword(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -88,7 +90,7 @@ public class KeywordService {
 
         Optional<Keywords> opTitle = repo.findByContent(request.getContent());
         if (opTitle.isPresent() && opTitle.get().getContent() != op.get().getContent()) {
-            errors.add(Map.of("contentError", "Already exist keyword: " + request.getContent()));
+            errors.add(Map.of("contentError", "Already exist keyword"));
         }
 
         if (!errors.isEmpty()) {

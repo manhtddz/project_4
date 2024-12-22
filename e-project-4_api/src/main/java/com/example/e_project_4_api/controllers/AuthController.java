@@ -39,7 +39,7 @@ public class AuthController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "list_error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -57,7 +57,24 @@ public class AuthController {
         } catch (ValidationException ex) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", ex.getErrors()
+                            "listError", ex.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+    @PostMapping("/loginForAdmin")
+    public ResponseEntity<Object> loginAdmin(@RequestBody @Valid LoginRequest user) {
+        try {
+            LoginResponse res = service.verifyForAdmin(user);
+            return new ResponseEntity<>(
+                    res,
+                    HttpStatus.OK
+            );
+        } catch (ValidationException ex) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", ex.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

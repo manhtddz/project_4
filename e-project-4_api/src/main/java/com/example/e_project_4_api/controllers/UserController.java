@@ -36,23 +36,13 @@ public class UserController {
 
     @DeleteMapping("/public/users/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {
-        try {
-            service.deleteById(id);
-            return new ResponseEntity<>(
-                    Map.of(
-                            "message", "Deleted successfully"
-                    ),
-                    HttpStatus.OK
-            );
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(
-                    Map.of(
-                            "error", "Not found",
-                            "details", e.getMessage()
-                    ),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        service.deleteById(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/public/users")
@@ -70,13 +60,13 @@ public class UserController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
         }
     }
+
     @PutMapping("/public/users/updatePart")
     public ResponseEntity<Object> update(@RequestBody @Valid UpdateUserWithAttribute request) {
         try {
@@ -91,8 +81,7 @@ public class UserController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", "Validation failed",
-                            "details", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

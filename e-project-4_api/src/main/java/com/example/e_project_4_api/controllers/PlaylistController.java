@@ -61,26 +61,46 @@ public class PlaylistController {
 
     @PostMapping("/public/playlists")
     public ResponseEntity<Object> add(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        NewOrUpdatePlaylist newPlaylist = service.addNewPlaylist(request);
-        return new ResponseEntity<>(
-                Map.of(
-                        "message", "Playlist added successfully",
-                        "data", newPlaylist
-                ),
-                HttpStatus.OK
-        );
+        try {
+
+            NewOrUpdatePlaylist newPlaylist = service.addNewPlaylist(request);
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Playlist added successfully",
+                            "data", newPlaylist
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @PutMapping("/public/playlists")
     public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdatePlaylist request) {
-        NewOrUpdatePlaylist updatedPlaylist = service.updatePlaylist(request);
+        try {
 
-        return new ResponseEntity<>(
-                Map.of(
-                        "message", "Playlist updated successfully",
-                        "data", updatedPlaylist
-                ),
-                HttpStatus.OK
-        );
+            NewOrUpdatePlaylist updatedPlaylist = service.updatePlaylist(request);
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Playlist updated successfully",
+                            "data", updatedPlaylist
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 }

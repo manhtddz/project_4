@@ -120,15 +120,15 @@ public class SongService {
 
         Optional<Songs> op = repo.findByTitle(request.getTitle());
         if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
         Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
         Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
+            errors.add(Map.of("artistError", "Can't find artist"));
         }
         if (album.isEmpty()) {
-            errors.add(Map.of("albumError", "Can't find any album with id: " + request.getAlbumId()));
+            errors.add(Map.of("albumError", "Can't find album"));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -152,16 +152,16 @@ public class SongService {
 
         Optional<Songs> opTitle = repo.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-            errors.add(Map.of("titleError", "Already exist song with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
         Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
+            errors.add(Map.of("artistError", "Can't find artist"));
         }
         if (album.isEmpty()) {
-            errors.add(Map.of("albumError", "Can't find any album with id: " + request.getAlbumId()));
+            errors.add(Map.of("albumError", "Can't find album"));
         }
         Songs song = op.get();
         song.setTitle(request.getTitle());

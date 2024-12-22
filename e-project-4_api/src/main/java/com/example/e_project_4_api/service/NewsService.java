@@ -58,7 +58,7 @@ public class NewsService {
 
         Optional<News> op = repo.findByTitle(request.getTitle());
         if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist news with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         if (!errors.isEmpty()) {
@@ -91,7 +91,7 @@ public class NewsService {
 
         Optional<News> opTitle = repo.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-            errors.add(Map.of("titleError", "Already exist news with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         if (!errors.isEmpty()) {

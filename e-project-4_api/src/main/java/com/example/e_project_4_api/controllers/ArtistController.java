@@ -44,7 +44,7 @@ public class ArtistController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -60,7 +60,7 @@ public class ArtistController {
         } catch (ValidationException ex) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", ex.getErrors()
+                            "listError", ex.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

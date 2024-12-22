@@ -62,7 +62,7 @@ public class CategoryController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );
@@ -84,7 +84,7 @@ public class CategoryController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(
                     Map.of(
-                            "error", e.getErrors()
+                            "listError", e.getErrors()
                     ),
                     HttpStatus.BAD_REQUEST
             );

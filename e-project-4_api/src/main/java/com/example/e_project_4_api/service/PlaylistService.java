@@ -83,7 +83,7 @@ public class PlaylistService {
         Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
 
         if (user.isEmpty()) {
-            errors.add(Map.of("userError", "Can't find any user with id: " + request.getUserId()));
+            errors.add(Map.of("userError", "Can't find user"));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -104,7 +104,7 @@ public class PlaylistService {
 
         Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
         if (user.isEmpty()) {
-            errors.add(Map.of("userError", "Can't find any user with id: " + request.getUserId()));
+            errors.add(Map.of("userError", "Can't find user"));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

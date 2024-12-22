@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Bật CORS theo cấu hình mặc định
                 .csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("api/login", "api/register").permitAll()
+                        .requestMatchers("api/login", "api/register", "api/loginForAdmin").permitAll()
                         .requestMatchers("/api/artist/**").permitAll()
                         .requestMatchers("/api/user/**").permitAll()
                         .requestMatchers("/api/admin/**").permitAll()

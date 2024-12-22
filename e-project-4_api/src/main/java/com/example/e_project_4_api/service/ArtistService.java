@@ -61,7 +61,7 @@ public class ArtistService {
 
         Optional<Artists> op = repo.findByArtistName(request.getArtistName());
         if (op.isPresent()) {
-            errors.add(Map.of("artistNameError", "Already exist artist with name: " + request.getArtistName()));
+            errors.add(Map.of("artistNameError", "Already exist artist name"));
         }
 
         if (!errors.isEmpty()) {
@@ -88,7 +88,7 @@ public class ArtistService {
         if (request.getUserId() != null) {
             Optional<Users> userOp = userRepo.findByIdAndIsDeleted(request.getUserId(),false);
             if (userOp.isEmpty()) {
-                errors.add(Map.of("userNotExistedError", "Can't find any user with id: " + request.getUserId()));
+                errors.add(Map.of("userNotExistedError", "Can't find user"));
             }
             Users foundUser = userOp.get();
             Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId(), false);
@@ -100,7 +100,7 @@ public class ArtistService {
 
         Optional<Artists> opName = repo.findByArtistName(request.getArtistName());
         if (opName.isPresent() && opName.get().getArtistName() != op.get().getArtistName()) {
-            errors.add(Map.of("artistNameError", "Already exist artist with name: " + request.getArtistName()));
+            errors.add(Map.of("artistNameError", "Already exist artist name"));
         }
 
 

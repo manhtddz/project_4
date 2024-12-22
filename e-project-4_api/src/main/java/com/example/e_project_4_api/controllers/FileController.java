@@ -23,17 +23,17 @@ import java.util.UUID;
 public class FileController {
 
 
-    @Value("${file.upload.temp-folder}")
-    private String IMAGES_FOLDER;
+    @Value("${file.upload.epj4-folder}")
+    private String FOLDER;
 
-    @Value("${file.upload.final-folder}")
-    private String FINAL_FOLDER;
+//    @Value("${file.upload.final-folder}")
+//    private String FINAL_FOLDER;
 
     @PostMapping("/upload/image")
     public ResponseEntity<String> uploadImageFile(@RequestParam("file") MultipartFile file) {
         try {
             // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(IMAGES_FOLDER);
+            File tempDir = new File(FOLDER + "images/");
             if (!tempDir.exists()) {
                 tempDir.mkdirs();
             }
@@ -47,7 +47,7 @@ public class FileController {
             String newFilename = randomString + extension;
 
             // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(IMAGES_FOLDER + newFilename);
+            Path tempFilePath = Paths.get(FOLDER + "images/" + newFilename);
             Files.write(tempFilePath, file.getBytes());
 
             // Trả về tên file mới
@@ -61,7 +61,7 @@ public class FileController {
     public ResponseEntity<String> uploadAudioFile(@RequestParam("file") MultipartFile file) {
         try {
             // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(IMAGES_FOLDER);
+            File tempDir = new File(FOLDER + "audio/");
             if (!tempDir.exists()) {
                 tempDir.mkdirs();
             }
@@ -75,7 +75,7 @@ public class FileController {
             String newFilename = randomString + extension;
 
             // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(IMAGES_FOLDER + newFilename);
+            Path tempFilePath = Paths.get(FOLDER + "audio/" + newFilename);
             Files.write(tempFilePath, file.getBytes());
 
             // Trả về tên file mới
@@ -89,7 +89,7 @@ public class FileController {
     public ResponseEntity<String> uploadLRCFile(@RequestParam("file") MultipartFile file) {
         try {
             // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(IMAGES_FOLDER);
+            File tempDir = new File(FOLDER + "lrc/");
             if (!tempDir.exists()) {
                 tempDir.mkdirs();
             }
@@ -103,7 +103,7 @@ public class FileController {
             String newFilename = randomString + extension;
 
             // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(IMAGES_FOLDER + newFilename);
+            Path tempFilePath = Paths.get(FOLDER + "lrc/" + newFilename);
             Files.write(tempFilePath, file.getBytes());
 
             // Trả về tên file mới
@@ -143,22 +143,22 @@ public class FileController {
 //        }
 //    }
 
-    public static class FileSubmissionRequest {
-        private String tempFileName;
-
-        public String getTempFileName() {
-            return tempFileName;
-        }
-
-        public void setTempFileName(String tempFileName) {
-            this.tempFileName = tempFileName;
-        }
-    }
+//    public static class FileSubmissionRequest {
+//        private String tempFileName;
+//
+//        public String getTempFileName() {
+//            return tempFileName;
+//        }
+//
+//        public void setTempFileName(String tempFileName) {
+//            this.tempFileName = tempFileName;
+//        }
+//    }
 
 
     @GetMapping("/download/lrc/{filename}")
     public ResponseEntity<?> downloadLRCFile(@PathVariable("filename") String filename) throws IOException {
-        String filePath = IMAGES_FOLDER + filename;
+        String filePath = FOLDER + "lrc/" + filename;
 
         File file = new File(filePath);
 
@@ -178,7 +178,7 @@ public class FileController {
 
     @GetMapping("/download/audio/{filename}")
     public ResponseEntity<?> downloadAudioFile(@PathVariable("filename") String filename) throws IOException {
-        String filePath = IMAGES_FOLDER + filename;
+        String filePath = FOLDER + "audio/" + filename;
 
         File file = new File(filePath);
 
@@ -198,7 +198,7 @@ public class FileController {
 
     @GetMapping("/download/image/{filename}")
     public ResponseEntity<?> downloadImageFile(@PathVariable("filename") String filename) throws IOException {
-        String filePath = IMAGES_FOLDER + filename;
+        String filePath = FOLDER + "images/" + filename;
 
         File file = new File(filePath);
 

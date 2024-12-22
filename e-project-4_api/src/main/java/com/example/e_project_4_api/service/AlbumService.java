@@ -113,12 +113,12 @@ public class AlbumService {
 
         Optional<Albums> op = repo.findByTitle(request.getTitle());
         if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist album with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
+            errors.add(Map.of("artistError", "Can't find artist"));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
@@ -141,12 +141,12 @@ public class AlbumService {
 
         Optional<Albums> opTitle = repo.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
-            errors.add(Map.of("titleError", "Already exist album with title: " + request.getTitle()));
+            errors.add(Map.of("titleError", "Already exist title"));
         }
 
         Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find any artist with id: " + request.getArtistId()));
+            errors.add(Map.of("artistError", "Can't find artist"));
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

@@ -37,6 +37,7 @@ public class UserService {
     private ArtistRepository artistRepo;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
             @CacheEvict(value = "user", key = "#request.id") // Xóa cache user cụ thể
@@ -51,7 +52,7 @@ public class UserService {
         // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
         Optional<Users> opTitle = repo.findByUsername(request.getUsername());
         if (opTitle.isPresent() && opTitle.get().getUsername() != op.get().getUsername()) {
-            errors.add(Map.of("usernameError", "Already exist user with username: " + request.getUsername()));
+            errors.add(Map.of("usernameError", "Already exist username"));
         }
 
 
@@ -66,7 +67,7 @@ public class UserService {
 
         Optional<Users> opPhone = repo.findByPhone(request.getPhone());
         if (opPhone.isPresent() && opPhone.get().getPhone() != op.get().getPhone()) {
-            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
+            errors.add(Map.of("phoneError", "Already exist phone number" ));
         }
 
 
@@ -75,7 +76,7 @@ public class UserService {
         }
         Optional<Users> opEmail = repo.findByEmail(request.getEmail());
         if (opEmail.isPresent() && opEmail.get().getEmail() != op.get().getEmail()) {
-            errors.add(Map.of("emailError", "Already exist user with email: " + request.getEmail()));
+            errors.add(Map.of("emailError", "Already exist email"));
         }
 
 
@@ -113,7 +114,7 @@ public class UserService {
                 // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
                 Optional<Users> opTitle = repo.findByUsername(request.getValue());
                 if (opTitle.isPresent() && opTitle.get().getUsername() != op.get().getUsername()) {
-                    errors.add(Map.of("usernameError", "Already exist user with username: " + request.getValue()));
+                    errors.add(Map.of("usernameError", "Already exist username"));
                 }
                 user.setUsername(request.getValue());
                 break;
@@ -136,7 +137,7 @@ public class UserService {
                 }
                 Optional<Users> opPhone = repo.findByPhone(request.getValue());
                 if (opPhone.isPresent() && opPhone.get().getPhone() != op.get().getPhone()) {
-                    errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getValue()));
+                    errors.add(Map.of("phoneError", "Already exist phone number"));
                 }
                 user.setPhone(request.getValue());
                 break;
@@ -146,7 +147,7 @@ public class UserService {
                 }
                 Optional<Users> opEmail = repo.findByEmail(request.getValue());
                 if (opEmail.isPresent() && opEmail.get().getEmail() != op.get().getEmail()) {
-                    errors.add(Map.of("emailError", "Already exist user with email: " + request.getValue()));
+                    errors.add(Map.of("emailError", "Already exist email"));
                 }
                 user.setEmail(request.getValue());
                 break;
