@@ -1,74 +1,128 @@
 import 'dart:async';
-import 'package:pj_demo/models/user.dart';
 import 'album.dart';
 
 class AlbumApi {
-  List<Album> _albumList = [
-    Album(
-        id: 1,
-        title: 'Son Tung 1',
-        artistId: 1,
-        artistName: 'ST',
-        subjectId: 1,
-        subjectName: 'AAA',
-        imageUrl: 'assets/images/8.jpg'),
-    Album(
-        id: 2,
-        title: 'Son Tung 2',
-        artistId: 1,
-        artistName: 'ST',
-        subjectId: 1,
-        subjectName: 'BBB',
-        imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 3, title: 'Son Tung 3', artistId: 2,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 4, title: 'SooBin Vo.1', artistId: 1,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 5, title: 'Son Tung 2', artistId: 1,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 6, title: 'SooBin Vo.2', artistId: 1,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 7, title: 'Son Tung 2', artistId: 1,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-    // Album(id: 8, title: 'SooBin Vo.3', artistId: 1,artistName: 'ST', subjectId: 1, subjectName:'AAA', imageUrl: 'assets/images/8.jpg'),
-  ];
-
-  Album? _currentAlbum;
-
-  // Fetch all albums
-  List<Album> getAllAlbums() {
-    return _albumList;
+  Future<List<Album>> fetchAllAlbums() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return [
+      Album(
+          id: 1,
+          title: 'BBB 3',
+          artistId: 1,
+          artistName: 'ST',
+          subjectId: 1,
+          subjectName: 'AAA',
+          imageUrl: 'assets/images/8.jpg'),
+      Album(
+          id: 2,
+          title: 'BBB 2',
+          artistId: 1,
+          artistName: 'ST',
+          subjectId: 1,
+          subjectName: 'BBB',
+          imageUrl: 'assets/images/4.jpg'),
+      Album(
+          id: 3,
+          title: 'BBB 3',
+          artistId: 1,
+          artistName: 'ST',
+          subjectId: 1,
+          subjectName: 'CCC',
+          imageUrl: 'assets/images/5.jpg'),
+      Album(
+          id: 4,
+          title: 'AHH 2',
+          artistId: 1,
+          artistName: 'Thuy Linh',
+          subjectId: 1,
+          subjectName: 'BBB',
+          imageUrl: 'assets/images/3.jpg'),
+    ];
   }
 
-  // Find album by id
-  Future<Album?> findAlbumById(int id) async {
-    await Future.delayed(const Duration(seconds: 1)); // Simulate delay
-    try {
-      final album = _albumList.firstWhere((it) => it.id == id);
-      _currentAlbum = album;
-    } catch (_) {
-      return null;
-    }
-  }
+  Future<List<Album>> searchAlbums(String keyword) async {
+    final mockResponse = [
+      {
+        'id': 1,
+        'title': 'Son Tung 1',
+        'artist_id': 1,
+        'artistName': 'ST',
+        'subject_id': 1,
+        'subjectName': 'AAA',
+        'image': 'assets/images/8.jpg'
+      },
+      {
+        'id': 2,
+        'title': 'Thuy Linh 1',
+        'artist_id': 1,
+        'artistName': 'Hoang Thuy Linh',
+        'subject_id': 1,
+        'subjectName': 'BBB',
+        'image': 'assets/images/7.jpg'
+      },
+    ];
 
-  // Find album by artistID
-  Future<List<Album>?> findAlbumsByArtistId(int id) async {
-    await Future.delayed(const Duration(seconds: 1)); // Simulate delay
-    try {
-      final albumList = _albumList.where((it) => it.artistId == id).toList();
-      return albumList;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  // Filter albums by keyword
-  Future<List<Album?>?> searchAlbumsByKeyword(String keyword) async {
     await Future.delayed(const Duration(seconds: 1));
     try {
-      final searchResult = _albumList
-          .where((album) =>
-              album.title.toLowerCase().contains(keyword.toLowerCase()) ||
-              album.artistName.toLowerCase().contains(keyword.toLowerCase()))
+      final filteredItems = mockResponse
+          .where((item) =>
+              (item['title'] as String)
+                  .toLowerCase()
+                  .contains(keyword.toLowerCase()) ||
+              (item['artistName'] as String).toLowerCase().contains(keyword.toLowerCase()))
           .toList();
-      return searchResult;
-    } catch (_) {
-      return null;
+      return filteredItems.map((it) {
+        return Album(
+            id: int.parse(it['id'].toString()),
+            title: it['title'].toString(),
+            artistId: int.parse(it['artist_id'].toString()),
+            imageUrl: it['image'].toString(),
+            artistName: it['artistName'].toString(),
+            subjectId: int.parse(it['subject_id'].toString()),
+            subjectName: it['subjectName'].toString());
+      }).toList();
+    } catch (error) {
+      print("Error searching for item: $error");
+      return [];
+    }
+  }
+
+  Future<List<Album>> findFavouriteAlbumsOfUser(int userId) async {
+    final mockResponse = [
+      {
+        'id': 3,
+        'title': 'Sky 1',
+        'artist_id': 1,
+        'artistName': 'Son Tung',
+        'subject_id': 1,
+        'subjectName': 'AAA',
+        'image': 'assets/images/8.jpg'
+      },
+      {
+        'id': 3,
+        'title': 'Sky 2',
+        'artist_id': 1,
+        'artistName': 'Son Tung',
+        'subject_id': 1,
+        'subjectName': 'BBB',
+        'image': 'assets/images/7.jpg'
+      },
+    ];
+    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final filteredItems = mockResponse;
+      return filteredItems.map((it) {
+        return Album(
+            id: int.parse(it['id'].toString()),
+            title: it['title'].toString(),
+            artistId: int.parse(it['artist_id'].toString()),
+            artistName: it['artistName'].toString(),
+            subjectId: int.parse(it['subject_id'].toString()),
+            subjectName: it['subjectName'].toString());
+      }).toList();
+    } catch (error) {
+      print("Error searching for item: $error");
+      return [];
     }
   }
 }

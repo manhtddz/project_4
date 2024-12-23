@@ -5,39 +5,26 @@ import 'package:provider/provider.dart';
 import '../models/song_provider.dart';
 import '../models/song.dart';
 
-class AlbumPage extends StatefulWidget {
+class AlbumPage extends StatelessWidget {
   final Album currentAlbum;
   AlbumPage({required this.currentAlbum});
 
-  @override
-  State<AlbumPage> createState() => _AlbumPageState();
-}
-
-class _AlbumPageState extends State<AlbumPage> {
-  late final dynamic songProvider;
+  // late final dynamic songProvider;
   List<Song> _favorites = [];
 
-  @override
-  void initState() {
-    super.initState();
-    songProvider = Provider.of<SongProvider>(context, listen: false);
-  }
-
-  void goToSong(int songIndex) {
-    songProvider.currentSongIndex = songIndex;
-
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SongPage2()));
-  }
+  // void goToSong(BuildContext context, int songIndex) {
+  //   songProvider.currentSongIndex = songIndex;
+  //
+  //   Navigator.push(
+  //       context, MaterialPageRoute(builder: (context) => SongPage2()));
+  // }
 
   void addToFavorite(Song so) {
-    setState(() {
       if (_favorites.contains(so)) {
         _favorites.remove(so);
       } else {
         _favorites.add(so);
       }
-    });
   }
 
   @override
@@ -65,7 +52,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     padding: EdgeInsets.only(
                         left: 16, bottom: 30), // Adjust padding as needed
                     child: Text(
-                      '${widget.currentAlbum.title}',
+                      '${currentAlbum.title}',
                       style: TextStyle(
                         color: Colors.white, // Or any desired color
                         fontSize: 24, // Adjust font size as needed
@@ -79,7 +66,7 @@ class _AlbumPageState extends State<AlbumPage> {
                     padding: EdgeInsets.only(
                         left: 16, bottom: 10), // Adjust padding as needed
                     child: Text(
-                      '${widget.currentAlbum.artistName}',
+                      '${currentAlbum.artistName}',
                       style: TextStyle(
                         color: Colors.white, // Or any desired color
                         fontSize: 16, // Adjust font size as needed
@@ -104,65 +91,16 @@ class _AlbumPageState extends State<AlbumPage> {
             ),
           ),
           child: Consumer<SongProvider>(
-            builder: (context, value, child) {
-              List<Song> playlist = value.playlist;
-              return ListView.builder(
-                itemCount: playlist.length,
-                itemBuilder: (context, index) {
-                  final song = playlist[index];
-                  return ListTile(
-                    onTap: () => goToSong(index),
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 2,
-                        ),
-                        Text('${song.id}',
-                            style:
-                            TextStyle(fontSize: 16, color: Colors.black54)),
-                        SizedBox(
-                            width:
-                            5.0), // Add some spacing between the number and the avatar
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(song.albumImagePath!),
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      song.title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                          fontFamily: 'San Francisco'),
-                    ),
-                    subtitle: Text(
-                      song.artistName! + '   ${value.totalDuration}',
-                      style: TextStyle(
-                          color: Colors.black54, fontFamily: 'San Francisco'),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment:
-                      MainAxisAlignment.end, // Align to the end
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: renderAddToFavoriteButton(playlist[index]),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.more_vert),
-                          onPressed: () {
-                            // Handle more options
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+            builder: (context, songProvider, child) {
+              var songs = songProvider.fetchSongOfAlbum(currentAlbum.id);
+                // if (songProvider.isLoading) {
+                //   return Center(child: CircularProgressIndicator());
+                // } else if (songProvider.songList.isEmpty) {
+                //   return Center(child: Text('No items found.'));
+                // } else {
+                  return _renderListSong(context, songs);
+                // }
+            }),
         ));
   }
 
@@ -178,6 +116,65 @@ class _AlbumPageState extends State<AlbumPage> {
       color: Colors.grey, // Set the icon color to grey
       size: 22.0, // Set the icon size to 30 pixels
       semanticLabel: 'Favorite',
+    );
+  }
+
+  Widget _renderListSong(BuildContext, Future<List<Song>> songProvider) {
+    return ListView.builder(
+      itemCount: songProvider.length,
+      itemBuilder: (context, index) {
+        final song = songProvider[index];
+        return ListTile(
+          onTap: () {},
+          // onTap: () => goToSong(context, index),
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 2,
+              ),
+              Text('${song.id}',
+                  style:
+                  TextStyle(fontSize: 16, color: Colors.black54)),
+              SizedBox(
+                  width:
+                  5.0), // Add some spacing between the number and the avatar
+              CircleAvatar(
+                backgroundImage: NetworkImage(song.albumImagePath!),
+              ),
+            ],
+          ),
+          title: Text(
+            song.title,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+                fontFamily: 'San Francisco'),
+          ),
+          subtitle: Text(
+            song.artistName! + '   ${songProvider}',
+            style: TextStyle(
+                color: Colors.black54, fontFamily: 'San Francisco'),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment:
+            MainAxisAlignment.end, // Align to the end
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.white,
+                child: renderAddToFavoriteButton(songProvider[index]),
+              ),
+              IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: () {
+                  // Handle more options
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

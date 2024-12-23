@@ -1,54 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/models/album_api.dart';
 import 'package:pj_demo/models/album_provider.dart';
 import 'package:pj_demo/pages/album_page.dart';
 import 'package:provider/provider.dart';
 import '../models/album.dart';
 
-// void main() {
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(
-//           create: (context) => AlbumProvider(),
-//         ),
-//       ],
-//       child: MyApp(),
-//     ),
-//   );
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: SearchResult(txtSearch: ''), // Your main screen widget
-//     );
-//   }
-// }
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AlbumProvider(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
 
-class SearchResult extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SearchResult(txtSearch: ''), // Your main screen widget
+    );
+  }
+}
+
+class SearchResult extends StatelessWidget {
   final String txtSearch;
   SearchResult({super.key, required this.txtSearch});
 
-  @override
-  State<StatefulWidget> createState() => _SearchResultState();
-}
-
-class _SearchResultState extends State<SearchResult> {
-  var _txtSearch = TextEditingController();
-  late final dynamic albumProvider;
-
-  @override
-  void initState() {
-    super.initState();
-    albumProvider = Provider.of<AlbumProvider>(context, listen: false);
-  }
+  final TextEditingController _txtSearch = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AlbumProvider>(context, listen: false)
+          .searchAlbums(txtSearch);
+    });
     return Scaffold(
         body: Stack(children: [
       Container(
@@ -72,102 +65,96 @@ class _SearchResultState extends State<SearchResult> {
             right: 25.0,
             bottom: 50.0,
           ),
-          child: FutureBuilder<List<Album?>?>(
-            // Fetch user data
-            future: albumProvider.searchAlbumByKeyWord(widget.txtSearch),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return const Center(
-                  child: Text(
-                    'An error occurred while fetching user data',
-                    style: TextStyle(color: Colors.white),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.arrow_back),
                   ),
-                );
-              } else if (!snapshot.hasData || snapshot.data == null) {
-                return const Center(
-                  child: Text(
-                    'No user data available',
-                    style: TextStyle(color: Colors.white),
+                  SizedBox(width: 10),
+                  SizedBox(
+                    width: 280, // Adjust the width as needed
+                    height: 40, // Adjust the height as needed
+                    child: _buildSearchField(context),
                   ),
-                );
-              } else {
-                final searchedAlbums = snapshot.data!;
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.arrow_back),
-                        ),
-                        SizedBox(width: 10),
-                        SizedBox(
-                          width: 260, // Adjust the width as needed
-                          height: 40, // Adjust the height as needed
-                          child: TextField(
-                              controller: _txtSearch,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xFF87AFC7),
-                                hintStyle: TextStyle(color: Colors.white),
-                                hintText: '${widget.txtSearch}',
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF87AFC7),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  borderSide: BorderSide(
-                                      color: Colors.blue, width: 2.0),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                // Use post-frame callback to avoid calling setState during build
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  albumProvider.searchAlbumByKeyWord(val);
-                                });
-                              }),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 30),
-                    Expanded(
-                      child: GridView.builder(
-                        itemCount: searchedAlbums.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 0,
-                          crossAxisSpacing: 15,
-                          childAspectRatio: 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          return _renderItems(context, searchedAlbums[index]!);
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
+                ],
+              ),
+              SizedBox(height: 30),
+              Consumer<AlbumProvider>(
+                builder: (context, albumProvider, child) {
+                  if (albumProvider.isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (albumProvider.albumList.isEmpty) {
+                    return Center(child: Text('No items found.'));
+                  } else {
+                    return _buildSearchResults(context, albumProvider);
+                  }
+                },
+              ),
+            ],
           ))
     ]));
+  }
+
+  Widget _buildSearchResults(
+      BuildContext context, AlbumProvider albumProvider) {
+    return Expanded(
+      child: GridView.builder(
+        itemCount: albumProvider.albumList.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 0,
+          crossAxisSpacing: 15,
+          childAspectRatio: 1,
+        ),
+        itemBuilder: (context, index) {
+          return _renderItems(context, albumProvider.albumList[index]);
+        },
+      ),
+    );
+  }
+
+// Build the search field
+  Widget _buildSearchField(BuildContext context) {
+    return TextField(
+        controller: _txtSearch,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Color(0xFF87AFC7),
+          hintStyle: TextStyle(color: Colors.white),
+          hintText: '${txtSearch}',
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.white,
+            size: 30,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: BorderSide(
+              color: Color(0xFF87AFC7),
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          ),
+        ),
+        onChanged: (keyword) {
+          if (keyword.isNotEmpty) {
+            // Trigger the search when the user types in the search field
+            Provider.of<AlbumProvider>(context, listen: false)
+                .searchAlbums(keyword);
+          } else {
+            // Clear the list when the query is empty
+            Provider.of<AlbumProvider>(context, listen: false).clearAlbums();
+          }
+        });
   }
 
   Widget _renderItems(BuildContext context, Album album) {
@@ -175,7 +162,7 @@ class _SearchResultState extends State<SearchResult> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () => goToAlbum(album),
+          onTap: () => goToAlbum(context, album),
           child: Container(
             width: double.infinity,
             height: 100,
@@ -218,7 +205,7 @@ class _SearchResultState extends State<SearchResult> {
     );
   }
 
-  void goToAlbum(Album album) {
+  void goToAlbum(BuildContext context, Album album) {
     Navigator.push(
         context,
         MaterialPageRoute(
