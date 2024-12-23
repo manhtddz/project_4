@@ -8,7 +8,7 @@ CREATE TABLE users (
 	full_name VARCHAR(100) NOT NULL,
     avatar VARCHAR(100) NOT NULL,
     password VARCHAR(60) NOT NULL,
-    phone VARCHAR(10),
+    phone VARCHAR(11),
     email VARCHAR(100),
     role VARCHAR(20),
     dob DATE,
