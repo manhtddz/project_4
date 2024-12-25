@@ -1,5 +1,5 @@
 class User {
-  final String id;
+  final int id;
   final String fullname;
   final String username;
   final String image;

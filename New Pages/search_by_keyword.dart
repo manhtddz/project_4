@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/models/user_favorites_provider.dart';
 import 'package:pj_demo/models/keyword.dart';
 import 'package:pj_demo/pages/search_result.dart';
 import 'package:pj_demo/themes/theme_provider.dart';
@@ -17,6 +18,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserFavoritesProvider(),
         ),
       ],
       child: const MainApp(),

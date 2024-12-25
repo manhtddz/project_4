@@ -1,146 +1,150 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/album.dart';
+import 'package:pj_demo/models/song.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-import '../models/song_provider.dart';
-import '../models/song.dart';
+import 'package:pj_demo/models/song_provider.dart';
+import 'package:pj_demo/models/user_favorites_provider.dart';
+
+import '../models/album.dart';
 
 class AlbumPage extends StatelessWidget {
   final Album currentAlbum;
+  final int userId = 1; // Example user ID
+
   AlbumPage({required this.currentAlbum});
 
-  // late final dynamic songProvider;
-  List<Song> _favorites = [];
+  void goToSong(BuildContext context, int songIndex) {
+    // Update the current song index in the provider
+    Provider.of<SongProvider>(context, listen: false).currentSongIndex =
+        songIndex;
 
-  // void goToSong(BuildContext context, int songIndex) {
-  //   songProvider.currentSongIndex = songIndex;
-  //
-  //   Navigator.push(
-  //       context, MaterialPageRoute(builder: (context) => SongPage2()));
-  // }
-
-  void addToFavorite(Song so) {
-      if (_favorites.contains(so)) {
-        _favorites.remove(so);
-      } else {
-        _favorites.add(so);
-      }
+    // Navigate to SongPage2
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => SongPage2()));
   }
 
   @override
   Widget build(BuildContext context) {
+    // Fetch the user's favorite songs only if not fetched
+    final favoriteProvider = Provider.of<UserFavoritesProvider>(context);
+    if (favoriteProvider.favoriteSongs.isEmpty) {
+      favoriteProvider.fetchUserFavorites(userId);
+    }
+
+    final songProvider = Provider.of<SongProvider>(context);
+    // Fetch the songs of the current album if they are not fetched yet
+    if (!songProvider.isLoading && songProvider.songList.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        songProvider.fetchSongOfAlbum(currentAlbum.id);
+      });
+    }
+
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(250.0),
-          child: AppBar(
-            flexibleSpace: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/3.jpg'),
-                        fit: BoxFit.cover,
-                      ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(250.0),
+        child: AppBar(
+          flexibleSpace: Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/3.jpg'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 30), // Adjust padding as needed
-                    child: Text(
-                      '${currentAlbum.title}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 24, // Adjust font size as needed
-                      ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16, bottom: 30),
+                  child: Text(
+                    '${currentAlbum.title}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 10), // Adjust padding as needed
-                    child: Text(
-                      '${currentAlbum.artistName}',
-                      style: TextStyle(
-                        color: Colors.white, // Or any desired color
-                        fontSize: 16, // Adjust font size as needed
-                      ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16, bottom: 10),
+                  child: Text(
+                    '${currentAlbum.artistName}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        // drawer: MyDrawer(),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFADDFFF),
-                Color(0xFFFDD7E4),
-              ],
-            ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFADDFFF),
+              Color(0xFFFDD7E4),
+            ],
           ),
-          child: Consumer<SongProvider>(
-            builder: (context, songProvider, child) {
-              var songs = songProvider.fetchSongOfAlbum(currentAlbum.id);
-                // if (songProvider.isLoading) {
-                //   return Center(child: CircularProgressIndicator());
-                // } else if (songProvider.songList.isEmpty) {
-                //   return Center(child: Text('No items found.'));
-                // } else {
-                  return _renderListSong(context, songs);
-                // }
-            }),
-        ));
-  }
-
-  Icon getFavoriteIcon(bool isFavorite) {
-    return isFavorite
-        ? Icon(
-      Icons.favorite, color: Colors.grey, // Set the icon color to grey
-      size: 22.0, // Set the icon size to 30 pixels
-      semanticLabel: 'Favorite',
-    )
-        : Icon(
-      Icons.favorite_border,
-      color: Colors.grey, // Set the icon color to grey
-      size: 22.0, // Set the icon size to 30 pixels
-      semanticLabel: 'Favorite',
+        ),
+        child: songProvider.isLoading
+            ? Center(child: CircularProgressIndicator())
+            : songProvider.songList.isEmpty
+                ? Center(child: Text('No songs found.'))
+                : _renderListSong(context, songProvider, favoriteProvider),
+      ),
     );
   }
 
-  Widget _renderListSong(BuildContext, Future<List<Song>> songProvider) {
+  // Get the favorite icon based on whether the song is in favorites
+  Icon getFavoriteIcon(bool isFavorite) {
+    return isFavorite
+        ? Icon(
+            Icons.favorite,
+            color: Colors
+                .grey, // You might want to change to red to signify it is favorited
+            size: 22.0, // Set the icon size to 22 pixels
+            semanticLabel: 'Favorite', // Helps with accessibility
+          )
+        : Icon(
+            Icons.favorite_border,
+            color: Colors.grey, // Set the icon color to grey
+            size: 22.0, // Set the icon size to 22 pixels
+            semanticLabel: 'Favorite', // Helps with accessibility
+          );
+  }
+
+  Widget _renderListSong(BuildContext context, SongProvider songProvider,
+      UserFavoritesProvider favoriteProvider) {
     return ListView.builder(
-      itemCount: songProvider.length,
+      itemCount: songProvider.songList.length,
       itemBuilder: (context, index) {
-        final song = songProvider[index];
+        final song = songProvider.songList[index];
+        final isFavorite = favoriteProvider.isFavorite(song.id);
+        final isPlaying =
+            songProvider.currentSongIndex == index && songProvider.isPlaying;
+
         return ListTile(
-          onTap: () {},
-          // onTap: () => goToSong(context, index),
+          onTap: () => goToSong(context, index),
           leading: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                width: 2,
-              ),
+              SizedBox(width: 2),
               Text('${song.id}',
-                  style:
-                  TextStyle(fontSize: 16, color: Colors.black54)),
-              SizedBox(
-                  width:
-                  5.0), // Add some spacing between the number and the avatar
+                  style: TextStyle(fontSize: 16, color: Colors.black54)),
+              SizedBox(width: 5.0),
               CircleAvatar(
-                backgroundImage: NetworkImage(song.albumImagePath!),
+                backgroundImage: NetworkImage(song.albumImagePath),
               ),
             ],
           ),
@@ -152,36 +156,53 @@ class AlbumPage extends StatelessWidget {
                 fontFamily: 'San Francisco'),
           ),
           subtitle: Text(
-            song.artistName! + '   ${songProvider}',
-            style: TextStyle(
-                color: Colors.black54, fontFamily: 'San Francisco'),
+            '${song.artistName}',
+            style:
+                TextStyle(color: Colors.black54, fontFamily: 'San Francisco'),
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment:
-            MainAxisAlignment.end, // Align to the end
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CircleAvatar(
                 backgroundColor: Colors.white,
-                child: renderAddToFavoriteButton(songProvider[index]),
+                child: IconButton(
+                  icon: getFavoriteIcon(
+                      isFavorite), // Show correct icon based on favorite status
+                  onPressed: () {
+                    if (isFavorite) {
+                      favoriteProvider
+                          .removeFavorite(song); // Remove from favorites
+                    } else {
+                      favoriteProvider.addFavorite(song); // Add to favorites
+                    }
+                  },
+                ),
               ),
               IconButton(
-                icon: Icon(Icons.more_vert),
+                icon: Icon(
+                  isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: Colors.black,
+                ),
                 onPressed: () {
-                  // Handle more options
+                  if (isPlaying) {
+                    songProvider.pause();
+                  } else {
+                    songProvider.currentSongIndex = index;
+                    songProvider.play();
+                  }
                 },
               ),
+              CircleAvatar(
+                  // backgroundColor: Colors.white,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.drag_indicator_rounded),
+                  )),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget renderAddToFavoriteButton(Song so) {
-    return IconButton(
-      icon: getFavoriteIcon(_favorites.contains(so)),
-      onPressed: () => addToFavorite(so),
     );
   }
 }

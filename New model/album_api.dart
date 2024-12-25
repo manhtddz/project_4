@@ -12,7 +12,7 @@ class AlbumApi {
           artistName: 'ST',
           subjectId: 1,
           subjectName: 'AAA',
-          imageUrl: 'assets/images/8.jpg'),
+          imageUrl: 'assets/images/1.jpg'),
       Album(
           id: 2,
           title: 'BBB 2',
@@ -49,7 +49,7 @@ class AlbumApi {
         'artistName': 'ST',
         'subject_id': 1,
         'subjectName': 'AAA',
-        'image': 'assets/images/8.jpg'
+        'image': 'assets/images/3.jpg'
       },
       {
         'id': 2,
@@ -58,7 +58,7 @@ class AlbumApi {
         'artistName': 'Hoang Thuy Linh',
         'subject_id': 1,
         'subjectName': 'BBB',
-        'image': 'assets/images/7.jpg'
+        'image': 'assets/images/2.jpg'
       },
     ];
 
@@ -96,7 +96,7 @@ class AlbumApi {
         'artistName': 'Son Tung',
         'subject_id': 1,
         'subjectName': 'AAA',
-        'image': 'assets/images/8.jpg'
+        'image': 'assets/images/3.jpg'
       },
       {
         'id': 3,
@@ -105,7 +105,7 @@ class AlbumApi {
         'artistName': 'Son Tung',
         'subject_id': 1,
         'subjectName': 'BBB',
-        'image': 'assets/images/7.jpg'
+        'image': 'assets/images/2.jpg'
       },
     ];
     await Future.delayed(const Duration(seconds: 1));

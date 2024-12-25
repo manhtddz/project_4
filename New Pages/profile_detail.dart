@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pj_demo/models/user.dart';
 import 'package:provider/provider.dart';
 import '../models/user_provider.dart';
@@ -30,13 +31,8 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class ProfilePage extends StatefulWidget {
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  late final dynamic userProvider;
+class ProfilePage extends StatelessWidget {
+  final int userId = 1; // Example user ID
 
   var _txtBio = TextEditingController();
   var _txtPhone = TextEditingController();
@@ -45,45 +41,47 @@ class _ProfilePageState extends State<ProfilePage> {
   var _txtFullname = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    userProvider = Provider.of<UserProvider>(context, listen: false);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    if (!userProvider.isLoading && userProvider.currentUser == null) {
+      userProvider.fetchUserInfo(userId);
+    }
+
     return Scaffold(
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(250.0),
-            // child: Consumer<UserProvider>(builder: (context, value, child) {
-            //   var currentUser = value.currentUser;
-            //   return AppBar(
             child: AppBar(
-                flexibleSpace: Stack(children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/profile.png'),
-                      fit: BoxFit.cover,
-                      opacity: 0.6,
+              flexibleSpace: Stack(children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/profile.png'),
+                        fit: BoxFit.cover,
+                        opacity: 0.6,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: EdgeInsets.only(
-                    bottom: 100,
-                  ), // Adjust padding as needed
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage: NetworkImage('assets/images/avatar.png'),
-                  ), // Image.asset('${currentUser.image}'),
-                ),
-              ),
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        bottom: 100,
+                      ), // Adjust padding as needed
+                      child: userProvider.isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : CircleAvatar(
+                              radius: 40,
+                              backgroundImage: userProvider.currentUser != null
+                                  ? NetworkImage(
+                                      userProvider.currentUser!.image)
+                                  : AssetImage('assets/images/avatar.png'),
+                            ),
+                    )),
               Align(
                 alignment: Alignment.topCenter,
                 child: Container(
@@ -110,7 +108,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundColor: Color(0xFFF2F2F2)),
                     onPressed: () => {},
                     child: Text(
-                      // "${currentUser!.username}'s Favourites",
                       "Change avatar",
                       style: TextStyle(
                         color: Colors.black54, // Or any desired color
@@ -120,72 +117,83 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-            ]))),
-        body: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            // child: Consumer<UserProvider>(
-            //     builder: (context, value, child) {
-            //       User? user = value.currentUser;
-            //       return
-            child: SizedBox(
-    height: 600,
-    child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Profile Picture and Name
-                SizedBox(height: 10),
-                // Personal Information
-                _buildSectionTitle('About you'),
-                SizedBox(height: 8),
-                _renderAboutField(),
-                SizedBox(height: 24),
-                // Account Information
-                _buildSectionTitle('Account Information'),
-                SizedBox(height: 8),
-                _renderInfoField(),
-              ],
+            ])),),
+        body: Consumer<UserProvider>(builder: (context, userProvider, child) {
+          final currentUser = userProvider.currentUser;
+
+          if (currentUser == null) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          // Fill in controllers with the current user data
+          _txtFullname.text = currentUser.fullname;
+          _txtBio.text = currentUser.bio;
+          _txtPhone.text = currentUser.phone;
+          _txtEmail.text = currentUser.email;
+          _txtBirthday.text = currentUser.dob.toString();
+
+          return Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Personal Information
+                  _buildSectionTitle('About you'),
+                  SizedBox(height: 8),
+                  _renderAboutField(context),
+                  SizedBox(height: 24),
+                  // Account Information
+                  _buildSectionTitle('Account Information'),
+                  SizedBox(height: 8),
+                  _renderInfoField(context),
+                ],
+              ),
             ),
-          ),
-        )));
+          );
+        }));
   }
 
   void _showEditDialog(
       String label, TextEditingController controller, BuildContext context) {
     showDialog(
-        context: context,
-        builder: (ct) {
-          return SizedBox(
-              height: 150,
-              width: 250, // Adjust the height as needed
-              child: AlertDialog(
-                title: Text(
-                  'Edit Info',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
-                ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildEditableRow(label, controller, 1),
-                      SizedBox(
-                          width: 100,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(50, 40),
-                                backgroundColor: Color(0xFFADDFFF),
-                              ),
-                              onPressed: () => saveInfo(context),
-                              child: Text(
-                                'Save',
-                                style: TextStyle(color: Colors.black54),
-                              )))
-                    ],
+      context: context,
+      builder: (ct) {
+        return SizedBox(
+          height: 150,
+          child: AlertDialog(
+            title: Text(
+              'Edit Info',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEditableRow(label, controller, 1),
+                  SizedBox(
+                    width: 100,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(50, 40),
+                        backgroundColor: Color(0xFFADDFFF),
+                      ),
+                      onPressed: () => saveInfo(context),
+                      child: Text(
+                        'Save',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    ),
                   ),
-                ),
-              ));
-        });
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showEditDialogTextBox(
@@ -236,33 +244,34 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
-  Widget _renderAboutField() {
+  Widget _renderAboutField(BuildContext context) {
     return Card(
       color: Color(0xFFF2F2F2),
       child: Column(
         children: [
-          _buildInfoRow('Full Name', 'Thu Thuy', _txtFullname),
-          _buildInfoTextbox('Bio', 'Bio content', _txtBio),
-          _buildInfoRow('Birthday', '01/01/1970', _txtBirthday),
+          _buildInfoRow('Full Name', _txtFullname.text, _txtFullname, context),
+          _buildInfoTextbox('Bio', _txtBio.text, _txtBio, context),
+          _buildInfoRow('Birthday', _txtBirthday.text, _txtBirthday, context),
           _buildDropdownRow('Gender', ['Male', 'Female', 'Other'], 'Other'),
         ],
       ),
     );
   }
 
-  Widget _renderInfoField() {
+  Widget _renderInfoField(BuildContext context) {
     return Card(
       color: Color(0xFFF2F2F2),
       child: Column(
         children: [
-          _buildInfoRow('Phone Number', '09000001111', _txtPhone),
-          _buildInfoRow('Email', 'thuy@gmail.com', _txtEmail),
+          _buildInfoRow('Phone Number', _txtPhone.text, _txtPhone, context),
+          _buildInfoRow('Email', _txtEmail.text, _txtEmail, context),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, TextEditingController txt) {
+  Widget _buildInfoRow(String label, String value, TextEditingController txt,
+      BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
         child:
@@ -286,8 +295,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ]));
   }
 
-  Widget _buildInfoTextbox(
-      String label, String value, TextEditingController txt) {
+  Widget _buildInfoTextbox(String label, String value,
+      TextEditingController txt, BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
         child:

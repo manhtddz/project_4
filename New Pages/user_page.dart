@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/pages/favourite_page.dart';
+import 'package:pj_demo/pages/playlist_page.dart';
+import 'package:pj_demo/pages/profile_detail.dart';
+import 'package:pj_demo/pages/user_playlist_list.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 import '../models/user_provider.dart';
-
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -19,7 +22,8 @@ class Profile extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: FutureBuilder<User?>( // Fetch user data
+        child: FutureBuilder<User?>(
+          // Fetch user data
           future: Provider.of<UserProvider>(context, listen: false)
               .fetchCurrentUser(),
           builder: (context, snapshot) {
@@ -50,7 +54,8 @@ class Profile extends StatelessWidget {
                     leading: CircleAvatar(
                       backgroundImage: user.image.isNotEmpty
                           ? AssetImage(user.image)
-                          : const NetworkImage('https://via.placeholder.com/150')
+                          : const NetworkImage(
+                                  'https://via.placeholder.com/150')
                               as ImageProvider,
                       child: user.image.isEmpty
                           ? const Icon(Icons.person, size: 40)
@@ -73,15 +78,30 @@ class Profile extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onTap: () {
-                      // Handle navigation to profile details
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage()));
                     },
                   ),
                   const Divider(),
-                  _buildSettingItem(context, 'Favourite'),
-                  _buildSettingItem(context, 'Playlist'),
+                  _buildSettingItem(context, 'Favourite', () {
+                    // Navigate to Playlist Page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FavouritePage()),
+                    );
+                  }),
+                  _buildSettingItem(context, 'Playlist', () {
+                    // Navigate to Playlist Page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PlaylistList()),
+                    );
+                  }),
+                  _buildSettingItem(context, 'Your albums'),
                   _buildSettingItem(context, 'Change Theme'),
                   _buildSettingItem(context, 'Change Password'),
-                  _buildSettingItem(context, 'Privacy and Social'),
                   // _buildSettingItem(context, 'Sign Out', () async {
                   //   await Provider.of<UserProvider>(context, listen: false).signOut();
                   //   Navigator.pushReplacement(
@@ -99,7 +119,8 @@ class Profile extends StatelessWidget {
   }
 
   // Build individual setting items
-  Widget _buildSettingItem(BuildContext context, String title, [Function? onTap]) {
+  Widget _buildSettingItem(BuildContext context, String title,
+      [Function? onTap]) {
     return ListTile(
       title: Text(
         title,

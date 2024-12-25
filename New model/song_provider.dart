@@ -11,89 +11,99 @@ class SongProvider extends ChangeNotifier {
   List<Song> get songList => _songList;
 
   int? _currentSongIndex;
-  /* Audio Player*/
-//audio player
   final AudioPlayer _audioPlayer = AudioPlayer();
-  get audioPlayer => this._audioPlayer;
-
-//duration
   Duration _currentDuration = Duration.zero;
   Duration _totalDuration = Duration.zero;
-//constructor
+  bool _isPlaying = false;
+
   SongProvider() {
     listenToDuration();
   }
-//initiallity not playing
-  bool _isPlaying = false;
 
-//play the song
-  void play() async {
-    final String path = _songList[currentSongIndex!].audioPath;
+  // Audio player controls
+  get audioPlayer => _audioPlayer;
+
+  bool get isPlaying => _isPlaying;
+  Duration get currentDuration => _currentDuration;
+  Duration get totalDuration => _totalDuration;
+  int? get currentSongIndex => _currentSongIndex;
+
+  // Set current song index
+  set currentSongIndex(int? newIndex) {
+    _currentSongIndex = newIndex;
+    if (newIndex != null && _songList.isNotEmpty) {
+      play();
+    }
+    notifyListeners();
+  }
+
+  // Play the song
+  Future<void> play() async {
+    if (_currentSongIndex == null || _songList.isEmpty) return;
+
+    final String path = _songList[_currentSongIndex!].audioPath;
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(path));
     _isPlaying = true;
     notifyListeners();
   }
-// pause current song
 
-  void pause() async {
+  // Pause current song
+  Future<void> pause() async {
     await _audioPlayer.pause();
     _isPlaying = false;
     notifyListeners();
   }
 
-//resume playing
-  void resume() async {
+  // Resume current song
+  Future<void> resume() async {
     await _audioPlayer.resume();
     _isPlaying = true;
     notifyListeners();
   }
 
-//pause or resume
-  void pauseOrResume() async {
+  // Pause or resume based on the current state
+  Future<void> pauseOrResume() async {
     if (_isPlaying) {
-      pause();
+      await pause();
     } else {
-      resume();
+      await resume();
     }
     notifyListeners();
   }
 
-//seek to a specific position in the current song
-  void seek(Duration position) async {
+  // Seek to a specific position in the current song
+  Future<void> seek(Duration position) async {
     await _audioPlayer.seek(position);
   }
 
-//play next song
+  // Play next song
   void playNextSong() {
-    if (_currentSongIndex != null) {
-      if (_currentSongIndex! < _songList.length - 1) {
-        currentSongIndex = _currentSongIndex! + 1;
-      } else {
-        currentSongIndex = 0;
-      }
+    if (_currentSongIndex != null && _songList.isNotEmpty) {
+      _currentSongIndex = (_currentSongIndex! + 1) % _songList.length;
+      play();
     }
   }
 
-//play previous song
-  void playPreviousSong() async {
+  // Play previous song
+  Future<void> playPreviousSong() async {
     if (_currentDuration.inSeconds > 2) {
-      seek(Duration.zero);
+      await seek(Duration.zero);
     } else {
-      if (_currentSongIndex! > 0) {
-        currentSongIndex = _currentSongIndex! - 1;
-      } else {
-        currentSongIndex = _songList.length - 1;
+      if (_currentSongIndex != null && _songList.isNotEmpty) {
+        _currentSongIndex = (_currentSongIndex! - 1) % _songList.length;
+        play();
       }
     }
   }
 
-// list to duration
+  // Listen to the audio player duration changes
   void listenToDuration() {
     _audioPlayer.onDurationChanged.listen((newDuration) {
       _totalDuration = newDuration;
       notifyListeners();
     });
+
     _audioPlayer.onPositionChanged.listen((newPosition) {
       _currentDuration = newPosition;
       notifyListeners();
@@ -104,55 +114,37 @@ class SongProvider extends ChangeNotifier {
     });
   }
 
-//display audio player
-
-  int? get currentSongIndex => _currentSongIndex;
-
-  bool get isPlaying => _isPlaying;
-  Duration get currentDuration => _currentDuration;
-  Duration get totalDuration => _totalDuration;
-
-  set currentSongIndex(int? newIndex) {
-    _currentSongIndex = newIndex;
-    if (newIndex != null) {
-      play();
-    }
-    notifyListeners();
-  }
-
-  Future<List<Song>> fetchSongOfAlbum(int albumId) async {
+  // Fetch songs of an album
+  Future<void> fetchSongOfAlbum(int albumId) async {
     _isLoading = true;
-
-    await Future.delayed(Duration(milliseconds: 100));
     notifyListeners();
 
-    return await SongApi().filterSongOfAlbum(albumId);
-
-    // if (result.isNotEmpty) {
-    //   _songList = result;
-    // } else {
-    //   _songList = [];
-    // }
-    // _isLoading = false;
-    //
-    // notifyListeners();
-  }
-
-  Future<void> fetchFavouriteSongOfUser(int userId) async {
-    _isLoading = true;
-
-    await Future.delayed(Duration(milliseconds: 100));
-    notifyListeners();
-
-    final result = await SongApi().filterFavouriteSongOfUser(userId);
-
-    if (result.isNotEmpty) {
-      _songList = result;
-    } else {
+    try {
+      final result = await SongApi().filterSongOfAlbum(albumId);
+      _songList = result.isNotEmpty ? result : [];
+    } catch (error) {
+      // Handle error (for example, you can set an error state)
       _songList = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
+  }
 
+  // Fetch songs of an playlist
+  Future<void> fetchSongOfPlaylist(int playlistId) async {
+    _isLoading = true;
     notifyListeners();
+
+    try {
+      final result = await SongApi().filterSongOfAlbum(playlistId);
+      _songList = result.isNotEmpty ? result : [];
+    } catch (error) {
+      // Handle error (for example, you can set an error state)
+      _songList = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

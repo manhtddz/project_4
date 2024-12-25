@@ -26,20 +26,21 @@ class Song {
       required this.artistName,
       required this.albumTitle});
 
-  factory Song.fromMap(Map<String, dynamic> map) {
+  factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-        id: map['id'],
-        title: map['title'],
-        albumId: map['album_id'],
-        artistId: map['artist_id'],
-        audioPath: map['audio_path'],
-        listenAmount: map['listen_amount'],
-        featureArtist: map['feature_artist'],
-        lyricsFilePath: map['lyric_file_path'],
-        isActive: map['is_active'],
-        albumImagePath: map['albumImagePath'],
-        artistName: map['artistName'],
-        albumTitle: map['albumTitle']);
+      id: json['id'] != null ? int.parse(json['id'].toString()) : 0,
+      title: json['title']?.toString() ?? '',
+      albumId: json['album_id'] != null ? int.parse(json['album_id'].toString()) : 0,
+      artistId: json['artist_id'] != null ? int.parse(json['artist_id'].toString()) : 0,
+      audioPath: json['audio_path']?.toString() ?? '',
+      listenAmount: json['listen_amount'] != null ? int.parse(json['listen_amount'].toString()) : 0,
+      featureArtist: json['feature_artist']?.toString(),
+      lyricsFilePath: json['lyric_file_path']?.toString() ?? '',
+      isActive: json['is_active'] != null ? json['is_active'] : false,
+      albumImagePath: json['albumImagePath']?.toString() ?? '',
+      artistName: json['artistName']?.toString() ?? '',
+      albumTitle: json['albumTitle']?.toString() ?? '',
+    );
   }
 
   Map<String, dynamic> toMap() {

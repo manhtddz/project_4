@@ -40,175 +40,166 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class PlaylistList extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _PlaylistListState();
-}
+class PlaylistList extends StatelessWidget {
+  final int userId = 1; // Static user ID for the example
 
-class _PlaylistListState extends State<PlaylistList> {
   late final dynamic playlistProvider;
   var _txtName = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final playlistProvider = Provider.of<PlaylistProvider>(context);
+    if (playlistProvider.playListList.isEmpty) {
+      playlistProvider.fetchUserPlaylist(userId);
+    }
+
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(250.0),
-        // child: Consumer<UserProvider>(builder: (context, value, child) {
-        //   var currentUser = value.currentUser;
-        //   return AppBar(
-        child: Consumer<PlaylistProvider>(builder: (context, value, child) {
-          final playlistList = value.playListList;
-          return AppBar(
-            flexibleSpace: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/favourite.png'),
-                        fit: BoxFit.cover,
-                        opacity: 0.7,
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(250.0),
+            child: AppBar(
+              flexibleSpace: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/favourite.png'),
+                          fit: BoxFit.cover,
+                          opacity: 0.7,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, bottom: 50), // Adjust padding as needed
-                    child: Text(
-                      // "${currentUser!.username}'s Favourites",
-                      "Thu Thuy's Playlists",
-                      style: TextStyle(
-                          color: Colors.white, // Or any desired color
-                          fontSize: 26,
-                          fontWeight:
-                              FontWeight.bold // Adjust font size as needed
-                          ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      bottom: 10,
-                    ), // Adjust padding as needed
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              NetworkImage('assets/images/avatar.png'),
-                        ), // Image.asset('${currentUser.image}'),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          // '${currentUser.username}',
-                          '${playlistList.length} Playlists',
-                          style: TextStyle(
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          left: 16, bottom: 50), // Adjust padding as needed
+                      child: Text(
+                        // "${currentUser!.username}'s Favourites",
+                        "Thu Thuy's Playlists",
+                        style: TextStyle(
                             color: Colors.white, // Or any desired color
-                            fontSize: 16, // Adjust font size as needed
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // );
-            // }),
-          );
-        }),
-      ),
-      body: Consumer<PlaylistProvider>(
-        builder: (context, value, child) {
-          final playlistList = value.playListList;
-          return Stack(
-            children: [
-              Container(
-                // color: Colors.white,
-                // Gradient container
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFADDFFF),
-                      Color(0xFFFDD7E4),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                // Padding on top of the gradient
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _showAddDialog('Name', _txtName, context),
-                      child: Container(
-                          // color: Colors.white,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5.0), // Set border radius
-                            border: Border.all(
-                              color: Colors.white, // Set border color
-                              width: 1.0, // Set border width
+                            fontSize: 26,
+                            fontWeight:
+                                FontWeight.bold // Adjust font size as needed
                             ),
-                          ),
-                          width: 40,
-                          height: 40,
-                          child: Icon(Icons.add)),
-                    ),
-                    // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     backgroundColor: Colors.white,
-                    //   ),
-                    //     onPressed: () =>
-                    //         _showAddDialog('name', _txtName, context),
-                    //     child: Icon(Icons.add)),
-                    SizedBox(height: 5),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: playlistList.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Color(0xFFF2F2F2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            margin: EdgeInsets.all(3.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(
-                                  5.0), // Adjust padding as needed
-                              child: _renderItems(context, playlistList[index]),
-                            ),
-                          );
-                        },
-                        // separatorBuilder: (context, index) => const Divider(),
                       ),
                     ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        bottom: 10,
+                      ), // Adjust padding as needed
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage:
+                                NetworkImage('assets/images/avatar.png'),
+                          ), // Image.asset('${currentUser.image}'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            // '${currentUser.username}',
+                            '${playlistProvider.playListList.length} Playlists',
+                            style: TextStyle(
+                              color: Colors.white, // Or any desired color
+                              fontSize: 16, // Adjust font size as needed
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // );
+              // }),
+            )),
+        body: Stack(
+          children: [
+            Container(
+              // color: Colors.white,
+              // Gradient container
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFADDFFF),
+                    Color(0xFFFDD7E4),
                   ],
                 ),
-              )
-            ],
-          );
-        },
-      ),
+              ),
+            ),
+            Padding(
+              // Padding on top of the gradient
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => _showAddDialog('Name', _txtName, context),
+                    child: Container(
+                        // color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.circular(5.0), // Set border radius
+                          border: Border.all(
+                            color: Colors.white, // Set border color
+                            width: 1.0, // Set border width
+                          ),
+                        ),
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.add)),
+                  ),
+                  // ElevatedButton(
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: Colors.white,
+                  //   ),
+                  //     onPressed: () =>
+                  //         _showAddDialog('name', _txtName, context),
+                  //     child: Icon(Icons.add)),
+                  SizedBox(height: 5),
+                  Expanded(
+                    child: playlistProvider.isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : playlistProvider.playListList.isEmpty
+                            ? Center(child: Text('No songs found.'))
+                            : _renderListPlaylist(context, playlistProvider),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget _renderListPlaylist(BuildContext context, PlaylistProvider playlistProvider) {
+    return ListView.builder(
+      itemCount: playlistProvider.playListList.length,
+      itemBuilder: (context, index) {
+        return Card(
+          color: Color(0xFFF2F2F2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          margin: EdgeInsets.all(3.0),
+          child: Padding(
+            padding: const EdgeInsets.all(5.0), // Adjust padding as needed
+            child: _renderItems(context, playlistProvider.playListList[index]),
+          ),
+        );
+      },
+      // separatorBuilder: (context, index) => const Divider(),
     );
   }
 
@@ -280,7 +271,7 @@ class _PlaylistListState extends State<PlaylistList> {
 
   Widget _renderItems(BuildContext context, Playlist playlist) {
     return ListTile(
-        onTap: () => goToPlaylist(playlist),
+        onTap: () => goToPlaylist(context, playlist),
         leading: Container(
           color: Colors.black54,
           width: 50,
@@ -308,7 +299,7 @@ class _PlaylistListState extends State<PlaylistList> {
         ));
   }
 
-  void goToPlaylist(Playlist playlist) {
+  void goToPlaylist(BuildContext context, Playlist playlist) {
     Navigator.push(
         context,
         MaterialPageRoute(

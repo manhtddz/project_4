@@ -8,9 +8,13 @@ class UserProvider with ChangeNotifier {
   User? _currentUser;
   List<User> _users = [];
   List<User> _artists = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
 
+  bool get isLoading => _isLoading;
   User? get currentUser => _currentUser;
   List<User> get users => _users;
+  String get errorMessage => _errorMessage;
   List<User> get artists => _artists;
 
   // Fetch all users
@@ -26,13 +30,29 @@ class UserProvider with ChangeNotifier {
   }
 
   // Find user by ID
-  void findUser(String id) {
-    final user = _userApi.findUserById(id);
-    if (user != null) {
-      _currentUser = user;
+  Future<void> fetchUserInfo(int userId) async {
+    _isLoading = true;
+    _errorMessage = ''; // Reset error message
+    notifyListeners();
+
+    try {
+      final result = await UserApi().findUserById(userId);
+
+      _currentUser = result;
+    } catch (error) {
+      _errorMessage = 'Failed to fetch favorite albums: $error';
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
+
+  // void updateAvatar(String newImageUrl) {
+  //   if (_currentUser != null) {
+  //     _currentUser = _currentUser!.copyWith(image: newImageUrl);
+  //     notifyListeners();
+  //   }
+  // }
 
   // Fetch current user
   Future<User?> fetchCurrentUser() async {

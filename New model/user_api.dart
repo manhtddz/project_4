@@ -5,7 +5,7 @@ import 'package:pj_demo/models/user.dart';
 class UserApi {
   final List<User> _users = [
     User(
-      id: '1',
+      id: 1,
       fullname: 'JVKE',
       username: 'jvke',
       image: 'assets/images/6.jpg',
@@ -18,7 +18,7 @@ class UserApi {
       // artistId: '1',
     ),
     User(
-      id: '2',
+      id: 2,
       fullname: 'Jane Smith',
       username: 'janesmith',
       image: 'https://example.com/images/jane.jpg',
@@ -31,7 +31,7 @@ class UserApi {
       // artistId: null,
     ),
     User(
-      id: '3',
+      id: 3,
       fullname: 'Emily Johnson',
       username: 'emilyj',
       image: 'https://example.com/images/emily.jpg',
@@ -57,17 +57,63 @@ class UserApi {
     return _users.where((user) => user.role == 'artist').toList();
   }
 
-  // Find user by ID
-  User? findUserById(String id) {
+  // // Find user by ID
+  // User? findUserById(String id) {
+  //   try {
+  //     return _users.firstWhere((user) => user.id == id);
+  //   } catch (_) {
+  //     return null;
+  //   }
+  // }
+
+  Future<User?> findUserById(int userId) async {
+    final mockResponse = [
+      {
+        'id': 1,
+        'fullname': 'Nguyen Son Tung',
+        'username': 'Son Tung Mtp',
+        'image': 'assets/images/3.jpg',
+        'password': 'admin123!',
+        'phone': '09000001111',
+        'email': 'tung@gmail.com',
+        'role': 'ROLE-USER',
+        'bio': '',
+        'dob': '1999-02-02',
+      }
+    ];
+
+    await Future.delayed(const Duration(seconds: 1)); // Simulate delay
+
     try {
-      return _users.firstWhere((user) => user.id == id);
-    } catch (_) {
-      return null;
+      final userMap = mockResponse.firstWhere(
+            (user) => user['id'] == userId, // Return null if no user is found
+      );
+
+      if (userMap == null) {
+        return null; // Return null if no user is found
+      }
+
+      return User(
+        id: int.parse(userMap['id'].toString()),
+        fullname: userMap['fullname'].toString(),
+        username: userMap['username'].toString(),
+        image: userMap['image'].toString(),
+        password: userMap['password'].toString(),
+        phone: userMap['phone'].toString(),
+        email: userMap['email'].toString(),
+        role: userMap['role'].toString(),
+        bio: userMap['bio'].toString(),
+        dob: DateTime.parse(userMap['dob'].toString()),
+      );
+    } catch (error) {
+      print("Error searching for user: $error");
+      return null; // Return null in case of error
     }
   }
 
+
   // Simulate fetching the current user
- Future<User?> fetchCurrentUser() async {
+  Future<User?> fetchCurrentUser() async {
     await Future.delayed(const Duration(seconds: 1)); // Simulate delay
     if (_currentUser != null) {
       return _currentUser; // Return the current user if logged in
@@ -89,8 +135,8 @@ class UserApi {
       return false; // Login failed
     }
   }
-  
-   void logout() {
+
+  void logout() {
     _currentUser = null; // Set current user to null
   }
 }
