@@ -3,6 +3,7 @@ package com.example.e_project_4_api.service;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
+import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.*;
@@ -11,8 +12,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +35,8 @@ public class SongService {
     private GenreSongRepository genSongRepo;
     @Autowired
     private PlaylistSongRepository playlistSongRepo;
+    @Autowired
+    private LikeAndViewRepository likeAndViewRepository;
 
     public List<SongResponse> getAllSongs() {
         return repo.findAll()
@@ -79,6 +85,44 @@ public class SongService {
         return toSongDisplay(op.get());
     }
 
+    public SongWithLikeAndViewInMonth getMostListenedSongInMonth() {
+        LocalDate cuDate = LocalDate.now();
+        Pageable pageable = PageRequest.of(0, 1);
+        LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxListenAmount(cuDate.getMonthValue(), pageable)
+                .stream().findFirst().get();
+        return toSongWithLikeAndViewAmount(mostListenedSong);
+    }
+
+    public SongWithLikeAndViewInMonth getMostFavouriteSongInMonth() {
+        LocalDate cuDate = LocalDate.now();
+
+        Pageable pageable = PageRequest.of(0, 1);
+        LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxLikeAmount(cuDate.getMonthValue(), pageable)
+                .stream().findFirst().get();
+        return toSongWithLikeAndViewAmount(mostListenedSong);
+    }
+
+    public List<SongWithLikeAndViewInMonth> getMost5ListenedSongInMonth() {
+        LocalDate cuDate = LocalDate.now();
+
+        Pageable pageable = PageRequest.of(0, 5);
+        List<LikeAndViewInMonth> mostListenedSongs = likeAndViewRepository.findSongsWithMaxListenAmount(cuDate.getMonthValue(), pageable);
+        return mostListenedSongs.stream()
+                .map(this::toSongWithLikeAndViewAmount)
+                .collect(Collectors.toList());
+    }
+
+    private SongWithLikeAndViewInMonth toSongWithLikeAndViewAmount(LikeAndViewInMonth mostListenedSong) {
+        SongWithLikeAndViewInMonth res = new SongWithLikeAndViewInMonth();
+        res.setSongId(mostListenedSong.getSongId().getId());
+        res.setSongName(mostListenedSong.getSongId().getTitle());
+        res.setArtistName(mostListenedSong.getSongId().getArtistId().getArtistName());
+        res.setAlbumName(mostListenedSong.getSongId().getAlbumId().getTitle());
+        res.setLikeInMonth(mostListenedSong.getLikeAmount());
+        res.setListenInMonth(mostListenedSong.getListenAmount());
+        return res;
+    }
+
     @Cacheable(value = "favSongs", key = "#id")
     public List<SongDisplay> getAllFavSongsByUserId(Integer id) {
         return favRepo.findFSByUserId(id, false)
@@ -102,6 +146,7 @@ public class SongService {
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
+
     @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Songs> op = repo.findById(id);
@@ -114,7 +159,7 @@ public class SongService {
         return true;
     }
 
-    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum","songsByGenre" }, allEntries = true)
+    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "songsByGenre"}, allEntries = true)
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

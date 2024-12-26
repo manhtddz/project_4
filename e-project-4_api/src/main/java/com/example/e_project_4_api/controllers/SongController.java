@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
+import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.SongService;
@@ -69,6 +70,25 @@ public class SongController {
         return new ResponseEntity<>(song, HttpStatus.OK);
 
     }
+
+    @GetMapping("/public/songs/mostListened")
+    public ResponseEntity<Object> findMostListenedSongInMonth() {
+        SongWithLikeAndViewInMonth song = service.getMostListenedSongInMonth();
+        return new ResponseEntity<>(song, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/songs/mostFav")
+    public ResponseEntity<Object> findMostFavouriteSongInMonth() {
+        SongWithLikeAndViewInMonth song = service.getMostFavouriteSongInMonth();
+        return new ResponseEntity<>(song, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/songs/topFive")
+    public ResponseEntity<Object> findTop5SongInMonth() {
+        List<SongWithLikeAndViewInMonth> songs = service.getMost5ListenedSongInMonth();
+        return new ResponseEntity<>(songs, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/public/songs/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {

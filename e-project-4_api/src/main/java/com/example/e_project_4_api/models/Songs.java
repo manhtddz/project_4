@@ -7,6 +7,7 @@ package com.example.e_project_4_api.models;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- *
  * @author admin
  */
 @Entity
@@ -75,6 +75,8 @@ public class Songs implements Serializable {
     private Collection<PlaylistSong> playlistSongCollection;
     @OneToMany(mappedBy = "songId")
     private Collection<GenreSong> genreSongCollection;
+    @OneToMany(mappedBy = "songId")
+    private Collection<LikeAndViewInMonth> likeAndViewInMonthCollection;
 
     public Songs(String title, String audioPath, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
         this.title = title;
@@ -114,5 +116,5 @@ public class Songs implements Serializable {
     public String toString() {
         return "models.Songs[ id=" + id + " ]";
     }
-    
+
 }

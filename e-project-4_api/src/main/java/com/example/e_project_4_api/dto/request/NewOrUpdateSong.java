@@ -20,7 +20,6 @@ public class NewOrUpdateSong {
     private String title;
     @NotBlank(message = "audioPath is required")
     private String audioPath;
-    @NotBlank(message = "listenAmount is required")
     private Integer listenAmount;
     @NotBlank(message = "lyricFilePath is required")
     private String lyricFilePath;

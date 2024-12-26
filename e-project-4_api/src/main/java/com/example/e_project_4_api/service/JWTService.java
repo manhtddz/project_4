@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -49,7 +48,7 @@ public class JWTService {
 
     }
 
-    public String generateTokenForAdminOrArtist(String username, String fullName,String role) {
+    public String generateTokenForAdminOrArtist(String username, String fullName, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("fullName", fullName);
         claims.put("role", role);
