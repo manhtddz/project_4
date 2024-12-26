@@ -49,6 +49,23 @@ public class JWTService {
 
     }
 
+    public String generateTokenForAdminOrArtist(String username, String fullName,String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("fullName", fullName);
+        claims.put("role", role);
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
+                .and()
+                .signWith(getKey())
+                .compact();
+
+    }
+
+
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretkey);
         return Keys.hmacShaKeyFor(keyBytes);

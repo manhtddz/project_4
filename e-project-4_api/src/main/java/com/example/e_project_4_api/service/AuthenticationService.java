@@ -2,9 +2,10 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.response.auth_response.AdminOrArtistLoginResponse;
 import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
-import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.dto.response.auth_response.UserForLogin;
+import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
@@ -114,7 +115,7 @@ public class AuthenticationService {
         return null;
     }
 
-    public LoginResponse verifyForAdmin(LoginRequest request) {
+    public AdminOrArtistLoginResponse verifyForAdmin(LoginRequest request) {
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -128,7 +129,7 @@ public class AuthenticationService {
                 throw new ValidationException(Collections.singletonList(Map.of("permissionError", "You don't have permission")));
             }
 
-            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserForLogin(user), 60 * 60 * 1000);
+            return new AdminOrArtistLoginResponse(jwtService.generateTokenForAdminOrArtist(request.getUsername(), user.getFullName(), user.getRole()));
         }
 
         return null;

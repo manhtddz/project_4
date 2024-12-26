@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.LoginRequest;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.response.auth_response.AdminOrArtistLoginResponse;
 import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -66,7 +67,7 @@ public class AuthController {
     @PostMapping("/loginForAdmin")
     public ResponseEntity<Object> loginAdmin(@RequestBody @Valid LoginRequest user) {
         try {
-            LoginResponse res = service.verifyForAdmin(user);
+            AdminOrArtistLoginResponse res = service.verifyForAdmin(user);
             return new ResponseEntity<>(
                     res,
                     HttpStatus.OK
