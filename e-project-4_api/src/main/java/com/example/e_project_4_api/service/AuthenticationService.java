@@ -17,6 +17,8 @@ import com.example.e_project_4_api.utilities.PhoneNumberValidator;
 import com.example.e_project_4_api.utilities.Role;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,6 +44,9 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+    })
     public UserResponse register(NewOrUpdateUser request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Users newUser = new Users();
