@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,5 +16,5 @@ public interface GenreSongRepository extends JpaRepository<GenreSong, Integer> {
     Optional<GenreSong> findByGenreIdAndSongId(@Param("genreId") Integer genreId, @Param("songId") Integer songId);
 
     @Query("SELECT gs FROM GenreSong gs WHERE gs.genreId.id = :genreId AND gs.songId.isDeleted = :isDeleted")
-    Optional<GenreSong> findByGenreId(@Param("genreId") Integer genreId, @Param("isDeleted") boolean isDeleted);
+    List<GenreSong> findByGenreId(@Param("genreId") Integer genreId, @Param("isDeleted") boolean isDeleted);
 }

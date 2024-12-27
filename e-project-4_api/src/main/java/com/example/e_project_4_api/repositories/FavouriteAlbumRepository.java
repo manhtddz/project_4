@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +17,5 @@ public interface FavouriteAlbumRepository extends JpaRepository<FavouriteAlbums,
     Optional<FavouriteAlbums> findByUserIdAndAlbumId(@Param("userId") Integer userId, @Param("albumId") Integer albumId);
 
     @Query("SELECT fa FROM FavouriteAlbums fa WHERE fa.userId.id = :userId AND fa.albumId.isDeleted = :isDeleted")
-    Optional<FavouriteAlbums> findFAByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
+    List<FavouriteAlbums> findFAByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +17,5 @@ public interface FavouriteSongRepository extends JpaRepository<FavouriteSongs, I
     Optional<FavouriteSongs> findByUserIdAndSongId(@Param("userId") Integer userId, @Param("songId") Integer songId);
 
     @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId AND fs.songId.isDeleted = :isDeleted")
-    Optional<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
+    List<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
 }
