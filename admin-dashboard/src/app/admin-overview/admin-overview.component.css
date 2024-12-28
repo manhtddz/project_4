@@ -1,0 +1,31 @@
+.scroll-container {
+  display: inline-block;
+  width: 250px;
+  height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.scrolling-text {
+  display: inline-block;
+  position: relative;
+  animation: scroll-horizontal 5s linear infinite;
+  line-height: 20px;
+  color: black;
+}
+
+@keyframes scroll-horizontal {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 135px;
+}

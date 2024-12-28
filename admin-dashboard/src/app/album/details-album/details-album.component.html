@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<app-header></app-header>
+
+<body class="g-sidenav-show bg-gray-200">
+    <div class="main-layout">
+
+        <aside id="sidenav-main">
+            <app-sidebar></app-sidebar>
+        </aside>
+
+        <div class="main-content">
+
+            <main class="main-content full-height position-relative border-radius-lg ">
+                <!-- Navbar -->
+                <app-navbar></app-navbar>
+                <!-- End Navbar -->
+
+                <div class="container-fluid py-4 pb-2">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <div class="card">
+                                <div
+                                    class="d-flex align-items-center justify-content-between bg-gradient-info shadow-info border-radius-lg pt-2 pb-2">
+                                    <h6 class="text-white text-capitalize ps-3 mb-0 pt-1">Album Details Information</h6>
+                                    <div class="align-items-end text-end me-3">
+                                        <a class="btn bg-gradient-secondary mb-0 pb-2 ps-2"
+                                            (click)="openEditArtistDialog()">
+                                            <i class="material-icons text-sm ">edit</i>&nbsp;&nbsp;Edit
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="card-body pt-4 p-3">
+                                    <div class="row">
+                                        <div class="card-body pb-2 ms-3"
+                                            style="background-color: aliceblue;width: max-content">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Album title: </span>
+                                                        <span class="text-dark font-weight-bold ms-sm-2">Em cua ngay hom
+                                                            nay</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Artist name: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">Son Tung
+                                                            MTP</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Total views: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">22255</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Total favorites: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">22255</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Created_At: </span>
+                                                        <span
+                                                            class="text-dark ms-sm-2 font-weight-bold">26/03/2024</span>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Total songs:</span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">15</span>
+
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Is_released:</span>
+                                                        <span
+                                                            class="text-dark ms-sm-2 font-weight-bold">26/03/2024</span>
+
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Most listened songs: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">Em cua ngay hom
+                                                            qua</span>
+                                                        <!-- <span class="badge badge-sm bg-gradient-primary" style="color: white;">True</span>
+                <span class="badge badge-sm bg-gradient-success ms-2"
+                    style="color: white;">False</span> -->
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Most favorite songs: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">Em cua ngay hom
+                                                            qua</span>
+                                                        <!-- <span class="badge badge-sm bg-gradient-primary" style="color: white;">True</span>
+                <span class="badge badge-sm bg-gradient-success ms-2"
+                    style="color: white;">False</span> -->
+                                                    </div>
+
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Modified_At: </span>
+                                                        <span
+                                                            class="text-dark ms-sm-2 font-weight-bold">12/12/2024</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-2 align-items-end text-end">
+                                            <img src="https://via.placeholder.com/150" alt="Image Preview"
+                                                class="img-thumbnail" style="width: 150px; height: 150px;">
+                                        </div>
+
+                                    </div>
+                                    <!-- <div class="card-body ms-1" style="background-color: aliceblue;margin: 10px;padding: 10px;">
+                                <span class="text-s">Bio: </span>
+                                <span class="text-dark ms-sm-2 font-weight-bold">Gioi thieu thong tin cua nghe si, Day
+                                    la nhung thong tin tom tat!</span>
+                            </div> -->
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-12 ms-0 mt-3">
+
+                        <div class="card">
+                            <div
+                                class="d-flex align-items-center justify-content-between bg-gradient-primary shadow-primary border-radius-lg pt-2 pb-2">
+                                <h6 class="text-white text-capitalize ps-3 mb-0 pt-1">Song List of Album</h6>
+
+                                <div class="d-flex align-items-center justify-content-between ">
+                                    <app-autocomplete-search-dropdown></app-autocomplete-search-dropdown>
+
+                                    <a class="btn bg-gradient-secondary ps-1 mb-0 pb-2"
+                                        (click)="openAddNewSongToSubjectDialog()" style="margin-right:50px;">
+                                        <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add Song To Album
+                                    </a>
+
+                                    <a class="btn bg-gradient-info ps-1 mb-0 pb-2 me-3"
+                                        (click)="openAddNewSongToSubjectDialog()">
+                                        <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Create New Song To Album
+                                    </a>
+                                </div>
+
+
+                            </div>
+
+                            <div class="card-body pt-4 p-3">
+                                <div class="table-responsive p-0">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-3">
+                                                    STT</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-2">
+                                                    Song Name</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-2">
+                                                    Total views</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-2">
+                                                    Total favorites</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-2">
+                                                    created_at</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ps-2">
+                                                    modified_at</th>
+                                                <th
+                                                    class="text-uppercase text-primary text-xs font-weight-bolder opacity-7 ">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <!-- <tr *ngFor="let u of response; let i = index">
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{u.name}}</h6>
+                                                <p class="text-xs text-primary mb-0">{{u.phone}}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{u.email}}</p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{u.dob}}</p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{u.address}}</p>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v text-primary"></i>
+                                        </a>
+                                        <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5"
+                                            aria-labelledby="dropdownTable">
+                                            <li><a class="dropdown-item border-radius-md"
+                                                    routerLink="/users/{{u.id}}/detail">Details</a></li>
+                                            <li><a class="dropdown-item border-radius-md"
+                                                    routerLink="/users/{{u.id}}/edit">Edit</a></li>
+                                            <li><a class="dropdown-item border-radius-md"
+                                                    routerLink="/users/{{u.id}}/delete">Delete</a></li>
+                                        </ul>
+
+                                    </td>
+                                </tr> -->
+
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <p class="text-xs font-weight-bold mb-0">1</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">Song 1</p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">123</p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">12345</p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">26/03/2024</p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">26/03/2024</p>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <a class="cursor-pointer" id="dropdownTable"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v text-primary"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5"
+                                                        aria-labelledby="dropdownTable">
+                                                        <li><a class="dropdown-item border-radius-md"
+                                                                routerLink="/songs/1/details">Details</a></li>
+                                                        <li><a class="dropdown-item border-radius-md"
+                                                                routerLink="/songs/1/edit">Edit</a></li>
+                                                        <li><a class="dropdown-item border-radius-md"
+                                                                routerLink="/songs/1/delete">Delete</a></li>
+                                                    </ul>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>

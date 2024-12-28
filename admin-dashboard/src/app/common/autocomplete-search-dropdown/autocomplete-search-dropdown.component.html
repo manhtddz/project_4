@@ -1,0 +1,19 @@
+<form [formGroup]="stateForm" class="">
+                           
+                              <input type="text" class="form-label mt-1 p-1 mb-0 me-3" style="border-radius: 8px;color: black;width: 200px;"
+                                     matInput
+                                     placeholder=" Search album..."
+                                     formControlName="stateGroup"
+                                     required
+                                     [matAutocomplete]="autoGroup">
+                                <mat-autocomplete #autoGroup="matAutocomplete">
+                                  @for (group of stateGroupOptions | async; track group) {
+                                    <mat-optgroup [label]="group.letter">
+                                      @for (name of group.names; track name) {
+                                        <mat-option [value]="name">{{name}}</mat-option>
+                                      }
+                                    </mat-optgroup>
+                                  }
+                              </mat-autocomplete>
+                         
+                          </form>

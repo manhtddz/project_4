@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<app-header></app-header>
+
+<body class="g-sidenav-show bg-gray-200">
+    <div class="main-layout">
+
+        <aside id="sidenav-main">
+            <app-sidebar></app-sidebar>
+        </aside>
+        <div class="main-content">
+            <main class="main-content full-height position-relative border-radius-lg ">
+                <!-- Navbar -->
+                <app-navbar></app-navbar>
+                <!-- End Navbar -->
+
+                <div class="container-fluid py-4">
+                    <div class="row">
+                        <div class="col-7">
+
+                            <div class="card">
+                                <div
+                                    class="d-flex align-items-center justify-content-between bg-gradient-info shadow-info border-radius-lg pt-2 pb-2">
+                                    <h6 class="text-white text-capitalize ps-3 mb-0 ">Song Details Information</h6>
+                                    <div class="align-items-end text-end me-3">
+                                        <a class="btn bg-gradient-secondary mb-0 pb-2 ps-2 me-3"
+                                            (click)="openEditArtistDialog()">
+                                            <i class="material-icons text-sm ">edit</i>&nbsp;&nbsp;Edit
+                                        </a>
+                                        <a class="btn bg-gradient-primary mb-0 pb-2 ps-2"
+                                            (click)="openEditArtistDialog()">
+                                            <i class="material-icons text-sm ">delete</i>&nbsp;&nbsp;Delete
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="card-body pb-0" style="background-color: aliceblue;">
+                                            <div class="row">
+                                                <div class="mb-2">
+                                                    <span class="text-s">Song Name: </span>
+                                                    <span class="text-dark font-weight-bold ms-sm-2">Thang 4 la loi noi
+                                                        doi cua
+                                                        anh</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Created_At: </span>
+                                                        <span
+                                                            class="text-dark ms-sm-2 font-weight-bold">12/12/2024</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Modified_At: </span>
+                                                        <span
+                                                            class="text-dark ms-sm-2 font-weight-bold">12/12/2024</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Total Views: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">55</span>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <span class="text-s">Total Favorites: </span>
+                                                        <span class="text-dark ms-sm-2 font-weight-bold">55</span>
+                                                    </div>
+                                                    <!-- <div class="col-6">
+                                            <div class="mb-2">
+                                                <span class="text-s"> </span>
+                                                <span class="text-dark ms-sm-2 font-weight-bold">1</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="text-s"></span>
+                                                <span class="text-dark ms-sm-2 font-weight-bold">Ha Anh Tuan</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="text-s"> </span>
+                                                <span class="text-dark ms-sm-2 font-weight-bold">Nguyen Van Hai</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="text-s"> </span>
+                                                <span class="text-dark ms-sm-2 font-weight-bold">Concept Summer</span>
+                                            </div> -->
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="text-s">Audio_Path: </span>
+                                                    <span class="text-dark font-weight-bold ms-sm-2">This is information
+                                                        about
+                                                        music
+                                                    </span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="text-s">Lyric_File_Path: </span>
+                                                    <span class="text-dark font-weight-bold ms-sm-2">This is information
+                                                        about
+                                                        music
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card-header pb-8">
+                                <div class="card h-100 ">
+                                    <div class="card-body pb-5 px-5">
+
+
+                                        <span class="text-s">Rank Song:</span>
+                                        <span class="text-dark font-weight-bold ms-sm-2">1
+                                        </span>
+                                        <br>
+                                        <span class="text">Artist Name:</span>
+                                        <span class="text-dark font-weight-bold ms-sm-2">Ha Anh Tuan
+                                        </span> <br>
+                                        <span class="text-s">Feature Artist Name:</span>
+                                        <span class="text-dark font-weight-bold ms-sm-2">Nguyen Van Hai
+                                        </span> <br>
+                                        <span class="text-s">Album:</span>
+                                        <span class="text-dark font-weight-bold ms-sm-2">Album Gi Do
+                                        </span> <br>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>

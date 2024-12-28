@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<app-header></app-header>
+
+<body class="g-sidenav-show bg-gray-200">
+  <div class="main-layout">
+    
+    <aside id="sidenav-main" >
+      <app-sidebar></app-sidebar>
+    </aside>
+
+    <div class="main-content">
+      <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+
+        <!-- Navbar -->
+        <app-navbar></app-navbar>
+        <!-- End Navbar -->
+    
+        <div class="container-fluid py-2">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-2 pt-2">
+                  <div class="d-flex justify-content-end">
+                    <div
+                      class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                      <i class="material-icons opacity-10">headphones</i>
+                    </div>
+                  </div>
+    
+                  <div class="text-start pt-1">
+                    <p class="text-sm mb-0 text-danger font-weight-bolder">Music Views Of Month</p><br>
+                    <h5 class="mb-0 text-center">354 Views</h5>
+                  </div>
+    
+                </div>
+                <hr class="dark horizontal my-0" />
+                <div class="card-footer p-2">
+                  <div class="text-center">
+                    <p class="mb-0">
+                      <span class="text-success text-sm font-weight-bolder">+3% </span>than last month
+                    </p>
+                  </div>
+    
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-2 pt-2">
+                  <div class="d-flex justify-content-end">
+                    <div
+                      class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                      <i class="material-icons opacity-10">album</i>
+                    </div>
+                  </div>
+    
+                  <div class="text-start pt-1">
+                    <p class="text-sm mb-0 text-danger font-weight-bolder">Popular Song Of Month</p><br>
+                    <span class="scroll-container">
+                      <span class="scrolling-text font-weight-bolder">
+                        Anh Hai rat dep trai - Mr.2
+                      </span>
+                    </span>
+    
+                  </div>
+                </div>
+                <hr class="dark horizontal my-0" />
+                <div class="card-footer p-2">
+                  <div class="text-center">
+                    <p class="mb-0">
+                      <span class="text-success text-sm font-weight-bolder">57 </span> <i
+                        class="material-icons">headphones</i> and
+                      <span class="text-success text-sm font-weight-bolder">57 </span> <i
+                        class="material-icons">favorite</i>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-2 pt-2">
+                  <div class="d-flex justify-content-end">
+                    <div
+                      class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                      <i class="material-icons opacity-10">music_note</i>
+                    </div>
+                  </div>
+    
+                  <div class="text-start pt-1">
+                    <p class="text-sm mb-0 text-danger font-weight-bolder">Music Views Of Today</p><br>
+                    <h5 class="mb-0 text-center">154 Views</h5>
+                  </div>
+    
+                </div>
+                <hr class="dark horizontal my-0" />
+                <div class="card-footer p-2">
+                  <div class="text-center">
+                    <p class="mb-0">
+                      <span class="text-danger text-sm font-weight-bolder">-2%</span>
+                      than yesterday
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-2 pt-2">
+                  <div class="d-flex justify-content-end">
+                    <div
+                      class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                      <i class="material-icons opacity-10">favorite</i>
+                    </div>
+                  </div>
+    
+                  <div class="text-start pt-1">
+                    <p class="text-sm mb-0 text-danger font-weight-bolder">Favorite Song Of Month</p><br>
+                    <span class="scroll-container">
+                      <span class="scrolling-text font-weight-bolder">
+                        Anh Hai rat dep trai - Mr.2
+                      </span>
+                    </span>
+    
+                  </div>
+                </div>
+                <hr class="dark horizontal my-0" />
+                <div class="card-footer p-2">
+                  <div class="text-center">
+                    <p class="mb-0">
+                      <span class="text-success text-sm font-weight-bolder">57 </span> <i
+                        class="material-icons">headphones</i> and
+                      <span class="text-success text-sm font-weight-bolder">57 </span> <i
+                        class="material-icons">favorite</i>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <div class="row mt-3">
+            <app-bieudo></app-bieudo>
+          </div>
+    
+          <div class="row">
+            <div class="col-12">
+              <div class="card my-4">
+                <div class="card-header p-1 position-relative mt-n4 mx-12 z-index-0">
+                  <div class="bg-gradient-primary shadow-primary border-radius-lg pt-1 pb-1">
+                    <h6 class="text-white text-center text-capitalize ps-1">
+                      Top 5 most listened to artists
+                    </h6>
+                  </div>
+                </div>
+                <div class="card-body px-2 pb-2">
+                  <div class="table-responsive p-0">
+                    <table class="table align-items-center justify-content-center mb-1">
+                      <thead>
+                        <tr>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Artist_ID
+                          </th>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Artist Name
+                          </th>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Songs
+                          </th>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Ablums
+                          </th>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            total views
+                          </th>
+    
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            most listened song
+                          </th>
+                          <th class="text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Views
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <!-- <tr *ngFor="let trans of transaction"> -->
+    
+                          <td>
+                            <p class="text-xs font-weight-bold mb-0">ID</p>
+                          </td>
+                          <td>
+                            <p class="text-xs font-weight-bold mb-0">Nguyen Thanh Tung - Son Tung MTP</p>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">15 Sings</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">4 Ablums</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+    
+                          <td class="align-middle text-sm">
+                            <!-- <span *ngIf="trans.isSucceeded" class="badge badge-sm bg-gradient-success">Succeeded</span>
+                                                    <span *ngIf="!trans.isSucceeded" class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <!-- <span class="badge badge-sm bg-gradient-danger">Succeeded</span>
+                            <span class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <span class="text-xs font-weight-bold">Thai Binh mo hoi roi</span>
+    
+                          </td>
+    
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+                          <!-- <td class="align-middle">
+                            <button class="btn btn-link text-secondary mb-0">
+                              <i class="fa fa-ellipsis-v text-xs"></i>
+                            </button>
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                              <li>
+                                <a class="dropdown-item border-radius-md" href="javascript:;">Details</a>
+                              </li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Edit</a></li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Delete</a></li>
+                            </ul>
+                          </td> -->
+                        </tr>
+    
+                        <tr>
+                          <!-- <tr *ngFor="let trans of transaction"> -->
+    
+                          <td>
+                            <p class="text-xs font-weight-bold">ID</p>
+                          </td>
+                          <td>
+                            <p class="text-xs font-weight-bold">Nguyen Thanh Tung - Son Tung MTP</p>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">15 Sings</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">4 Ablums</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+    
+                          <td class="align-middle text-sm">
+                            <!-- <span *ngIf="trans.isSucceeded" class="badge badge-sm bg-gradient-success">Succeeded</span>
+                                                    <span *ngIf="!trans.isSucceeded" class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <!-- <span class="badge badge-sm bg-gradient-danger">Succeeded</span>
+                            <span class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <span class="text-xs font-weight-bold">Thai Binh mo hoi roi</span>
+    
+                          </td>
+    
+                          <td>
+                            <span class="text-xs  font-weight-bold">254.362 Views</span>
+                          </td>
+    
+                          <!-- <td class="align-middle">
+                            <button class="btn btn-link text-secondary mb-0">
+                              <i class="fa fa-ellipsis-v text-xs"></i>
+                            </button>
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                              <li>
+                                <a class="dropdown-item border-radius-md" href="javascript:;">Details</a>
+                              </li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Edit</a></li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Delete</a></li>
+                            </ul>
+                          </td> -->
+                        </tr>
+    
+                        <tr>
+                          <!-- <tr *ngFor="let trans of transaction"> -->
+    
+                          <td>
+                            <p class="text-xs  font-weight-bold mb-0">ID</p>
+                          </td>
+                          <td>
+                            <p class="text-xs  font-weight-bold mb-0">Nguyen Thanh Tung - Son Tung MTP</p>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">15 Sings</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">4 Ablums</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+    
+                          <td class="align-middle text-sm">
+                            <!-- <span *ngIf="trans.isSucceeded" class="badge badge-sm bg-gradient-success">Succeeded</span>
+                                                    <span *ngIf="!trans.isSucceeded" class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <!-- <span class="badge badge-sm bg-gradient-danger">Succeeded</span>
+                            <span class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <span class="text-xs font-weight-bold">Thai Binh mo hoi roi</span>
+    
+                          </td>
+    
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+                          <!-- <td class="align-middle">
+                            <button class="btn btn-link text-secondary mb-0">
+                              <i class="fa fa-ellipsis-v text-xs"></i>
+                            </button>
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                              <li>
+                                <a class="dropdown-item border-radius-md" href="javascript:;">Details</a>
+                              </li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Edit</a></li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Delete</a></li>
+                            </ul>
+                          </td> -->
+                        </tr>
+    
+                        <tr>
+                          <!-- <tr *ngFor="let trans of transaction"> -->
+    
+                          <td>
+                            <p class="text-xs font-weight-bold mb-0">ID</p>
+                          </td>
+                          <td>
+                            <p class="text-xs  font-weight-bold mb-0">Nguyen Thanh Tung - Son Tung MTP</p>
+                          </td>
+                          <td>
+                            <span class="text-xs  font-weight-bold">15 Sings</span>
+                          </td>
+                          <td>
+                            <span class="text-xs  font-weight-bold">4 Ablums</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+    
+                          <td class="align-middle text-sm">
+                            <!-- <span *ngIf="trans.isSucceeded" class="badge badge-sm bg-gradient-success">Succeeded</span>
+                                                    <span *ngIf="!trans.isSucceeded" class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <!-- <span class="badge badge-sm bg-gradient-danger">Succeeded</span>
+                            <span class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <span class="text-xs font-weight-bold">Thai Binh mo hoi roi</span>
+    
+                          </td>
+    
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+                          <!-- <td class="align-middle">
+                            <button class="btn btn-link text-secondary mb-0">
+                              <i class="fa fa-ellipsis-v text-xs"></i>
+                            </button>
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                              <li>
+                                <a class="dropdown-item border-radius-md" href="javascript:;">Details</a>
+                              </li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Edit</a></li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Delete</a></li>
+                            </ul>
+                          </td> -->
+                        </tr>
+    
+                        <tr>
+                          <!-- <tr *ngFor="let trans of transaction"> -->
+    
+                          <td>
+                            <p class="text-xs font-weight-bold mb-0">ID</p>
+                          </td>
+                          <td>
+                            <p class="text-xs font-weight-bold mb-0">Nguyen Thanh Tung - Son Tung MTP</p>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">15 Sings</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">4 Ablums</span>
+                          </td>
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+    
+                          <td class="align-middle text-sm">
+                            <!-- <span *ngIf="trans.isSucceeded" class="badge badge-sm bg-gradient-success">Succeeded</span>
+                                                    <span *ngIf="!trans.isSucceeded" class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <!-- <span class="badge badge-sm bg-gradient-danger">Succeeded</span>
+                            <span class="badge badge-sm bg-gradient-danger">Failed</span> -->
+                            <span class="text-xs font-weight-bold">Thai Binh mo hoi roi</span>
+    
+                          </td>
+    
+                          <td>
+                            <span class="text-xs font-weight-bold">254.362 Views</span>
+                          </td>
+    
+                          <!-- <td class="align-middle">
+                            <button class="btn btn-link text-secondary mb-0">
+                              <i class="fa fa-ellipsis-v text-xs"></i>
+                            </button>
+                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="fa fa-ellipsis-v text-secondary"></i>
+                            </a>
+                            <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                              <li>
+                                <a class="dropdown-item border-radius-md" href="javascript:;">Details</a>
+                              </li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Edit</a></li>
+                              <li><a class="dropdown-item border-radius-md" href="javascript:;">Delete</a></li>
+                            </ul>
+                          </td> -->
+                        </tr>
+    
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <!-- <p-paginator
+                        [rows]="rows"
+                        [totalRecords]="totalRecords"
+                        (onPageChange)="onPageChange($event)"
+                        #paginator
+                    ></p-paginator> -->
+            </div>
+          </div>
+    
+          <app-footer></app-footer>
+          
+        </div>
+      </main>
+    </div>
+  </div>
+ 
+
+  
+</body>
+
+</html>
