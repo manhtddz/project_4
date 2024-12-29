@@ -27,8 +27,6 @@ public class NewOrUpdateSong {
     private String featureArtist;
     @NotNull(message = "isPending is required")
     private Boolean isPending;
-    private Date createdAt;
-    private Date modifiedAt;
     @NotNull(message = "albumId is required")
     private Integer albumId;
     @NotNull(message = "artistId is required")

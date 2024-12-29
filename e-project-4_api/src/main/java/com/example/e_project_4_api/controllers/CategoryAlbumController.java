@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
+import com.example.e_project_4_api.dto.request.UpdateCategoriesForAlbum;
 import com.example.e_project_4_api.dto.response.common_response.CategoryAlbumResponse;
 import com.example.e_project_4_api.service.CategoryAlbumService;
 import jakarta.validation.Valid;
@@ -44,6 +45,11 @@ public class CategoryAlbumController {
         return new ResponseEntity<>(updatedSubjectAlbum, HttpStatus.OK);
     }
 
+    @PutMapping("admin/category-album")
+    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateCategoriesForAlbum request) {
+        subjectAlbumService.updateCategoriesForAlbum(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @DeleteMapping("public/category-album/{id}")
     public ResponseEntity<Object> deleteSubjectAlbum(@PathVariable int id) {

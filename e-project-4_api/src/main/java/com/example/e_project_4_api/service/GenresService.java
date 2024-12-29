@@ -31,6 +31,9 @@ public class GenresService {
                 .map(this::toGenreResponse)
                 .collect(Collectors.toList());
     }
+    public int getNumberOfGenre() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
 
     @Cacheable("genresDisplayForAdmin")
     public List<GenreDisplayForAdmin> getAllGenreDisplayForAdmin() {
@@ -57,7 +60,7 @@ public class GenresService {
         return toGenreDisplayForAdmin(op.get());
     }
 
-    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Genres> genre = repo.findById(id);
         if (genre.isEmpty()) {
@@ -69,7 +72,7 @@ public class GenresService {
         return true;
     }
 
-    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateGenres addNewGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -98,7 +101,7 @@ public class GenresService {
         return request;
     }
 
-    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateGenres updateGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

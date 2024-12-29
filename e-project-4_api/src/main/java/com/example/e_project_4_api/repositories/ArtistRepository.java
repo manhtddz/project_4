@@ -23,4 +23,6 @@ public interface ArtistRepository extends JpaRepository<Artists,Integer>{
     @Query("Select a from Artists a where a.isDeleted = :isDeleted")
     List<Artists> findAllNotDeleted(boolean isDeleted);
 
+    @Query("Select COUNT(a) from Artists a where a.isDeleted = :isDeleted")
+    int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
 }

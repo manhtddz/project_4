@@ -26,8 +26,6 @@ public class NewOrUpdateAlbum {
     private Date releaseDate;
     @NotNull(message = "artistId is required")
     private Integer artistId;
-    private Date createdAt;
-    private Date modifiedAt;
 
 
 }

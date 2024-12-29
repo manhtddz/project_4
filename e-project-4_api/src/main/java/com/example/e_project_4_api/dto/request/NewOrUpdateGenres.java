@@ -20,8 +20,5 @@ public class NewOrUpdateGenres {
     private String title;
     @NotBlank(message = "image is required")
     private String image;
-    private Date createdAt;
-    private Date modifiedAt;
-
 
 }

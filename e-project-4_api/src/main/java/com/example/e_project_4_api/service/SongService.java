@@ -46,6 +46,10 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfSong() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable("songsDisplay")
     public List<SongDisplay> getAllSongsForDisplay() {
         return repo.findAllNotDeleted(false)
@@ -64,7 +68,7 @@ public class SongService {
 
     @Cacheable(value = "songsByArtist", key = "#artistId")
     public List<SongDisplay> getAllSongsByArtistIdForDisplay(int artistId) {
-        return repo.findAllByArtistId(artistId, false)
+        return repo.findAllByArtistId(artistId, false, true)
                 .stream()
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
@@ -72,9 +76,8 @@ public class SongService {
 
     @Cacheable(value = "songsByAlbum", key = "#albumId")
     public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
-        return repo.findAllByAlbumId(albumId, false)
+        return repo.findAllByAlbumId(albumId, false, true)
                 .stream()
-                .filter(song -> song.getIsPending())
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
@@ -107,7 +110,7 @@ public class SongService {
         LocalDate cuDate = LocalDate.now();
         Pageable pageable = PageRequest.of(0, 1);
         LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxListenAmount(cuDate.getMonthValue(), pageable)
-                .stream().findFirst().get();
+                .stream().findFirst().orElseThrow(() -> new NotFoundException("Can't most listened song"));
         return toSongWithLikeAndViewAmount(mostListenedSong);
     }
 
@@ -116,7 +119,7 @@ public class SongService {
 
         Pageable pageable = PageRequest.of(0, 1);
         LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxLikeAmount(cuDate.getMonthValue(), pageable)
-                .stream().findFirst().get();
+                .stream().findFirst().orElseThrow(() -> new NotFoundException("Can't most listened song"));
         return toSongWithLikeAndViewAmount(mostListenedSong);
     }
 
@@ -233,6 +236,9 @@ public class SongService {
         if (album.isEmpty()) {
             errors.add(Map.of("albumError", "Can't find album"));
         }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
         Songs song = op.get();
         song.setTitle(request.getTitle());
         song.setAudioPath(request.getAudioPath());
@@ -270,7 +276,7 @@ public class SongService {
         res.setArtistId(song.getArtistId().getId());
         List<Integer> genreIds = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getId())
+                .map(it -> it.getGenreId().getId())
                 .toList();
         res.setGenreIds(genreIds);
         return res;
@@ -288,7 +294,7 @@ public class SongService {
         res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getTitle())
+                .map(it -> it.getGenreId().getTitle())
                 .toList();
         res.setGenreNames(genreNames);
         return res;
@@ -307,7 +313,7 @@ public class SongService {
         res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getTitle())
+                .map(it -> it.getGenreId().getTitle())
                 .toList();
         res.setGenreNames(genreNames);
         return res;
@@ -326,7 +332,7 @@ public class SongService {
         res.setArtistName(song.getArtistId().getArtistName());
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getTitle())
+                .map(it -> it.getGenreId().getTitle())
                 .toList();
         res.setGenreNames(genreNames);
         return res;
@@ -346,7 +352,7 @@ public class SongService {
         res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getTitle())
+                .map(it -> it.getGenreId().getTitle())
                 .toList();
         res.setGenreNames(genreNames);
         return res;
@@ -366,7 +372,7 @@ public class SongService {
         res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
-                .map(it -> it.getSongId().getTitle())
+                .map(it -> it.getGenreId().getTitle())
                 .toList();
         res.setGenreNames(genreNames);
         return res;

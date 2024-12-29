@@ -36,6 +36,10 @@ public class ArtistService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfArtist() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable("artistsDisplayForAdmin")
     public List<ArtistDisplayForAdmin> getAllArtistsDisplayForAdmin() {
         return repo.findAllNotDeleted(false)
@@ -61,7 +65,7 @@ public class ArtistService {
         return toArtistDisplayForAdmin(op.get());
     }
 
-    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Artists> artistOptional = repo.findById(id);
         if (artistOptional.isEmpty()) {
@@ -73,7 +77,7 @@ public class ArtistService {
         return true;
     }
 
-    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
     public NewOrUpdateArtist addNewArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -92,7 +96,7 @@ public class ArtistService {
         return request;
     }
 
-    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
     public NewOrUpdateArtist updateArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -105,15 +109,20 @@ public class ArtistService {
 
         if (request.getUserId() != null) {
             Optional<Users> userOp = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
+
             if (userOp.isEmpty()) {
                 errors.add(Map.of("userNotExistedError", "Can't find user"));
+            } else {
+                Users foundUser = userOp.get();
+
+                // Kiểm tra xem artist với user ID đã tồn tại chưa
+                Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId(), false);
+                if (foundArtistWithUID.isPresent()) {
+                    errors.add(Map.of("accountAssignedError", "This artist account already has an owner"));
+                } else {
+                    artist.setUserId(foundUser);
+                }
             }
-            Users foundUser = userOp.get();
-            Optional<Artists> foundArtistWithUID = repo.findByUserId(request.getUserId(), false);
-            if (foundArtistWithUID.isPresent()) {
-                errors.add(Map.of("accountAssignedError", "This artist account already have owner"));
-            }
-            artist.setUserId(foundUser);
         }
 
         Optional<Artists> opName = repo.findByArtistName(request.getArtistName());

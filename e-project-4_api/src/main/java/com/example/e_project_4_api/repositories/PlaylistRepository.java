@@ -23,5 +23,6 @@ public interface PlaylistRepository extends JpaRepository<Playlists, Integer> {
     @Query("Select a from Playlists a where a.isDeleted = :isDeleted")
     List<Playlists> findAllNotDeleted(boolean isDeleted);
 
-
+    @Query("Select COUNT(a) from Playlists a where a.isDeleted = :isDeleted")
+    int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
 }

@@ -18,6 +18,4 @@ public class NewOrUpdateCategory {
     @NotBlank(message = "image is required")
     private String image;
     private String description;
-    private Date createdAt;
-    private Date modifiedAt;
 }

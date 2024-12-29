@@ -1,10 +1,14 @@
 package com.example.e_project_4_api.service;
 
+import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
+import com.example.e_project_4_api.dto.request.UpdateCategoriesForAlbum;
+import com.example.e_project_4_api.dto.request.UpdateGenresForSong;
 import com.example.e_project_4_api.dto.response.common_response.GenreSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.CategoryAlbum;
 import com.example.e_project_4_api.models.GenreSong;
 import com.example.e_project_4_api.models.Genres;
 import com.example.e_project_4_api.models.Songs;
@@ -84,6 +88,37 @@ public class GenreSongService {
         return request;
     }
 
+    public void deleteByGenreIdAndSongId(int genreId, int songId) {
+        Optional<GenreSong> genreSong = genreSongRepo.findByGenreIdAndSongId(genreId, songId);
+        if (genreSong.isEmpty()) {
+            throw new NotFoundException("Can't find any genre-song");
+        }
+        GenreSong existing = genreSong.get();
+        genreSongRepo.delete(existing);
+    }
+
+    public void updateGenresForAlbum(UpdateGenresForSong request) {
+        List<Integer> oldList = genreSongRepo.findBySongId(request.getSongId(), false)
+                .stream()
+                .map(it -> it.getGenreId().getId())
+                .toList();
+        if (request.getNewGenreIds().isEmpty()) {
+            oldList.forEach(it -> deleteByGenreIdAndSongId(it, request.getSongId()));
+            return;
+        }
+        List<Integer> removedIds = oldList.stream()
+                .filter(item -> !request.getNewGenreIds().contains(item))
+                .toList();
+        removedIds.forEach(it -> deleteByGenreIdAndSongId(it, request.getSongId()));
+
+        List<Integer> toAddIds = request.getNewGenreIds().stream()
+                .filter(item -> !oldList.contains(item))
+                .toList();
+
+        toAddIds.stream()
+                .map(it -> new NewOrUpdateGenreSong(null, it, request.getSongId()))
+                .forEach(this::addNewGenreSong);
+    }
 
     public NewOrUpdateGenreSong updateGenreSong(NewOrUpdateGenreSong request) {
 

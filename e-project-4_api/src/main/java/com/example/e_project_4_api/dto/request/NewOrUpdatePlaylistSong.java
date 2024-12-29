@@ -14,8 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class NewOrUpdatePlaylistSong {
     private Integer id;
-    private Date createdAt;
-    private Date modifiedAt;
     @NotNull(message = "playlistId is required")
     private Integer playlistId;
     @NotNull(message = "songId is required")

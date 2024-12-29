@@ -39,6 +39,10 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfCate() {
+        return cateRepository.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable("categoriesDisplayForAdmin")
     public List<CategoryDisplayForAdmin> getAllCategoriesDisplayForAdmin() {
         return cateRepository.findAllNotDeleted(false)
@@ -146,11 +150,10 @@ public class CategoryService {
     }
 
     private CategoryWithAlbumsResponse toCategoryWithAlbumsResponse(Categories category) {
-        List<CategoryAlbum> categoryAlbum = cateAlbumRepository.findAllByCategoryId(category.getId(), false);
+        List<CategoryAlbum> categoryAlbum = cateAlbumRepository.findAlreadyReleasedByCategoryId(category.getId(), false, true);
 
         List<AlbumDisplay> albumsOfCategory = categoryAlbum.stream()
-                .map(it -> it.getAlbumId())
-                .filter(albums -> albums.getIsReleased())
+                .map(CategoryAlbum::getAlbumId)
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
 

@@ -5,6 +5,7 @@ import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Categories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface CategoryRepository extends JpaRepository<Categories,Integer>{
     @Query("Select a from Categories a where a.isDeleted = :isDeleted")
     List<Categories> findAllNotDeleted(boolean isDeleted);
 
+    @Query("Select COUNT(a) from Categories a where a.isDeleted = :isDeleted")
+    int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
 }

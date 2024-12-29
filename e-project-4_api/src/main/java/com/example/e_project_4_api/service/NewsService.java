@@ -32,6 +32,9 @@ public class NewsService {
                 .map(this::toNewsResponse)
                 .collect(Collectors.toList());
     }
+    public int getNumberOfGenre() {
+        return repo.getNumberOfAll();
+    }
 
     @Cacheable("newsDisplayForAdmin")
     public List<NewsDisplayForAdmin> getAllNewsForAdmin() {
@@ -58,7 +61,7 @@ public class NewsService {
         return toNewsDisplayForAdmin(op.get());
     }
 
-    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<News> news = repo.findById(id);
         if (news.isEmpty()) {
@@ -69,7 +72,7 @@ public class NewsService {
         return true;
     }
 
-    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
     public NewOrUpdateNews addNew(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -96,7 +99,7 @@ public class NewsService {
         return request;
     }
 
-    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
     public NewOrUpdateNews updateNews(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

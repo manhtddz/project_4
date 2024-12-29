@@ -24,7 +24,5 @@ public class NewOrUpdateNews {
     private String image;
     @NotNull(message = "isActive is required")
     private Boolean isActive;
-    private Date createdAt;
-    private Date modifiedAt;
 
 }

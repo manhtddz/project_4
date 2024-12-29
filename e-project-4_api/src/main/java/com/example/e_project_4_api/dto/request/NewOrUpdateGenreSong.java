@@ -18,8 +18,6 @@ public class NewOrUpdateGenreSong {
     private Integer genreId;
     @NotNull(message = "songId is required")
     private Integer songId;
-    private Date createdAt;
-    private Date modifiedAt;
 
 
 }

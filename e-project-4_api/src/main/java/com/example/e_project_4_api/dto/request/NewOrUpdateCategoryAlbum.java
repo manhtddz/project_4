@@ -20,6 +20,5 @@ public class NewOrUpdateCategoryAlbum {
     private Integer albumId;
     @NotNull(message = "categoryId is required")
     private Integer categoryId;
-    private Date createdAt;
-    private Date modifiedAt;
+
 }

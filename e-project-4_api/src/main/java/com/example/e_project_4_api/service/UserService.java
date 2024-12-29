@@ -188,6 +188,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfUser() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable(value = "usersForAdmin")
     public List<UserDisplayForAdmin> getAllUsersDisplayForAdmin() {
         return repo.findAllByIsDeleted(false)

@@ -1,6 +1,9 @@
 package com.example.e_project_4_api.controllers;
 
+import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
+import com.example.e_project_4_api.dto.request.UpdateCategoriesForAlbum;
+import com.example.e_project_4_api.dto.request.UpdateGenresForSong;
 import com.example.e_project_4_api.dto.response.common_response.GenreSongResponse;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -35,6 +38,11 @@ public class GenreSongController {
 
     }
 
+    @PutMapping("admin/genre-song")
+    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateGenresForSong request) {
+        service.updateGenresForAlbum(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @DeleteMapping("/public/genre-song/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {

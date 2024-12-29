@@ -24,7 +24,5 @@ public class NewOrUpdateArtist {
     private String bio;
     @NotNull(message = "userId is required")
     private Integer userId;
-    private Date createdAt;
-    private Date modifiedAt;
 
 }

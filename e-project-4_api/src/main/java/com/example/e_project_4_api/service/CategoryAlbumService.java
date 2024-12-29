@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
+import com.example.e_project_4_api.dto.request.UpdateCategoriesForAlbum;
 import com.example.e_project_4_api.dto.response.common_response.CategoryAlbumResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -54,6 +55,15 @@ public class CategoryAlbumService {
         return true;
     }
 
+    public void deleteByAlbumIdAndCateId(int albumId, int cateId) {
+        Optional<CategoryAlbum> categoryAlbum = cateAlbumRepo.findByCategoryIdAndAlbumId(cateId, albumId);
+        if (categoryAlbum.isEmpty()) {
+            throw new NotFoundException("Can't find any category_album");
+        }
+        CategoryAlbum existing = categoryAlbum.get();
+        cateAlbumRepo.delete(existing);
+    }
+
 
     public NewOrUpdateCategoryAlbum addNewCategoryAlbum(NewOrUpdateCategoryAlbum request) {
         Optional<CategoryAlbum> existingCategoryAlbum = cateAlbumRepo.findByCategoryIdAndAlbumId(request.getCategoryId(), request.getAlbumId());
@@ -80,6 +90,28 @@ public class CategoryAlbumService {
         return request;
     }
 
+    public void updateCategoriesForAlbum(UpdateCategoriesForAlbum request) {
+        List<Integer> oldList = cateAlbumRepo.findAllByAlbumId(request.getAlbumId(), false)
+                .stream()
+                .map(it -> it.getCategoryId().getId())
+                .toList();
+        if (request.getNewCateIds().isEmpty()) {
+            oldList.forEach(it -> deleteByAlbumIdAndCateId(request.getAlbumId(), it));
+            return;
+        }
+        List<Integer> removedIds = oldList.stream()
+                .filter(item -> !request.getNewCateIds().contains(item))
+                .toList();
+        removedIds.forEach(it -> deleteByAlbumIdAndCateId(request.getAlbumId(), it));
+
+        List<Integer> toAddIds = request.getNewCateIds().stream()
+                .filter(item -> !oldList.contains(item))
+                .toList();
+
+        toAddIds.stream()
+                .map(it -> new NewOrUpdateCategoryAlbum(null, request.getAlbumId(), it))
+                .forEach(this::addNewCategoryAlbum);
+    }
 
     public NewOrUpdateCategoryAlbum updateCategoryAlbum(NewOrUpdateCategoryAlbum request) {
 

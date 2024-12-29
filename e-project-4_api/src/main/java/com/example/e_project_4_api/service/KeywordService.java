@@ -33,6 +33,9 @@ public class KeywordService {
                 .map(this::toKeywordResponse)
                 .collect(Collectors.toList());
     }
+    public int getNumberOfGenre() {
+        return repo.getNumberOfAll();
+    }
 
     @Cacheable("keywordsDisplayForAdmin")
     public List<KeywordDisplayForAdmin> getAllKeywordsForAdmin() {
@@ -60,7 +63,7 @@ public class KeywordService {
         return toKeywordDisplayForAdmin(op.get());
     }
 
-    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Keywords> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -71,7 +74,7 @@ public class KeywordService {
         return true;
     }
 
-    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"}, allEntries = true)
     public NewOrUpdateKeyword addNew(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -97,7 +100,7 @@ public class KeywordService {
         return request;
     }
 
-    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"}, allEntries = true)
     public NewOrUpdateKeyword updateKeyword(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 

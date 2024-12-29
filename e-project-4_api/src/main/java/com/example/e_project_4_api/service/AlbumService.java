@@ -40,6 +40,10 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfAlbum() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable("albumsDisplay")
     public List<AlbumDisplay> getAllAlbumsForDisplay() {
         return repo.findAllNotDeleted(false)
@@ -68,7 +72,6 @@ public class AlbumService {
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
         return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
-                .filter(categoryAlbum -> categoryAlbum.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }

@@ -37,6 +37,10 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    public int getNumberOfPlaylist() {
+        return repo.getNumberOfAllNotDeleted(false);
+    }
+
     @Cacheable("playlistsDisplay")
     public List<PlaylistDisplay> getAllPlaylistsForDisplay() {
         return repo.findAllNotDeleted(false)

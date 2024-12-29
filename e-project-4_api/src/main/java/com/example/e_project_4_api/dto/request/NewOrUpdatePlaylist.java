@@ -20,8 +20,6 @@ public class NewOrUpdatePlaylist {
     private Integer id;
     @NotBlank(message = "title is required")
     private String title;
-    private Date createdAt;
-    private Date modifiedAt;
     @NotNull(message = "userId is required")
     private Integer userId;
 
