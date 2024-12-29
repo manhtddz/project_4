@@ -2,9 +2,11 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Genres;
+import com.example.e_project_4_api.repositories.GenreSongRepository;
 import com.example.e_project_4_api.repositories.GenresRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,22 @@ import java.util.stream.Collectors;
 public class GenresService {
     @Autowired
     private GenresRepository repo;
+    @Autowired
+    private GenreSongRepository gSrepo;
 
     @Cacheable("genresDisplay")
     public List<GenresResponse> getAllGenres() {
         return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toGenreResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("genresDisplayForAdmin")
+    public List<GenreDisplayForAdmin> getAllGenreDisplayForAdmin() {
+        return repo.findAllNotDeleted(false)
+                .stream()
+                .map(this::toGenreDisplayForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -37,7 +49,15 @@ public class GenresService {
         return toGenreResponse(op.get());
     }
 
-    @CacheEvict("genresDisplay")
+    public GenreDisplayForAdmin findGenreDisplayForAdminById(int id) {
+        Optional<Genres> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any genre with id: " + id);
+        }
+        return toGenreDisplayForAdmin(op.get());
+    }
+
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
     public boolean deleteById(int id) {
         Optional<Genres> genre = repo.findById(id);
         if (genre.isEmpty()) {
@@ -49,7 +69,7 @@ public class GenresService {
         return true;
     }
 
-    @CacheEvict("genresDisplay")
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
     public NewOrUpdateGenres addNewGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -78,12 +98,12 @@ public class GenresService {
         return request;
     }
 
-    @CacheEvict("genresDisplay")
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"})
     public NewOrUpdateGenres updateGenre(NewOrUpdateGenres request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
 
-        Optional<Genres> op = repo.findByIdAndIsDeleted(request.getId(),false);
+        Optional<Genres> op = repo.findByIdAndIsDeleted(request.getId(), false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any genre with id: " + request.getId());
         }
@@ -113,6 +133,16 @@ public class GenresService {
     public GenresResponse toGenreResponse(Genres genre) {
         GenresResponse res = new GenresResponse();
         BeanUtils.copyProperties(genre, res);
+        return res;
+    }
+
+    public GenreDisplayForAdmin toGenreDisplayForAdmin(Genres genre) {
+        GenreDisplayForAdmin res = new GenreDisplayForAdmin();
+        BeanUtils.copyProperties(genre, res);
+        res.setTotalSong(gSrepo.findByGenreId(genre.getId(), false)
+                .stream()
+                .toList()
+                .size());
         return res;
     }
 }

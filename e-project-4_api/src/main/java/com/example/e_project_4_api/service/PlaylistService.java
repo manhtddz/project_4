@@ -2,12 +2,14 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
 import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.PlaylistRepository;
+import com.example.e_project_4_api.repositories.PlaylistSongRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,12 @@ public class PlaylistService {
     @Autowired
     private PlaylistRepository repo;
     @Autowired
+    private PlaylistSongRepository pSRepo;
+    @Autowired
     private UserRepository userRepo;
 
     public List<PlaylistResponse> getAllPlaylists() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toPlaylistResponse)
                 .collect(Collectors.toList());
@@ -41,6 +45,14 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("playlistsDisplayForAdmin")
+    public List<PlaylistDisplayForAdmin> getAllPlaylistsDisplayForAdmin() {
+        return repo.findAllNotDeleted(false)
+                .stream()
+                .map(this::toPlaylistDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable(value = "playlistsByUser", key = "#userId")
     public List<PlaylistDisplay> getAllPlaylistsByUserIdForDisplay(int userId) {
         return repo.findAllByUserId(userId, false)
@@ -50,7 +62,7 @@ public class PlaylistService {
     }
 
     public PlaylistResponse findById(int id) {
-        Optional<Playlists> op = repo.findById(id);
+        Optional<Playlists> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any playlists with id: " + id);
         }
@@ -65,7 +77,15 @@ public class PlaylistService {
         return toPlaylistDisplay(op.get());
     }
 
-    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
+    public PlaylistDisplayForAdmin findDisplayForAdminById(int id) {
+        Optional<Playlists> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any playlists with id: " + id);
+        }
+        return toPlaylistDisplayForAdmin(op.get());
+    }
+
+    @CacheEvict(value = {"playlistsDisplayForAdmin", "playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Playlists> playlist = repo.findById(id);
         if (playlist.isEmpty()) {
@@ -77,7 +97,7 @@ public class PlaylistService {
         return true;
     }
 
-    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"playlistsDisplayForAdmin", "playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public NewOrUpdatePlaylist addNewPlaylist(NewOrUpdatePlaylist request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Optional<Users> user = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
@@ -94,7 +114,7 @@ public class PlaylistService {
         return request;
     }
 
-    @CacheEvict(value = {"playlistsByUser", "playlistsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"playlistsDisplayForAdmin", "playlistsByUser", "playlistsDisplay"}, allEntries = true)
     public NewOrUpdatePlaylist updatePlaylist(NewOrUpdatePlaylist request) {
         List<Map<String, String>> errors = new ArrayList<>();
         Optional<Playlists> op = repo.findByIdAndIsDeleted(request.getId(), false);
@@ -127,6 +147,15 @@ public class PlaylistService {
 
     public PlaylistDisplay toPlaylistDisplay(Playlists playlist) {
         PlaylistDisplay res = new PlaylistDisplay();
+        BeanUtils.copyProperties(playlist, res);
+        res.setIsDeleted(playlist.getIsDeleted());
+        res.setUsername(playlist.getUserId().getUsername());
+        return res;
+    }
+
+    public PlaylistDisplayForAdmin toPlaylistDisplayForAdmin(Playlists playlist) {
+        PlaylistDisplayForAdmin res = new PlaylistDisplayForAdmin();
+        res.setTotalSong(pSRepo.findByPlaylistId(playlist.getId(), false).size());
         BeanUtils.copyProperties(playlist, res);
         res.setIsDeleted(playlist.getIsDeleted());
         res.setUsername(playlist.getUserId().getUsername());

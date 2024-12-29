@@ -3,6 +3,7 @@ package com.example.e_project_4_api.service;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -40,7 +41,8 @@ public class UserService {
 
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
-            @CacheEvict(value = "user", key = "#request.id") // Xóa cache user cụ thể
+            @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
+
     })
     public UserResponse updateUser(NewOrUpdateUser request) {
         List<Map<String, String>> errors = new ArrayList<>();
@@ -67,7 +69,7 @@ public class UserService {
 
         Optional<Users> opPhone = repo.findByPhone(request.getPhone());
         if (opPhone.isPresent() && opPhone.get().getPhone() != op.get().getPhone()) {
-            errors.add(Map.of("phoneError", "Already exist phone number" ));
+            errors.add(Map.of("phoneError", "Already exist phone number"));
         }
 
 
@@ -98,7 +100,7 @@ public class UserService {
 
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
-            @CacheEvict(value = "user", key = "#request.id") // Xóa cache user cụ thể
+            @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
     })
     public void updateEachPartOfUser(UpdateUserWithAttribute request) {
         Optional<Users> op = repo.findById(request.getId());
@@ -180,24 +182,39 @@ public class UserService {
 
     @Cacheable(value = "users")
     public List<UserResponse> getAllUsers() {
-        return repo.findAll()
+        return repo.findAllByIsDeleted(false)
                 .stream()
                 .map(this::toUserResponse)
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "user", key = "#id")
+    @Cacheable(value = "usersForAdmin")
+    public List<UserDisplayForAdmin> getAllUsersDisplayForAdmin() {
+        return repo.findAllByIsDeleted(false)
+                .stream()
+                .map(this::toUserDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
     public UserResponse findById(int id) {
-        Optional<Users> op = repo.findById(id);
+        Optional<Users> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any user with id: " + id);
         }
         return toUserResponse(op.get());
     }
 
+    public UserDisplayForAdmin findUserDisplayForAdminById(int id) {
+        Optional<Users> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any user with id: " + id);
+        }
+        return toUserDisplayForAdmin(op.get());
+    }
+
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
-            @CacheEvict(value = "user", key = "#id") // Xóa cache user cụ thể
+            @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
     })
     public boolean deleteById(int id) {
         Optional<Users> op = repo.findById(id);
@@ -212,6 +229,13 @@ public class UserService {
 
     public UserResponse toUserResponse(Users user) {
         UserResponse res = new UserResponse();
+        BeanUtils.copyProperties(user, res);
+        res.setIsDeleted(user.getIsDeleted());
+        return res;
+    }
+
+    public UserDisplayForAdmin toUserDisplayForAdmin(Users user) {
+        UserDisplayForAdmin res = new UserDisplayForAdmin();
         BeanUtils.copyProperties(user, res);
         res.setIsDeleted(user.getIsDeleted());
         return res;

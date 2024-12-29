@@ -1,4 +1,4 @@
-package com.example.e_project_4_api.dto.response.common_response;
+package com.example.e_project_4_api.dto.response.display_for_admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,14 +12,14 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewsResponse implements Serializable {
+
+public class PlaylistDisplayForAdmin implements Serializable {
     private Integer id;
     private String title;
-    private String content;
-    private String image;
-    private Boolean isActive;
+    private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
-
+    private String username;
+    private Integer totalSong;//field thiếu
 
 }

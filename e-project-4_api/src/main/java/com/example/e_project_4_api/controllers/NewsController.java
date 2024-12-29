@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.GenresService;
 import com.example.e_project_4_api.service.NewsService;
@@ -30,10 +31,21 @@ public class NewsController {
         return new ResponseEntity<>(service.getAllNews(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/news/display")
+    public ResponseEntity<List<NewsDisplayForAdmin>> findAllForAdmin() {
+        return new ResponseEntity<>(service.getAllNewsForAdmin(), HttpStatus.OK);
+    }
+
 
     @GetMapping("/public/news/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         NewsResponse news = service.findById(id);
+        return new ResponseEntity<>(news, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/news/display/{id}")
+    public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
+        NewsDisplayForAdmin news = service.findDisplayForAdminById(id);
         return new ResponseEntity<>(news, HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
 import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -31,6 +32,11 @@ public class PlaylistController {
         return new ResponseEntity<>(service.getAllPlaylistsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/playlists/display")
+    public ResponseEntity<List<PlaylistDisplayForAdmin>> findAllPlaylistsDisplayForAdmin() {
+        return new ResponseEntity<>(service.getAllPlaylistsDisplayForAdmin(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/playlists/byUser/display/{id}")
     public ResponseEntity<List<PlaylistDisplay>> findAllPlaylistsByUserIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllPlaylistsByUserIdForDisplay(id), HttpStatus.OK);
@@ -45,6 +51,12 @@ public class PlaylistController {
     @GetMapping("/public/playlists/display/{id}")
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         PlaylistDisplay playlist = service.findDisplayById(id);
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/playlists/display/{id}")
+    public ResponseEntity<Object> findDisplayDetailsForAdmin(@PathVariable("id") int id) {
+        PlaylistDisplayForAdmin playlist = service.findDisplayForAdminById(id);
         return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
 

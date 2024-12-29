@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -30,6 +31,11 @@ public class SongController {
     @GetMapping("/public/songs/display")
     public ResponseEntity<List<SongDisplay>> findAllSongsForDisplay() {
         return new ResponseEntity<>(service.getAllSongsForDisplay(), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/songs/display")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsDisplayForAdmin() {
+        return new ResponseEntity<>(service.getAllSongsForAdmin(), HttpStatus.OK);
     }
 
     @GetMapping("/public/songs/byArtist/display/{id}")
@@ -68,7 +74,12 @@ public class SongController {
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         SongDisplay song = service.findDisplayById(id);
         return new ResponseEntity<>(song, HttpStatus.OK);
+    }
 
+    @GetMapping("/admin/songs/display/{id}")
+    public ResponseEntity<Object> findDisplayDetailsForAdmin(@PathVariable("id") int id) {
+        SongDisplayForAdmin song = service.findDisplayForAdminById(id);
+        return new ResponseEntity<>(song, HttpStatus.OK);
     }
 
     @GetMapping("/public/songs/mostListened")

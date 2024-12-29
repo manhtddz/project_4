@@ -19,4 +19,7 @@ public interface CategoryAlbumRepository extends JpaRepository<CategoryAlbum, In
 
     @Query("SELECT sa FROM CategoryAlbum sa WHERE sa.categoryId.id = :categoryId AND sa.albumId.isDeleted = :isDeleted")
     List<CategoryAlbum> findAllByCategoryId(@Param("categoryId") Integer categoryId, @Param("isDeleted") boolean isDeleted);
+
+    @Query("SELECT sa FROM CategoryAlbum sa WHERE sa.albumId.id = :albumId AND sa.categoryId.isDeleted = :isDeleted")
+    List<CategoryAlbum> findAllByAlbumId(@Param("albumId") Integer albumId, @Param("isDeleted") boolean isDeleted);
 }

@@ -21,17 +21,20 @@ public class AlbumSearchSpecifications {
             return cb.or(
                     cb.and(
                             cb.equal(root.get("isDeleted"), false),
+                            cb.equal(root.get("isReleased"), true),
                             cb.like(cb.lower(root.get("title")), "%" + text.toLowerCase() + "%")
                     ),
 
                     cb.and(
                             cb.equal(parentJoin.get("isDeleted"), false),
                             cb.equal(root.get("isDeleted"), false),
+                            cb.equal(root.get("isReleased"), true),
                             cb.like(cb.lower(parentJoin.get("artistName")), "%" + text.toLowerCase() + "%")
                     ),
 
                     cb.and(
                             cb.equal(root.get("isDeleted"), false),
+                            cb.equal(root.get("isReleased"), true),
                             cb.equal(subEntityJoin.get("isDeleted"), false),
                             cb.like(cb.lower(subEntityJoin.get("title")), "%" + text.toLowerCase() + "%")
                     )

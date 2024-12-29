@@ -18,4 +18,7 @@ public interface FavouriteSongRepository extends JpaRepository<FavouriteSongs, I
 
     @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.userId.id = :userId AND fs.songId.isDeleted = :isDeleted")
     List<FavouriteSongs> findFSByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
+
+    @Query("SELECT fs FROM FavouriteSongs fs WHERE fs.songId.id = :songId AND fs.songId.isDeleted = :isDeleted")
+    List<FavouriteSongs> findFSBySongId(@Param("songId") Integer songId, @Param("isDeleted") boolean isDeleted);
 }

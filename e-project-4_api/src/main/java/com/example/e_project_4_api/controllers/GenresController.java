@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.GenresService;
@@ -28,10 +29,21 @@ public class GenresController {
         return new ResponseEntity<>(service.getAllGenres(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/genres/display")
+    public ResponseEntity<List<GenreDisplayForAdmin>> findAllGenreDisplayForAdmin() {
+        return new ResponseEntity<>(service.getAllGenreDisplayForAdmin(), HttpStatus.OK);
+    }
+
 
     @GetMapping("/public/genres/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         GenresResponse genre = service.findById(id);
+        return new ResponseEntity<>(genre, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/genres/{id}")
+    public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
+        GenreDisplayForAdmin genre = service.findGenreDisplayForAdminById(id);
         return new ResponseEntity<>(genre, HttpStatus.OK);
     }
 

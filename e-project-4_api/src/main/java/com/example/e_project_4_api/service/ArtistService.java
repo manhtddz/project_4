@@ -2,10 +2,12 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
 import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
@@ -34,6 +36,14 @@ public class ArtistService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("artistsDisplayForAdmin")
+    public List<ArtistDisplayForAdmin> getAllArtistsDisplayForAdmin() {
+        return repo.findAllNotDeleted(false)
+                .stream()
+                .map(this::toArtistDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
 
     public ArtistResponse findById(int id) {
         Optional<Artists> op = repo.findByIdAndIsDeleted(id, false);
@@ -43,7 +53,15 @@ public class ArtistService {
         return toArtistResponse(op.get());
     }
 
-    @CacheEvict("artistsDisplay")
+    public ArtistDisplayForAdmin findByIdForAdmin(int id) {
+        Optional<Artists> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any artist with id: " + id);
+        }
+        return toArtistDisplayForAdmin(op.get());
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
     public boolean deleteById(int id) {
         Optional<Artists> artistOptional = repo.findById(id);
         if (artistOptional.isEmpty()) {
@@ -55,7 +73,7 @@ public class ArtistService {
         return true;
     }
 
-    @CacheEvict("artistsDisplay")
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
     public NewOrUpdateArtist addNewArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -74,7 +92,7 @@ public class ArtistService {
         return request;
     }
 
-    @CacheEvict("artistsDisplay")
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"})
     public NewOrUpdateArtist updateArtist(NewOrUpdateArtist request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -86,7 +104,7 @@ public class ArtistService {
         Artists artist = op.get();
 
         if (request.getUserId() != null) {
-            Optional<Users> userOp = userRepo.findByIdAndIsDeleted(request.getUserId(),false);
+            Optional<Users> userOp = userRepo.findByIdAndIsDeleted(request.getUserId(), false);
             if (userOp.isEmpty()) {
                 errors.add(Map.of("userNotExistedError", "Can't find user"));
             }
@@ -122,6 +140,26 @@ public class ArtistService {
         ArtistResponse res = new ArtistResponse();
         BeanUtils.copyProperties(artist, res);
         res.setIsDeleted(artist.getIsDeleted());
+        return res;
+    }
+
+    public ArtistDisplayForAdmin toArtistDisplayForAdmin(Artists artist) {
+        ArtistDisplayForAdmin res = new ArtistDisplayForAdmin();
+        BeanUtils.copyProperties(artist, res);
+        res.setIsDeleted(artist.getIsDeleted());
+        res.setTotalSong(artist.getSongsCollection().size());
+        res.setTotalAlbum(artist.getAlbumsCollection().size());
+        int totalListenAmount = artist.getSongsCollection()
+                .stream().mapToInt(Songs::getListenAmount).sum();
+        res.setTotalListenAmount(totalListenAmount);
+        Users user = artist.getUserId();
+        if (user != null) {
+            res.setUsername(artist.getUserId().getUsername());
+            res.setIsActive(true);
+            return res;
+        }
+        res.setUsername("");
+        res.setIsActive(false);
         return res;
     }
 }

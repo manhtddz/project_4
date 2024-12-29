@@ -15,7 +15,7 @@ import java.util.Date;
 public class KeywordResponse implements Serializable {
     private Integer id;
     private String content;
-    private Boolean isDeleted;
+    private Boolean isActive;
     private Date createdAt;
     private Date modifiedAt;
 

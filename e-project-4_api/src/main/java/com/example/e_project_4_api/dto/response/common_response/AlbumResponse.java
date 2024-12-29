@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,5 +23,6 @@ public class AlbumResponse {
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
+    private List<Integer> categoryIds;
 
 }

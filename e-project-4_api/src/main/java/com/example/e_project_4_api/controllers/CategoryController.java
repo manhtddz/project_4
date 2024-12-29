@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
 import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.CategoryService;
@@ -25,6 +26,11 @@ public class CategoryController {
         return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/categories/display")
+    public ResponseEntity<List<CategoryDisplayForAdmin>> findAllForAdmin() {
+        return new ResponseEntity<>(service.getAllCategoriesDisplayForAdmin(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/categories/withAlbum")
     public ResponseEntity<List<CategoryWithAlbumsResponse>> findAllCateWithAlbums() {
         return new ResponseEntity<>(service.getAllCategoriesWithAlbums(), HttpStatus.OK);
@@ -33,6 +39,12 @@ public class CategoryController {
     @GetMapping("/public/categories/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         CategoryResponse sub = service.findById(id);
+        return new ResponseEntity<>(sub, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/categories/display/{id}")
+    public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
+        CategoryDisplayForAdmin sub = service.findByIdForAdmin(id);
         return new ResponseEntity<>(sub, HttpStatus.OK);
     }
 

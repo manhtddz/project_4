@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
 import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
@@ -38,6 +39,14 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("categoriesDisplayForAdmin")
+    public List<CategoryDisplayForAdmin> getAllCategoriesDisplayForAdmin() {
+        return cateRepository.findAllNotDeleted(false)
+                .stream()
+                .map(this::toCategoryCategoryDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable("categoriesWithAlbumDisplay")
     public List<CategoryWithAlbumsResponse> getAllCategoriesWithAlbums() {
         return cateRepository.findAllNotDeleted(false)
@@ -57,7 +66,17 @@ public class CategoryService {
         }
     }
 
-    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
+    public CategoryDisplayForAdmin findByIdForAdmin(int id) {
+        Optional<Categories> op = cateRepository.findByIdAndIsDeleted(id, false);
+        if (op.isPresent()) {
+            Categories subjects = op.get();
+            return toCategoryCategoryDisplayForAdmin(subjects);
+        } else {
+            throw new NotFoundException("Can't find any category with id: " + id);
+        }
+    }
+
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public void deleteById(int id) {
         if (!cateRepository.existsById(id)) {
             throw new NotFoundException("Can't find any category with id: " + id);
@@ -65,7 +84,7 @@ public class CategoryService {
         cateRepository.deleteById(id);
     }
 
-    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public NewOrUpdateCategory addNewSubject(NewOrUpdateCategory request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -83,11 +102,11 @@ public class CategoryService {
         return request;
     }
 
-    @CacheEvict(value = {"categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesDisplay", "categoriesWithAlbumDisplay"}, allEntries = true)
     public NewOrUpdateCategory updateSubject(NewOrUpdateCategory request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
-        Optional<Categories> op = cateRepository.findByIdAndIsDeleted(request.getId(),false);
+        Optional<Categories> op = cateRepository.findByIdAndIsDeleted(request.getId(), false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any category with id: " + request.getId());
         }
@@ -118,11 +137,20 @@ public class CategoryService {
         return res;
     }
 
+    private CategoryDisplayForAdmin toCategoryCategoryDisplayForAdmin(Categories sub) {
+        CategoryDisplayForAdmin res = new CategoryDisplayForAdmin();
+        res.setIsDeleted(sub.getIsDeleted());
+        res.setTotalAlbum(cateAlbumRepository.findAllByCategoryId(sub.getId(), false).size());
+        BeanUtils.copyProperties(sub, res);
+        return res;
+    }
+
     private CategoryWithAlbumsResponse toCategoryWithAlbumsResponse(Categories category) {
         List<CategoryAlbum> categoryAlbum = cateAlbumRepository.findAllByCategoryId(category.getId(), false);
 
         List<AlbumDisplay> albumsOfCategory = categoryAlbum.stream()
                 .map(it -> it.getAlbumId())
+                .filter(albums -> albums.getIsReleased())
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
 
@@ -132,7 +160,7 @@ public class CategoryService {
         return res;
     }
 
-    public AlbumDisplay toAlbumDisplay(Albums album) {
+    private AlbumDisplay toAlbumDisplay(Albums album) {
         AlbumDisplay res = new AlbumDisplay();
         BeanUtils.copyProperties(album, res);
         res.setIsDeleted(album.getIsDeleted());

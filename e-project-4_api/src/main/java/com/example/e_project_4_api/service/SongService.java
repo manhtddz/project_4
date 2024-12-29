@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -39,7 +40,7 @@ public class SongService {
     private LikeAndViewRepository likeAndViewRepository;
 
     public List<SongResponse> getAllSongs() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toSongResponse)
                 .collect(Collectors.toList());
@@ -50,6 +51,14 @@ public class SongService {
         return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("songsDisplayForAdmin")
+    public List<SongDisplayForAdmin> getAllSongsForAdmin() {
+        return repo.findAllNotDeleted(false)
+                .stream()
+                .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -65,12 +74,13 @@ public class SongService {
     public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
         return repo.findAllByAlbumId(albumId, false)
                 .stream()
+                .filter(song -> song.getIsPending())
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
 
     public SongResponse findById(int id) {
-        Optional<Songs> op = repo.findById(id);
+        Optional<Songs> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any song with id: " + id);
         }
@@ -83,6 +93,14 @@ public class SongService {
             throw new NotFoundException("Can't find any song with id: " + id);
         }
         return toSongDisplay(op.get());
+    }
+
+    public SongDisplayForAdmin findDisplayForAdminById(int id) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + id);
+        }
+        return toSongDisplayAdmin(op.get());
     }
 
     public SongWithLikeAndViewInMonth getMostListenedSongInMonth() {
@@ -135,6 +153,7 @@ public class SongService {
     public List<SongDisplay> getAllSongsByGenreId(Integer id) {
         return genSongRepo.findByGenreId(id, false)
                 .stream()
+                .filter(song -> song.getSongId().getIsPending())
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
@@ -147,7 +166,9 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    @CacheEvict(value = {"playlistsDisplayForAdmin", "artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Songs> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -159,7 +180,9 @@ public class SongService {
         return true;
     }
 
-    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "songsByGenre"}, allEntries = true)
+    @CacheEvict(value = {"playlistsDisplayForAdmin", "artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -185,7 +208,9 @@ public class SongService {
         return request;
     }
 
-    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateSong updateSong(NewOrUpdateSong request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -222,7 +247,9 @@ public class SongService {
         return request;
     }
 
-    @CacheEvict(value = {"songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public void plusOneListenAmount(int songId) {
         Optional<Songs> op = repo.findByIdAndIsDeleted(songId, false);
         //check sự tồn tại
@@ -241,6 +268,11 @@ public class SongService {
         res.setIsPending(song.getIsPending());
         res.setAlbumId(song.getAlbumId().getId());
         res.setArtistId(song.getArtistId().getId());
+        List<Integer> genreIds = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getId())
+                .toList();
+        res.setGenreIds(genreIds);
         return res;
     }
 
@@ -252,19 +284,51 @@ public class SongService {
         res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
         return res;
     }
 
-    public SongDisplay toSongDisplay(FavouriteSongs fsSong) {
-        Songs song = repo.findById(fsSong.getSongId().getId()).get();
+    public SongDisplayForAdmin toSongDisplayAdmin(Songs song) {
+        SongDisplayForAdmin res = new SongDisplayForAdmin();
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
 
-        SongDisplay res = new SongDisplay();
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
         res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
+        res.setTotalFavourite(favCount);
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
+        return res;
+    }
+
+    public SongDisplay toSongDisplay(FavouriteSongs fsSong) {
+        Songs song = repo.findById(fsSong.getSongId().getId()).get();
+        SongDisplay res = new SongDisplay();
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        res.setAlbumTitle(song.getAlbumId().getTitle());
+        res.setAlbumImage(song.getAlbumId().getImage());
+        res.setArtistName(song.getArtistId().getArtistName());
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
         return res;
     }
 
@@ -278,6 +342,13 @@ public class SongService {
         res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
         return res;
     }
 
@@ -291,6 +362,13 @@ public class SongService {
         res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getSongId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
         return res;
     }
 }

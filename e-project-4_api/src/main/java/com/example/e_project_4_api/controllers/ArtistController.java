@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
 import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.service.ArtistService;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -24,14 +25,24 @@ public class ArtistController {
 
     @GetMapping("/public/artists")
     public ResponseEntity<List<ArtistResponse>> getAllArtists() {
-        List<ArtistResponse> artists = artistService.getAllArtists();
         return new ResponseEntity<>(artistService.getAllArtists(), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/artists/display")
+    public ResponseEntity<List<ArtistDisplayForAdmin>> getAllArtistsDisplayForAdmin() {
+        return new ResponseEntity<>(artistService.getAllArtistsDisplayForAdmin(), HttpStatus.OK);
     }
 
 
     @GetMapping("/public/artists/{id}")
     public ResponseEntity<Object> getArtistById(@PathVariable int id) {
         ArtistResponse artist = artistService.findById(id);
+        return new ResponseEntity<>(artist, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/artists/display/{id}")
+    public ResponseEntity<Object> getArtistDisplayForAdminById(@PathVariable int id) {
+        ArtistDisplayForAdmin artist = artistService.findByIdForAdmin(id);
         return new ResponseEntity<>(artist, HttpStatus.OK);
     }
 

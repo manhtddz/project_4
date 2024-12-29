@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,6 +25,7 @@ public class SongResponse implements Serializable {
     private String title;
     private String audioPath;
     private Integer listenAmount;
+    private String featureArtist;
     private String lyricFilePath;
     private Boolean isPending;
     private Boolean isDeleted;
@@ -31,5 +33,5 @@ public class SongResponse implements Serializable {
     private Date modifiedAt;
     private Integer albumId;
     private Integer artistId;
-
+    private List<Integer> genreIds;
 }

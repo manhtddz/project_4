@@ -1,4 +1,4 @@
-package com.example.e_project_4_api.dto.response.display_response;
+package com.example.e_project_4_api.dto.response.display_for_admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class AlbumDisplay implements Serializable {
+public class AlbumDisplayForAdmin implements Serializable {
     private Integer id;
     private String title;
     private String image;
@@ -25,4 +25,6 @@ public class AlbumDisplay implements Serializable {
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
+    private Integer totalSong;//field thiếu
+    private Integer totalFavourite;//field thiếu
 }

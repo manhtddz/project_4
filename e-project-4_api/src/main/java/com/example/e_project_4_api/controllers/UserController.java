@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Users;
@@ -27,9 +28,20 @@ public class UserController {
         return new ResponseEntity<>(service.getAllUsers(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/users/display")
+    public ResponseEntity<List<UserDisplayForAdmin>> findAllForAdmin() {
+        return new ResponseEntity<>(service.getAllUsersDisplayForAdmin(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/users/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         UserResponse album = service.findById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/users/display/{id}")
+    public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
+        UserDisplayForAdmin album = service.findUserDisplayForAdminById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 

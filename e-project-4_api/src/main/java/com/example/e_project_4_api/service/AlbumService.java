@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -33,7 +34,7 @@ public class AlbumService {
     private FavouriteAlbumRepository favRepo;
 
     public List<AlbumResponse> getAllAlbums() {
-        return repo.findAll()
+        return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toAlbumResponse)
                 .collect(Collectors.toList());
@@ -44,6 +45,14 @@ public class AlbumService {
         return repo.findAllNotDeleted(false)
                 .stream()
                 .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("albumsDisplayForAdmin")
+    public List<AlbumDisplayForAdmin> getAllAlbumsDisplayForAdmin() {
+        return repo.findAllNotDeleted(false)
+                .stream()
+                .map(this::toAlbumDisplayForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -59,13 +68,14 @@ public class AlbumService {
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
         return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
+                .filter(categoryAlbum -> categoryAlbum.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
 
 
     public AlbumResponse findById(int id) {
-        Optional<Albums> op = repo.findById(id);
+        Optional<Albums> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
@@ -78,6 +88,14 @@ public class AlbumService {
             throw new NotFoundException("Can't find any album with id: " + id);
         }
         return toAlbumDisplay(op.get());
+    }
+
+    public AlbumDisplayForAdmin findDisplayForAdminById(int id) {
+        Optional<Albums> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + id);
+        }
+        return toAlbumDisplayForAdmin(op.get());
     }
 
     @Cacheable(value = "favAlbumsByUser", key = "#id")
@@ -95,7 +113,7 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = {"albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public boolean deleteById(int id) {
         Optional<Albums> album = repo.findById(id);
         if (album.isEmpty()) {
@@ -107,7 +125,7 @@ public class AlbumService {
         return true;
     }
 
-    @CacheEvict(value = {"albumsByCate", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -129,7 +147,7 @@ public class AlbumService {
         return request;
     }
 
-    @CacheEvict(value = {"albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -169,6 +187,10 @@ public class AlbumService {
         res.setIsDeleted(album.getIsDeleted());
         res.setIsReleased(album.getIsReleased());
         res.setArtistId(album.getArtistId().getId());
+        res.setCategoryIds(categoryAlbumRepo.findAllByAlbumId(album.getId(), false)
+                .stream()
+                .map(CategoryAlbum::getId)
+                .toList());
         return res;
     }
 
@@ -179,6 +201,18 @@ public class AlbumService {
         res.setIsReleased(album.getIsReleased());
         res.setArtistName(album.getArtistId().getArtistName());
         res.setArtistImage(album.getArtistId().getImage());
+        return res;
+    }
+
+    public AlbumDisplayForAdmin toAlbumDisplayForAdmin(Albums album) {
+        AlbumDisplayForAdmin res = new AlbumDisplayForAdmin();
+        BeanUtils.copyProperties(album, res);
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        res.setTotalSong(album.getSongsCollection().size());
+        res.setTotalFavourite(favRepo.findFAByAlbumId(album.getId(), false).size());
         return res;
     }
 

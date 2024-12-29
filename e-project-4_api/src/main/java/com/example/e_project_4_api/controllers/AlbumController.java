@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -32,6 +33,11 @@ public class AlbumController {
         return new ResponseEntity<>(service.getAllAlbumsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/albums/display")
+    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsDisplayForAdmin() {
+        return new ResponseEntity<>(service.getAllAlbumsDisplayForAdmin(), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/byArtist/display/{id}")
     public ResponseEntity<List<AlbumDisplay>> findAllAlbumsByArtistIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllAlbumsByArtistIdForDisplay(id), HttpStatus.OK);
@@ -52,6 +58,12 @@ public class AlbumController {
     @GetMapping("/public/albums/display/{id}")
     public ResponseEntity<Object> findDisplayDetails(@PathVariable("id") int id) {
         AlbumDisplay album = service.findDisplayById(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/albums/display/{id}")
+    public ResponseEntity<Object> findDisplayDetailsForAdmin(@PathVariable("id") int id) {
+        AlbumDisplayForAdmin album = service.findDisplayForAdminById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 

@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateKeyword;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.response.common_response.KeywordResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.KeywordService;
 import com.example.e_project_4_api.service.NewsService;
@@ -30,10 +31,21 @@ public class KeywordController {
         return new ResponseEntity<>(service.getAllKeywords(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/keywords/display")
+    public ResponseEntity<List<KeywordDisplayForAdmin>> findAllForAdmin() {
+        return new ResponseEntity<>(service.getAllKeywordsForAdmin(), HttpStatus.OK);
+    }
+
 
     @GetMapping("/public/keywords/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         KeywordResponse keyword = service.findById(id);
+        return new ResponseEntity<>(keyword, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/keywords/display/{id}")
+    public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
+        KeywordDisplayForAdmin keyword = service.findByIdForAdmin(id);
         return new ResponseEntity<>(keyword, HttpStatus.OK);
     }
 

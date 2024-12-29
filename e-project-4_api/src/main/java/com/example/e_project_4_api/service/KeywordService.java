@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateKeyword;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.response.common_response.KeywordResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Keywords;
@@ -28,7 +29,17 @@ public class KeywordService {
     public List<KeywordResponse> getAllKeywords() {
         return repo.findAll()
                 .stream()
+                .filter(keywords -> keywords.getIsActive())
                 .map(this::toKeywordResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("keywordsDisplayForAdmin")
+    public List<KeywordDisplayForAdmin> getAllKeywordsForAdmin() {
+        return repo.findAll()
+                .stream()
+                .filter(keywords -> keywords.getIsActive())
+                .map(this::toKeywordDisplayForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +52,15 @@ public class KeywordService {
         return toKeywordResponse(op.get());
     }
 
-    @CacheEvict("keywordsDisplay")
+    public KeywordDisplayForAdmin findByIdForAdmin(int id) {
+        Optional<Keywords> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any news with id: " + id);
+        }
+        return toKeywordDisplayForAdmin(op.get());
+    }
+
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
     public boolean deleteById(int id) {
         Optional<Keywords> op = repo.findById(id);
         if (op.isEmpty()) {
@@ -52,7 +71,7 @@ public class KeywordService {
         return true;
     }
 
-    @CacheEvict("keywordsDisplay")
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
     public NewOrUpdateKeyword addNew(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -78,7 +97,7 @@ public class KeywordService {
         return request;
     }
 
-    @CacheEvict("keywordsDisplay")
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"})
     public NewOrUpdateKeyword updateKeyword(NewOrUpdateKeyword request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -110,6 +129,12 @@ public class KeywordService {
 
     public KeywordResponse toKeywordResponse(Keywords keyword) {
         KeywordResponse res = new KeywordResponse();
+        BeanUtils.copyProperties(keyword, res);
+        return res;
+    }
+
+    public KeywordDisplayForAdmin toKeywordDisplayForAdmin(Keywords keyword) {
+        KeywordDisplayForAdmin res = new KeywordDisplayForAdmin();
         BeanUtils.copyProperties(keyword, res);
         return res;
     }

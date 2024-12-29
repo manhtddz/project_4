@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Genres;
@@ -32,6 +33,14 @@ public class NewsService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable("newsDisplayForAdmin")
+    public List<NewsDisplayForAdmin> getAllNewsForAdmin() {
+        return repo.findAll()
+                .stream()
+                .map(this::toNewsDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
 
     public NewsResponse findById(int id) {
         Optional<News> op = repo.findById(id);
@@ -41,7 +50,15 @@ public class NewsService {
         return toNewsResponse(op.get());
     }
 
-    @CacheEvict("newsDisplay")
+    public NewsDisplayForAdmin findDisplayForAdminById(int id) {
+        Optional<News> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any news with id: " + id);
+        }
+        return toNewsDisplayForAdmin(op.get());
+    }
+
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
     public boolean deleteById(int id) {
         Optional<News> news = repo.findById(id);
         if (news.isEmpty()) {
@@ -52,7 +69,7 @@ public class NewsService {
         return true;
     }
 
-    @CacheEvict("newsDisplay")
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
     public NewOrUpdateNews addNew(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -79,7 +96,7 @@ public class NewsService {
         return request;
     }
 
-    @CacheEvict("newsDisplay")
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"})
     public NewOrUpdateNews updateNews(NewOrUpdateNews request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -113,6 +130,12 @@ public class NewsService {
 
     public NewsResponse toNewsResponse(News news) {
         NewsResponse res = new NewsResponse();
+        BeanUtils.copyProperties(news, res);
+        return res;
+    }
+
+    public NewsDisplayForAdmin toNewsDisplayForAdmin(News news) {
+        NewsDisplayForAdmin res = new NewsDisplayForAdmin();
         BeanUtils.copyProperties(news, res);
         return res;
     }

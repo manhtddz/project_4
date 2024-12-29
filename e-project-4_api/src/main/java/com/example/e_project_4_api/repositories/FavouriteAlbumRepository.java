@@ -18,4 +18,7 @@ public interface FavouriteAlbumRepository extends JpaRepository<FavouriteAlbums,
 
     @Query("SELECT fa FROM FavouriteAlbums fa WHERE fa.userId.id = :userId AND fa.albumId.isDeleted = :isDeleted")
     List<FavouriteAlbums> findFAByUserId(@Param("userId") Integer userId, @Param("isDeleted") boolean isDeleted);
+
+    @Query("SELECT fa FROM FavouriteAlbums fa WHERE fa.albumId.id = :albumId AND fa.albumId.isDeleted = :isDeleted")
+    List<FavouriteAlbums> findFAByAlbumId(@Param("albumId") Integer albumId, @Param("isDeleted") boolean isDeleted);
 }
