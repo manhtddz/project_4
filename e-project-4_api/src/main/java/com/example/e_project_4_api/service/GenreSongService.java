@@ -97,27 +97,28 @@ public class GenreSongService {
         genreSongRepo.delete(existing);
     }
 
-    public void updateGenresForAlbum(UpdateGenresForSong request) {
-        List<Integer> oldList = genreSongRepo.findBySongId(request.getSongId(), false)
+    public void updateGenresForSong(Integer songId, List<Integer> newGenreIds) {
+        List<Integer> oldList = genreSongRepo.findBySongId(songId, false)
                 .stream()
                 .map(it -> it.getGenreId().getId())
                 .toList();
-        if (request.getNewGenreIds().isEmpty()) {
-            oldList.forEach(it -> deleteByGenreIdAndSongId(it, request.getSongId()));
+        if (newGenreIds.isEmpty()) {
+            oldList.forEach(it -> deleteByGenreIdAndSongId(it, songId));
             return;
         }
         List<Integer> removedIds = oldList.stream()
-                .filter(item -> !request.getNewGenreIds().contains(item))
+                .filter(item -> !newGenreIds.contains(item))
                 .toList();
-        removedIds.forEach(it -> deleteByGenreIdAndSongId(it, request.getSongId()));
 
-        List<Integer> toAddIds = request.getNewGenreIds().stream()
+        List<Integer> toAddIds = newGenreIds.stream()
                 .filter(item -> !oldList.contains(item))
                 .toList();
 
         toAddIds.stream()
-                .map(it -> new NewOrUpdateGenreSong(null, it, request.getSongId()))
+                .map(it -> new NewOrUpdateGenreSong(null, it, songId))
                 .forEach(this::addNewGenreSong);
+        
+        removedIds.forEach(it -> deleteByGenreIdAndSongId(it, songId));
     }
 
     public NewOrUpdateGenreSong updateGenreSong(NewOrUpdateGenreSong request) {

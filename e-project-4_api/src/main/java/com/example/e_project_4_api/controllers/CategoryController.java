@@ -31,6 +31,11 @@ public class CategoryController {
         return new ResponseEntity<>(service.getAllCategoriesDisplayForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/categories/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfCate()), HttpStatus.OK);
+    }
+
     @GetMapping("/public/categories/withAlbum")
     public ResponseEntity<List<CategoryWithAlbumsResponse>> findAllCateWithAlbums() {
         return new ResponseEntity<>(service.getAllCategoriesWithAlbums(), HttpStatus.OK);

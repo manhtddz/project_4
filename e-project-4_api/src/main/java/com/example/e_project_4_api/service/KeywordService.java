@@ -33,7 +33,7 @@ public class KeywordService {
                 .map(this::toKeywordResponse)
                 .collect(Collectors.toList());
     }
-    public int getNumberOfGenre() {
+    public int getNumberOfKeywords() {
         return repo.getNumberOfAll();
     }
 

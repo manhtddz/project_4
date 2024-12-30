@@ -38,11 +38,13 @@ public class GenreSongController {
 
     }
 
-    @PutMapping("admin/genre-song")
-    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateGenresForSong request) {
-        service.updateGenresForAlbum(request);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @PutMapping("admin/genre-song")
+//    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateGenresForSong request) {
+//        service.updateGenresForSong(request);
+//        return new ResponseEntity<>(Map.of(
+//                "message", "update successfully"
+//        ), HttpStatus.OK);
+//    }
 
     @DeleteMapping("/public/genre-song/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") int id) {

@@ -37,7 +37,7 @@ public class UserService {
     @Autowired
     private ArtistRepository artistRepo;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách

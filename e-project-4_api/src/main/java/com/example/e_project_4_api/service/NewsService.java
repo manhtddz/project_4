@@ -32,7 +32,7 @@ public class NewsService {
                 .map(this::toNewsResponse)
                 .collect(Collectors.toList());
     }
-    public int getNumberOfGenre() {
+    public int getNumberOfNews() {
         return repo.getNumberOfAll();
     }
 

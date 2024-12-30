@@ -36,6 +36,10 @@ public class NewsController {
         return new ResponseEntity<>(service.getAllNewsForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/news/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfNews()), HttpStatus.OK);
+    }
 
     @GetMapping("/public/news/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {

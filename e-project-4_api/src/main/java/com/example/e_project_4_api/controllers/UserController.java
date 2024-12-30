@@ -33,6 +33,11 @@ public class UserController {
         return new ResponseEntity<>(service.getAllUsersDisplayForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/users/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfUser()), HttpStatus.OK);
+    }
+
     @GetMapping("/public/users/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {
         UserResponse album = service.findById(id);

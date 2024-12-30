@@ -90,27 +90,29 @@ public class CategoryAlbumService {
         return request;
     }
 
-    public void updateCategoriesForAlbum(UpdateCategoriesForAlbum request) {
-        List<Integer> oldList = cateAlbumRepo.findAllByAlbumId(request.getAlbumId(), false)
+    public void updateCategoriesForAlbum(Integer albumId, List<Integer> newCateIds) {
+        List<Integer> oldList = cateAlbumRepo.findAllByAlbumId(albumId, false)
                 .stream()
                 .map(it -> it.getCategoryId().getId())
                 .toList();
-        if (request.getNewCateIds().isEmpty()) {
-            oldList.forEach(it -> deleteByAlbumIdAndCateId(request.getAlbumId(), it));
+        if (newCateIds.isEmpty()) {
+            oldList.forEach(it -> deleteByAlbumIdAndCateId(albumId, it));
             return;
         }
         List<Integer> removedIds = oldList.stream()
-                .filter(item -> !request.getNewCateIds().contains(item))
+                .filter(item -> !newCateIds.contains(item))
                 .toList();
-        removedIds.forEach(it -> deleteByAlbumIdAndCateId(request.getAlbumId(), it));
 
-        List<Integer> toAddIds = request.getNewCateIds().stream()
+        List<Integer> toAddIds = newCateIds.stream()
                 .filter(item -> !oldList.contains(item))
                 .toList();
 
         toAddIds.stream()
-                .map(it -> new NewOrUpdateCategoryAlbum(null, request.getAlbumId(), it))
+                .map(it -> new NewOrUpdateCategoryAlbum(null, albumId, it))
                 .forEach(this::addNewCategoryAlbum);
+
+        removedIds.forEach(it -> deleteByAlbumIdAndCateId(albumId, it));
+
     }
 
     public NewOrUpdateCategoryAlbum updateCategoryAlbum(NewOrUpdateCategoryAlbum request) {

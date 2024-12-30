@@ -32,6 +32,11 @@ public class PlaylistController {
         return new ResponseEntity<>(service.getAllPlaylistsForDisplay(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/playlists/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfPlaylist()), HttpStatus.OK);
+    }
+
     @GetMapping("/admin/playlists/display")
     public ResponseEntity<List<PlaylistDisplayForAdmin>> findAllPlaylistsDisplayForAdmin() {
         return new ResponseEntity<>(service.getAllPlaylistsDisplayForAdmin(), HttpStatus.OK);

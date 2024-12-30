@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.service;
 
+import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
@@ -38,6 +39,11 @@ public class SongService {
     private PlaylistSongRepository playlistSongRepo;
     @Autowired
     private LikeAndViewRepository likeAndViewRepository;
+    @Autowired
+    private GenresRepository genRepo;
+
+    @Autowired
+    private GenreSongService genreSongService;
 
     public List<SongResponse> getAllSongs() {
         return repo.findAllNotDeleted(false)
@@ -208,6 +214,12 @@ public class SongService {
                 0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
                 new Date(), new Date(), album.get(), artist.get());
         repo.save(newSong);
+
+        request.getGenreIds()
+                .stream()
+                .map(it -> new NewOrUpdateGenreSong(null, it, newSong.getId()))
+                .forEach(newOrUpdateGenreSong -> genreSongService.addNewGenreSong(newOrUpdateGenreSong));
+
         return request;
     }
 
@@ -250,6 +262,9 @@ public class SongService {
         song.setAlbumId(album.get());
         song.setArtistId(artist.get());
         repo.save(song);
+
+        genreSongService.updateGenresForSong(request.getId(), request.getGenreIds());
+
         return request;
     }
 

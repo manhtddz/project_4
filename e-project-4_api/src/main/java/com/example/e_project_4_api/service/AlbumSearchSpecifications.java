@@ -1,8 +1,6 @@
 package com.example.e_project_4_api.service;
 
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.Songs;
+import com.example.e_project_4_api.models.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
@@ -16,6 +14,11 @@ public class AlbumSearchSpecifications {
 
             // Join bảng con
             Join<Albums, Songs> subEntityJoin = root.join("songsCollection", JoinType.LEFT);
+
+            Join<Albums, CategoryAlbum> albumCategoryJoin = root.join("categoryAlbumCollection", JoinType.LEFT);
+
+            // Join bảng Category
+            Join<CategoryAlbum, Categories> categoryJoin = albumCategoryJoin.join("categoryId", JoinType.LEFT);
 
             // Điều kiện tìm kiếm
             return cb.or(
@@ -37,6 +40,12 @@ public class AlbumSearchSpecifications {
                             cb.equal(root.get("isReleased"), true),
                             cb.equal(subEntityJoin.get("isDeleted"), false),
                             cb.like(cb.lower(subEntityJoin.get("title")), "%" + text.toLowerCase() + "%")
+                    ),
+                    cb.and(
+                            cb.equal(root.get("isDeleted"), false),
+                            cb.equal(root.get("isReleased"), true),
+                            cb.equal(categoryJoin.get("isDeleted"), false),
+                            cb.like(cb.lower(categoryJoin.get("title")), "%" + text.toLowerCase() + "%")
                     )
             );
         };

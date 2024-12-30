@@ -38,6 +38,11 @@ public class AlbumController {
         return new ResponseEntity<>(service.getAllAlbumsDisplayForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/albums/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfAlbum()), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/byArtist/display/{id}")
     public ResponseEntity<List<AlbumDisplay>> findAllAlbumsByArtistIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllAlbumsByArtistIdForDisplay(id), HttpStatus.OK);

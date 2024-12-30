@@ -64,7 +64,7 @@ public class Albums implements Serializable {
     @ManyToOne
     private Artists artistId;
     @OneToMany(mappedBy = "albumId")
-    private Collection<CategoryAlbum> categoryAlbumCollectionAlbumCollection;
+    private Collection<CategoryAlbum> categoryAlbumCollection;
     @OneToMany(mappedBy = "albumId")
     private Collection<Songs> songsCollection;
 

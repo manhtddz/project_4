@@ -36,6 +36,10 @@ public class KeywordController {
         return new ResponseEntity<>(service.getAllKeywordsForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/keywords/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfKeywords()), HttpStatus.OK);
+    }
 
     @GetMapping("/public/keywords/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {

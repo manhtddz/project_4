@@ -45,11 +45,13 @@ public class CategoryAlbumController {
         return new ResponseEntity<>(updatedSubjectAlbum, HttpStatus.OK);
     }
 
-    @PutMapping("admin/category-album")
-    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateCategoriesForAlbum request) {
-        subjectAlbumService.updateCategoriesForAlbum(request);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @PutMapping("admin/category-album")
+//    public ResponseEntity<Object> updateSubjectAlbumForAdmin(@RequestBody @Valid UpdateCategoriesForAlbum request) {
+//        subjectAlbumService.updateCategoriesForAlbum(request);
+//        return new ResponseEntity<>(Map.of(
+//                "message", "update successfully"
+//        ), HttpStatus.OK);
+//    }
 
     @DeleteMapping("public/category-album/{id}")
     public ResponseEntity<Object> deleteSubjectAlbum(@PathVariable int id) {

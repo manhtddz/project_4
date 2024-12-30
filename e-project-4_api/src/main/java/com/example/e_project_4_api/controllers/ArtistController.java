@@ -33,6 +33,10 @@ public class ArtistController {
         return new ResponseEntity<>(artistService.getAllArtistsDisplayForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/artists/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", artistService.getNumberOfArtist()), HttpStatus.OK);
+    }
 
     @GetMapping("/public/artists/{id}")
     public ResponseEntity<Object> getArtistById(@PathVariable int id) {

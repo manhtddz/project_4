@@ -34,6 +34,10 @@ public class GenresController {
         return new ResponseEntity<>(service.getAllGenreDisplayForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/genres/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfGenre()), HttpStatus.OK);
+    }
 
     @GetMapping("/public/genres/{id}")
     public ResponseEntity<Object> findDetails(@PathVariable("id") int id) {

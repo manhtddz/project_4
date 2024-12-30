@@ -77,7 +77,6 @@ public class PlaylistSongService {
                 .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
         Songs song = songRepo.findById(request.getSongId())
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
-        Date currentDate = new Date();
         PlaylistSong ps = op.get();
         ps.setPlaylistId(playlist);
         ps.setSongId(song);

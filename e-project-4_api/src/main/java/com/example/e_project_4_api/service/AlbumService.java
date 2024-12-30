@@ -1,16 +1,15 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
+import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
+import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Albums;
-import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.CategoryAlbum;
-import com.example.e_project_4_api.models.FavouriteAlbums;
+import com.example.e_project_4_api.models.*;
 import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,11 @@ public class AlbumService {
     @Autowired
     private CategoryAlbumRepository categoryAlbumRepo;
     @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
     private FavouriteAlbumRepository favRepo;
+    @Autowired
+    private CategoryAlbumService categoryAlbumService;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAllNotDeleted(false)
@@ -146,7 +149,13 @@ public class AlbumService {
         }
         Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
                 false, new Date(), new Date(), artist.get());
+
         repo.save(newAlbum);
+        request.getCateIds()
+                .stream()
+                .map(it -> new NewOrUpdateCategoryAlbum(null, newAlbum.getId(), it))
+                .forEach(newOrUpdateCategoryAlbum -> categoryAlbumService.addNewCategoryAlbum(newOrUpdateCategoryAlbum));
+
         return request;
     }
 
@@ -180,6 +189,8 @@ public class AlbumService {
         album.setArtistId(artist.get());
         album.setModifiedAt(new Date());
         repo.save(album);
+
+        categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
 
         return request;
     }

@@ -38,6 +38,11 @@ public class SongController {
         return new ResponseEntity<>(service.getAllSongsForAdmin(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/songs/count")
+    public ResponseEntity<Object> getQuantity() {
+        return new ResponseEntity<>(Map.of("qty", service.getNumberOfSong()), HttpStatus.OK);
+    }
+
     @GetMapping("/public/songs/byArtist/display/{id}")
     public ResponseEntity<List<SongDisplay>> findAllSongsByArtistIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllSongsByArtistIdForDisplay(id), HttpStatus.OK);
