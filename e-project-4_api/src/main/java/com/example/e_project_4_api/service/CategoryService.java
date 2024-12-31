@@ -154,6 +154,7 @@ public class CategoryService {
 
         List<AlbumDisplay> albumsOfCategory = categoryAlbum.stream()
                 .map(CategoryAlbum::getAlbumId)
+                .filter(Albums::getIsReleased)
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
 

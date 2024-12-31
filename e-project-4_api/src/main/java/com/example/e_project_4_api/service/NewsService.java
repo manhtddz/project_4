@@ -8,6 +8,7 @@ import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayFor
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Genres;
+import com.example.e_project_4_api.models.Keywords;
 import com.example.e_project_4_api.models.News;
 import com.example.e_project_4_api.repositories.GenresRepository;
 import com.example.e_project_4_api.repositories.NewsRepository;
@@ -32,6 +33,7 @@ public class NewsService {
                 .map(this::toNewsResponse)
                 .collect(Collectors.toList());
     }
+
     public int getNumberOfNews() {
         return repo.getNumberOfAll();
     }
@@ -89,7 +91,7 @@ public class NewsService {
                 request.getTitle(),
                 request.getContent(),
                 request.getImage(),
-                false,
+                request.getIsActive(),
                 new Date(),
                 new Date()
         );
@@ -130,6 +132,18 @@ public class NewsService {
         return request;
     }
 
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
+    public void toggleNewsActiveStatus(int id) {
+        Optional<News> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any news with id: " + id);
+        }
+        News news = op.get();
+        news.setIsActive(!news.getIsActive());
+        news.setModifiedAt(new Date());
+        repo.save(news);
+
+    }
 
     public NewsResponse toNewsResponse(News news) {
         NewsResponse res = new NewsResponse();

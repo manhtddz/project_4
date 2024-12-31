@@ -58,11 +58,11 @@ public class FavouriteSongService {
         if (existingFavouriteSong.isPresent()) {
             throw new AlreadyExistedException("A FavouriteSong already exists");
         }
-        Users u = userRepo.findById(request.getUserId())
+        Users u = userRepo.findByIdAndIsDeleted(request.getUserId(), false)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getUserId()));
-        Songs song = songRepo.findById(request.getSongId())
+        Songs song = songRepo.findByIdAndIsDeleted(request.getSongId(), false)
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
-        FavouriteSongs newPS = new FavouriteSongs( song, u);
+        FavouriteSongs newPS = new FavouriteSongs(song, u);
         repo.save(newPS);
         return request;
     }
@@ -72,9 +72,9 @@ public class FavouriteSongService {
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any FavouriteSong with id: " + request.getId());
         }
-        Users u = userRepo.findById(request.getUserId())
+        Users u = userRepo.findByIdAndIsDeleted(request.getUserId(), false)
                 .orElseThrow(() -> new NotFoundException("Users not found with id: " + request.getUserId()));
-        Songs song = songRepo.findById(request.getSongId())
+        Songs song = songRepo.findByIdAndIsDeleted(request.getSongId(), false)
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
         FavouriteSongs ps = op.get();
         ps.setUserId(u);

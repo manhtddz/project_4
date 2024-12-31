@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.controllers;
 
+import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
@@ -160,15 +161,38 @@ public class SongController {
         }
     }
 
-    @PutMapping("/public/songs/listenAmount/{id}")
-    public ResponseEntity<Object> updateListenAmount(@PathVariable("id") int id) {
-        service.plusOneListenAmount(id);
+    @PutMapping("/public/songs/listen/{id}")
+    public ResponseEntity<Object> listen(@PathVariable("id") int id) {
+        service.listen(id);
         return new ResponseEntity<>(
                 Map.of(
-                        "message", "Increased successfully"
+                        "message", "listen successfully"
                 ),
                 HttpStatus.OK
         );
 
+    }
+
+    @PutMapping("/public/songs/like")
+    public ResponseEntity<Object> likeSong(@RequestBody @Valid NewOrUpdateFavouriteSong request) {
+        service.like(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "like successfully"
+                ),
+                HttpStatus.OK
+        );
+
+    }
+
+    @PutMapping("/admin/songs/toggle/pending")
+    public ResponseEntity<Object> toggleSongPending(@PathVariable("id") int id) {
+        service.toggleSongPendingStatus(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 }

@@ -107,4 +107,15 @@ public class NewsController {
             );
         }
     }
+
+    @PutMapping("/admin/news/toggle/active")
+    public ResponseEntity<Object> toggleNewsActive(@PathVariable("id") int id) {
+        service.toggleNewsActiveStatus(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
 }

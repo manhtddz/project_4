@@ -1,6 +1,8 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
+import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
+import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
@@ -136,5 +138,27 @@ public class AlbumController {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @PutMapping("/public/albums/like")
+    public ResponseEntity<Object> likeAlbum(@RequestBody @Valid NewOrUpdateFavouriteAlbum request) {
+        service.like(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "like successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/admin/albums/toggle/release")
+    public ResponseEntity<Object> toggleReleaseAlbum(@PathVariable("id") int id) {
+        service.toggleAlbumReleaseStatus(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 }

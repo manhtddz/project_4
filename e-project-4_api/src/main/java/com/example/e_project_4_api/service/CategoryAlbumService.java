@@ -71,13 +71,13 @@ public class CategoryAlbumService {
             throw new AlreadyExistedException("A CategoryAlbum already exists");
         }
 
-        Optional<Albums> album = albumRepo.findById(request.getAlbumId());
+        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
         if (album.isEmpty()) {
             throw new NotFoundException("Can't find any album with id: " + request.getAlbumId());
         }
 
 
-        Optional<Categories> cate = cateRepo.findById(request.getCategoryId());
+        Optional<Categories> cate = cateRepo.findByIdAndIsDeleted(request.getCategoryId(), false);
         if (cate.isEmpty()) {
             throw new NotFoundException("Can't find any category with id: " + request.getCategoryId());
         }
@@ -123,13 +123,13 @@ public class CategoryAlbumService {
         }
 
 
-        Optional<Albums> album = albumRepo.findById(request.getAlbumId());
+        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
         if (album.isEmpty()) {
             throw new NotFoundException("Can't find any album with id: " + request.getAlbumId());
         }
 
 
-        Optional<Categories> cate = cateRepo.findById(request.getCategoryId());
+        Optional<Categories> cate = cateRepo.findByIdAndIsDeleted(request.getCategoryId(), false);
         if (cate.isEmpty()) {
             throw new NotFoundException("Can't find any category with id: " + request.getCategoryId());
         }

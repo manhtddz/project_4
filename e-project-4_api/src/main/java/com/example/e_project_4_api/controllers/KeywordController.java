@@ -107,4 +107,15 @@ public class KeywordController {
             );
         }
     }
+
+    @PutMapping("/admin/keywords/toggle/active")
+    public ResponseEntity<Object> toggleKeywordActive(@PathVariable("id") int id) {
+        service.toggleKeywordActiveStatus(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
 }

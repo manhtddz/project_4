@@ -1,6 +1,8 @@
 package com.example.e_project_4_api.service;
 
+import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
+import com.example.e_project_4_api.dto.request.NewOrUpdateLikeAndViewInMonth;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
@@ -41,6 +43,10 @@ public class SongService {
     private LikeAndViewRepository likeAndViewRepository;
     @Autowired
     private GenresRepository genRepo;
+    @Autowired
+    private LikeAndViewInMonthService likeAndViewInMonthService;
+    @Autowired
+    private FavouriteSongService favouriteSongService;
 
     @Autowired
     private GenreSongService genreSongService;
@@ -154,6 +160,7 @@ public class SongService {
     public List<SongDisplay> getAllFavSongsByUserId(Integer id) {
         return favRepo.findFSByUserId(id, false)
                 .stream()
+                .filter(it -> it.getSongId().getIsPending())
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
@@ -171,6 +178,7 @@ public class SongService {
     public List<SongDisplay> getAllSongsByPlaylistId(Integer id) {
         return playlistSongRepo.findByPlaylistId(id, false)
                 .stream()
+                .filter(it -> it.getSongId().getIsPending())
                 .map(this::toSongDisplay)
                 .collect(Collectors.toList());
     }
@@ -271,7 +279,7 @@ public class SongService {
     @CacheEvict(value = {"artistsDisplayForAdmin",
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
-    public void plusOneListenAmount(int songId) {
+    public void listen(int songId) {
         Optional<Songs> op = repo.findByIdAndIsDeleted(songId, false);
         //check sự tồn tại
         if (op.isEmpty()) {
@@ -279,6 +287,34 @@ public class SongService {
         }
         Songs song = op.get();
         song.setListenAmount(song.getListenAmount() + 1);
+        repo.save(song);
+        likeAndViewInMonthService.increaseListenAmountOrCreateNew(new NewOrUpdateLikeAndViewInMonth(songId));
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void like(NewOrUpdateFavouriteSong likeModel) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(likeModel.getSongId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + likeModel.getSongId());
+        }
+        favouriteSongService.addNewFS(likeModel);
+        likeAndViewInMonthService.increaseLikeAmountOrCreateNew(new NewOrUpdateLikeAndViewInMonth(likeModel.getSongId()));
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void toggleSongPendingStatus(int id) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(id, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + id);
+        }
+        Songs song = op.get();
+        song.setIsPending(!song.getIsPending());
+        song.setModifiedAt(new Date());
         repo.save(song);
     }
 

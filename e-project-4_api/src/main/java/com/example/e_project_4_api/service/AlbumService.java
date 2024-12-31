@@ -1,8 +1,6 @@
 package com.example.e_project_4_api.service;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
+import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
@@ -35,6 +33,8 @@ public class AlbumService {
     private FavouriteAlbumRepository favRepo;
     @Autowired
     private CategoryAlbumService categoryAlbumService;
+    @Autowired
+    private FavouriteAlbumService favouriteAlbumService;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAllNotDeleted(false)
@@ -67,6 +67,7 @@ public class AlbumService {
     public List<AlbumDisplay> getAllAlbumsByArtistIdForDisplay(int artistId) {
         return repo.findAllByArtistId(artistId, false)
                 .stream()
+                .filter(Albums::getIsReleased)
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
@@ -75,6 +76,7 @@ public class AlbumService {
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
         return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
+                .filter(categoryAlbum -> categoryAlbum.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
@@ -108,6 +110,7 @@ public class AlbumService {
     public List<AlbumDisplay> getAllFavAlbumsByUserId(Integer id) {
         return favRepo.findFAByUserId(id, false)
                 .stream()
+                .filter(favouriteAlbums -> favouriteAlbums.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
@@ -115,6 +118,7 @@ public class AlbumService {
     public List<AlbumDisplay> search(String text) {
         return repo.findAll(AlbumSearchSpecifications.search(text))
                 .stream()
+                .filter(Albums::getIsReleased)
                 .map(this::toAlbumDisplay)
                 .collect(Collectors.toList());
     }
@@ -193,6 +197,32 @@ public class AlbumService {
         categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
 
         return request;
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void like(NewOrUpdateFavouriteAlbum likeModel) {
+        Optional<Albums> op = repo.findByIdAndIsDeleted(likeModel.getAlbumId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + likeModel.getAlbumId());
+        }
+        favouriteAlbumService.addNewFA(likeModel);
+    }
+
+    @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    public void toggleAlbumReleaseStatus(int albumId) {
+        Optional<Albums> op = repo.findByIdAndIsDeleted(albumId, false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + albumId);
+        }
+        Albums album = op.get();
+        album.setIsReleased(!album.getIsReleased());
+        album.setReleaseDate(new Date());
+        album.setModifiedAt(new Date());
+        repo.save(album);
+
     }
 
     public AlbumResponse toAlbumResponse(Albums album) {

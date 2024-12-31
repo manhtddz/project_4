@@ -67,13 +67,13 @@ public class GenreSongService {
         if (existingGenreSong.isPresent()) {
             throw new AlreadyExistedException("A GenreSong already exists");
         }
-        Optional<Genres> genre = genreRepo.findById(request.getGenreId());
+        Optional<Genres> genre = genreRepo.findByIdAndIsDeleted(request.getGenreId(), false);
         if (genre.isEmpty()) {
             throw new NotFoundException("Can't find any genre with id: " + request.getGenreId());
         }
 
 
-        Optional<Songs> song = songRepo.findById(request.getSongId());
+        Optional<Songs> song = songRepo.findByIdAndIsDeleted(request.getSongId(), false);
         if (song.isEmpty()) {
             throw new NotFoundException("Can't find any song with id: " + request.getSongId());
         }
@@ -117,7 +117,7 @@ public class GenreSongService {
         toAddIds.stream()
                 .map(it -> new NewOrUpdateGenreSong(null, it, songId))
                 .forEach(this::addNewGenreSong);
-        
+
         removedIds.forEach(it -> deleteByGenreIdAndSongId(it, songId));
     }
 
@@ -129,13 +129,13 @@ public class GenreSongService {
         }
 
 
-        Optional<Genres> genre = genreRepo.findById(request.getGenreId());
+        Optional<Genres> genre = genreRepo.findByIdAndIsDeleted(request.getGenreId(), false);
         if (genre.isEmpty()) {
             throw new NotFoundException("Can't find any genre with id: " + request.getGenreId());
         }
 
 
-        Optional<Songs> song = songRepo.findById(request.getSongId());
+        Optional<Songs> song = songRepo.findByIdAndIsDeleted(request.getSongId(), false);
         if (song.isEmpty()) {
             throw new NotFoundException("Can't find any song with id: " + request.getSongId());
         }

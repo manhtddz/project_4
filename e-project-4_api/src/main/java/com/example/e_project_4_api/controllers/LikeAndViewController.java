@@ -36,19 +36,4 @@ public class LikeAndViewController {
         return new ResponseEntity<>(Map.of(
                 "total_listen", service.totalListenAmountInMonth(id)), HttpStatus.OK);
     }
-
-    @PostMapping("/public/likeInMonth")
-    public ResponseEntity<Object> increaseLikeAmountOrCreateNew(@RequestBody @Valid NewOrUpdateLikeAndViewInMonth request) {
-        service.increaseLikeAmountOrCreateNew(request);
-        return new ResponseEntity<>(Map.of(
-                "message", "add or increase successfully"), HttpStatus.OK);
-    }
-
-    @PostMapping("/public/listenInMonth")
-    public ResponseEntity<Object> increaseListenAmountOrCreateNew(@RequestBody @Valid NewOrUpdateLikeAndViewInMonth request) {
-        service.increaseListenAmountOrCreateNew(request);
-        return new ResponseEntity<>(Map.of(
-                "message", "add or increase successfully"), HttpStatus.OK);
-    }
-
 }

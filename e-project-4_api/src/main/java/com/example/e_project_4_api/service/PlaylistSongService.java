@@ -54,16 +54,16 @@ public class PlaylistSongService {
     }
 
     public NewOrUpdatePlaylistSong addNewPS(NewOrUpdatePlaylistSong request) {
-        Optional<PlaylistSong> existingPlaylistSong = repo.findByPlaylistIdAndSongId(request.getPlaylistId(),request.getSongId());
+        Optional<PlaylistSong> existingPlaylistSong = repo.findByPlaylistIdAndSongId(request.getPlaylistId(), request.getSongId());
         if (existingPlaylistSong.isPresent()) {
             throw new AlreadyExistedException("A PlaylistSong already exists");
         }
         // Tìm thực thể Playlist và Song từ repo
-        Playlists playlist = playlistRepo.findById(request.getPlaylistId())
+        Playlists playlist = playlistRepo.findByIdAndIsDeleted(request.getPlaylistId(), false)
                 .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
-        Songs song = songRepo.findById(request.getSongId())
+        Songs song = songRepo.findByIdAndIsDeleted(request.getSongId(), false)
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
-        PlaylistSong newPS = new PlaylistSong(playlist,song);
+        PlaylistSong newPS = new PlaylistSong(playlist, song);
         repo.save(newPS);
         return request;
     }
@@ -73,9 +73,9 @@ public class PlaylistSongService {
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any PlaylistSong with id: " + request.getId());
         }
-        Playlists playlist = playlistRepo.findById(request.getPlaylistId())
+        Playlists playlist = playlistRepo.findByIdAndIsDeleted(request.getPlaylistId(), false)
                 .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
-        Songs song = songRepo.findById(request.getSongId())
+        Songs song = songRepo.findByIdAndIsDeleted(request.getSongId(), false)
                 .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
         PlaylistSong ps = op.get();
         ps.setPlaylistId(playlist);

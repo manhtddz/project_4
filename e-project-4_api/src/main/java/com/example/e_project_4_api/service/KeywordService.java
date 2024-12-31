@@ -7,6 +7,7 @@ import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Keywords;
 import com.example.e_project_4_api.models.News;
 import com.example.e_project_4_api.repositories.KeywordRepository;
@@ -33,6 +34,7 @@ public class KeywordService {
                 .map(this::toKeywordResponse)
                 .collect(Collectors.toList());
     }
+
     public int getNumberOfKeywords() {
         return repo.getNumberOfAll();
     }
@@ -41,7 +43,6 @@ public class KeywordService {
     public List<KeywordDisplayForAdmin> getAllKeywordsForAdmin() {
         return repo.findAll()
                 .stream()
-                .filter(keywords -> keywords.getIsActive())
                 .map(this::toKeywordDisplayForAdmin)
                 .collect(Collectors.toList());
     }
@@ -90,7 +91,7 @@ public class KeywordService {
 
         Keywords newKeyword = new Keywords(
                 request.getContent(),
-                false,
+                request.getIsActive(),
                 new Date(),
                 new Date()
         );
@@ -129,6 +130,18 @@ public class KeywordService {
         return request;
     }
 
+    @CacheEvict(value = {"keywordsDisplay", "keywordsDisplayForAdmin"}, allEntries = true)
+    public void toggleKeywordActiveStatus(int id) {
+        Optional<Keywords> op = repo.findById(id);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any keyword with id: " + id);
+        }
+        Keywords keyword = op.get();
+        keyword.setIsActive(!keyword.getIsActive());
+        keyword.setModifiedAt(new Date());
+        repo.save(keyword);
+
+    }
 
     public KeywordResponse toKeywordResponse(Keywords keyword) {
         KeywordResponse res = new KeywordResponse();

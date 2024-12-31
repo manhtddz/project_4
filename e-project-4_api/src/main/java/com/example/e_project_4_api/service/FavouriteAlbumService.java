@@ -55,9 +55,9 @@ public class FavouriteAlbumService {
         if (existingFavouriteSong.isPresent()) {
             throw new AlreadyExistedException("A FavouriteAlbum already exists");
         }
-        Users u = userRepo.findById(request.getUserId())
+        Users u = userRepo.findByIdAndIsDeleted(request.getUserId(), false)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getUserId()));
-        Albums album = albumRepo.findById(request.getAlbumId())
+        Albums album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false)
                 .orElseThrow(() -> new NotFoundException("Album not found with id: " + request.getAlbumId()));
         FavouriteAlbums newPS = new FavouriteAlbums(album, u);
         repo.save(newPS);
@@ -69,9 +69,9 @@ public class FavouriteAlbumService {
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any FavouriteAlbum with id: " + request.getId());
         }
-        Users u = userRepo.findById(request.getUserId())
+        Users u = userRepo.findByIdAndIsDeleted(request.getUserId(), false)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getUserId()));
-        Albums album = albumRepo.findById(request.getAlbumId())
+        Albums album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false)
                 .orElseThrow(() -> new NotFoundException("Album not found with id: " + request.getAlbumId()));
         FavouriteAlbums ps = op.get();
         ps.setUserId(u);
