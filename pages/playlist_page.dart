@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/playlist.dart';
-import 'package:pj_demo/models/playlist_response.dart';
+import 'package:pj_demo/dto/playlist_response.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-import '../models/song_provider.dart';
-import '../models/song.dart';
-import '../models/user_favorites_provider.dart';
+import '../providers/song_provider.dart';
+import '../providers/user_favorites_provider.dart';
 
 class PlaylistPage extends StatelessWidget {
   final PlaylistResponse currentPlaylist;

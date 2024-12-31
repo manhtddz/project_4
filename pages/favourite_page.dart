@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-import '../models/song_provider.dart';
-import '../models/user_favorites_provider.dart';
+import '../providers/song_provider.dart';
+import '../providers/user_favorites_provider.dart';
 
 void main() {
   runApp(

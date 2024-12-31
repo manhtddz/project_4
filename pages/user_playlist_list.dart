@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/album_provider.dart';
-import 'package:pj_demo/models/playlist.dart';
-import 'package:pj_demo/models/playlist_provider.dart';
-import 'package:pj_demo/models/playlist_response.dart';
-import 'package:pj_demo/models/user_provider.dart';
-import 'package:pj_demo/pages/album_page.dart';
+import 'package:pj_demo/providers/album_provider.dart';
+import 'package:pj_demo/dto/playlist_response.dart';
+import 'package:pj_demo/providers/user_provider.dart';
 import 'package:pj_demo/pages/playlist_page.dart';
-import 'package:pj_demo/pages/profile_detail.dart';
 import 'package:provider/provider.dart';
-import '../models/album.dart';
+
+import '../providers/playlist_provider.dart';
 
 void main() {
   runApp(

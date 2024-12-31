@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/song.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-import 'package:pj_demo/models/song_provider.dart';
-import 'package:pj_demo/models/user_favorites_provider.dart';
 
 import '../models/album.dart';
+import '../providers/song_provider.dart';
+import '../providers/user_favorites_provider.dart';
 
 class AlbumPage extends StatelessWidget {
   final Album currentAlbum;

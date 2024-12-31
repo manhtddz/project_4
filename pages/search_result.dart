@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/album_api.dart';
-import 'package:pj_demo/models/album_provider.dart';
+import 'package:pj_demo/services/album_api.dart';
+import 'package:pj_demo/providers/album_provider.dart';
 import 'package:pj_demo/pages/album_page.dart';
 import 'package:provider/provider.dart';
 import '../models/album.dart';

@@ -6,7 +6,7 @@ import 'package:pj_demo/pages/user_playlist_list.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user.dart';
-import '../models/user_provider.dart';
+import '../providers/user_provider.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});

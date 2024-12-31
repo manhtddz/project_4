@@ -1,11 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/song_provider.dart';
-
 import 'package:provider/provider.dart';
-
 import '../components/neu_box.dart';
+import '../providers/song_provider.dart';
 
 class SongPage2 extends StatelessWidget {
   // Convert duration into min:sec
