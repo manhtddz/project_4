@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +38,8 @@ public class AlbumService {
     private CategoryAlbumService categoryAlbumService;
     @Autowired
     private FavouriteAlbumService favouriteAlbumService;
+    @Autowired
+    private FileService fileService;
 
     public List<AlbumResponse> getAllAlbums() {
         return repo.findAllNotDeleted(false)
@@ -137,31 +142,53 @@ public class AlbumService {
 
     @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum addNewAlbum(NewOrUpdateAlbum request) {
-        List<Map<String, String>> errors = new ArrayList<>();
+        try {
+            List<Map<String, String>> errors = new ArrayList<>();
 
-        Optional<Albums> op = repo.findByTitle(request.getTitle());
-        if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist title"));
+            Optional<Albums> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add(Map.of("titleError", "Already exist title"));
+            }
+
+            Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
+            if (artist.isEmpty()) {
+                errors.add(Map.of("artistError", "Can't find artist"));
+            }
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+            Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
+                    false, new Date(), new Date(), artist.get());
+
+            repo.save(newAlbum);
+
+            request.getCateIds()
+                    .stream()
+                    .map(it -> new NewOrUpdateCategoryAlbum(null, newAlbum.getId(), it))
+                    .forEach(newOrUpdateCategoryAlbum -> categoryAlbumService.addNewCategoryAlbum(newOrUpdateCategoryAlbum));
+
+            return request;
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteFile(request.getImage());
+            throw e;
         }
 
-        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
-        if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find artist"));
-        }
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-        Albums newAlbum = new Albums(request.getTitle(), request.getImage(), false, request.getReleaseDate(),
-                false, new Date(), new Date(), artist.get());
 
-        repo.save(newAlbum);
-        request.getCateIds()
-                .stream()
-                .map(it -> new NewOrUpdateCategoryAlbum(null, newAlbum.getId(), it))
-                .forEach(newOrUpdateCategoryAlbum -> categoryAlbumService.addNewCategoryAlbum(newOrUpdateCategoryAlbum));
-
-        return request;
     }
+
+//    public void uploadAndInsert(MultipartFile file, NewOrUpdateAlbum request) {
+//        String fileName = fileService.uploadImageFile(file);
+//        try {
+//            // Bước 2: Insert vào database
+//            request.setImage(fileName);
+//            addNewAlbum(request);
+//        } catch (Exception e) {
+//            // Xóa file nếu insert database thất bại
+//            fileService.deleteFile(fileName);
+//            throw e;
+//        }
+//    }
 
     @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
@@ -187,16 +214,21 @@ public class AlbumService {
         }
         Albums album = op.get();
         album.setTitle(request.getTitle());
-        album.setImage(request.getImage());
+        if (!StringUtils.isEmpty(request.getImage())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteFile(album.getImage());
+            album.setImage(request.getImage());
+        }
         album.setReleaseDate(request.getReleaseDate());
         album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
         album.setModifiedAt(new Date());
+        categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
         repo.save(album);
 
-        categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
 
         return request;
+
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",

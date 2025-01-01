@@ -20,8 +20,8 @@ public class CacheConfig {
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         // Default cache configuration
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                //.entryTtl(Duration.ofMinutes(10)) // Thời gian sống của cache
-                .entryTtl(Duration.ofSeconds(1)) // Thời gian sống của cache
+                .entryTtl(Duration.ofMinutes(10)) // Thời gian sống của cache
+//                .entryTtl(Duration.ofSeconds(1)) // Thời gian sống của cache
                 .disableCachingNullValues(); // Disable caching null values
 
         // Return a RedisCacheManager with the default configuration

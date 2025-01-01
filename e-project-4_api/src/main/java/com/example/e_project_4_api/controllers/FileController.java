@@ -1,6 +1,8 @@
 package com.example.e_project_4_api.controllers;
 
+import com.example.e_project_4_api.service.FileService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,8 @@ import java.util.UUID;
 @RequestMapping("/api/files")
 public class FileController {
 
+    @Autowired
+    FileService fileService;
 
     @Value("${file.upload.epj4-folder}")
     private String FOLDER;
@@ -31,129 +35,18 @@ public class FileController {
 
     @PostMapping("/upload/image")
     public ResponseEntity<String> uploadImageFile(@RequestParam("file") MultipartFile file) {
-        try {
-            // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(FOLDER + "images/");
-            if (!tempDir.exists()) {
-                tempDir.mkdirs();
-            }
-
-            // Lấy tên file gốc
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
-            // Tạo tên file mới với chuỗi ngẫu nhiên
-            String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
-
-            // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(FOLDER + "images/" + newFilename);
-            Files.write(tempFilePath, file.getBytes());
-
-            // Trả về tên file mới
-            return ResponseEntity.ok(newFilename);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
-        }
+        return ResponseEntity.ok(fileService.uploadImageFile(file));
     }
 
     @PostMapping("/upload/audio")
     public ResponseEntity<String> uploadAudioFile(@RequestParam("file") MultipartFile file) {
-        try {
-            // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(FOLDER + "audio/");
-            if (!tempDir.exists()) {
-                tempDir.mkdirs();
-            }
-
-            // Lấy tên file gốc
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
-            // Tạo tên file mới với chuỗi ngẫu nhiên
-            String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
-
-            // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(FOLDER + "audio/" + newFilename);
-            Files.write(tempFilePath, file.getBytes());
-
-            // Trả về tên file mới
-            return ResponseEntity.ok(newFilename);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
-        }
+        return ResponseEntity.ok(fileService.uploadAudioFile(file));
     }
 
     @PostMapping("/upload/lrc")
     public ResponseEntity<String> uploadLRCFile(@RequestParam("file") MultipartFile file) {
-        try {
-            // Tạo folder tạm nếu chưa tồn tại
-            File tempDir = new File(FOLDER + "lrc/");
-            if (!tempDir.exists()) {
-                tempDir.mkdirs();
-            }
-
-            // Lấy tên file gốc
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
-            // Tạo tên file mới với chuỗi ngẫu nhiên
-            String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
-
-            // Lưu file vào folder tạm
-            Path tempFilePath = Paths.get(FOLDER + "lrc/" + newFilename);
-            Files.write(tempFilePath, file.getBytes());
-
-            // Trả về tên file mới
-            return ResponseEntity.ok(newFilename);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
-        }
+        return ResponseEntity.ok(fileService.uploadLRCFile(file));
     }
-
-//    @PostMapping("/submit")
-//    public ResponseEntity<String> submitFile(@RequestBody FileSubmissionRequest request) {
-//        try {
-//            String tempFileName = request.getTempFileName();
-//
-//            // Kiểm tra file tạm có tồn tại không
-//            Path tempFilePath = Paths.get(TEMP_FOLDER + tempFileName);
-//            if (!Files.exists(tempFilePath)) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Temporary file not found.");
-//            }
-//
-//            // Tạo folder chính nếu chưa tồn tại
-//            File finalDir = new File(FINAL_FOLDER);
-//            if (!finalDir.exists()) {
-//                finalDir.mkdirs();
-//            }
-//
-//            // Di chuyển file từ folder tạm sang folder chính
-//            Path finalFilePath = Paths.get(FINAL_FOLDER + tempFileName);
-//            Files.move(tempFilePath, finalFilePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//            // Lưu thông tin file vào database (giả sử bạn có repository)
-//            // fileRepository.save(new FileEntity(tempFileName));
-//
-//            return ResponseEntity.ok("File saved successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save file.");
-//        }
-//    }
-
-//    public static class FileSubmissionRequest {
-//        private String tempFileName;
-//
-//        public String getTempFileName() {
-//            return tempFileName;
-//        }
-//
-//        public void setTempFileName(String tempFileName) {
-//            this.tempFileName = tempFileName;
-//        }
-//    }
 
 
     @GetMapping("/download/lrc/{filename}")
