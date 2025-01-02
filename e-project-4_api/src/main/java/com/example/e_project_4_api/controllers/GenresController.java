@@ -45,7 +45,7 @@ public class GenresController {
         return new ResponseEntity<>(genre, HttpStatus.OK);
     }
 
-    @GetMapping("/admin/genres/{id}")
+    @GetMapping("/admin/genres/display/{id}")
     public ResponseEntity<Object> findDetailsForAdmin(@PathVariable("id") int id) {
         GenreDisplayForAdmin genre = service.findGenreDisplayForAdminById(id);
         return new ResponseEntity<>(genre, HttpStatus.OK);
