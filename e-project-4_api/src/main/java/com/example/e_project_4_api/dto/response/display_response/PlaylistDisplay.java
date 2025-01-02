@@ -19,6 +19,6 @@ public class PlaylistDisplay implements Serializable {
     private Date createdAt;
     private Date modifiedAt;
     private String username;
-
+    private Integer songQty;
 
 }

@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
+import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteAlbumResponse;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
@@ -10,6 +11,7 @@ import com.example.e_project_4_api.models.*;
 import com.example.e_project_4_api.repositories.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +51,16 @@ public class FavouriteAlbumService {
         }
         repo.deleteById(id);
     }
+
+    @CacheEvict(value = {"albumsDisplayForAdmin", "favAlbumsByUser", "artistsDisplayForAdmin"}, allEntries = true)
+    public void unlikeAlbum(UnlikeModelRequest request) {
+        Optional<FavouriteAlbums> op = repo.findByUserIdAndAlbumId(request.getUserId(), request.getUnlikeId());
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any FavouriteAlbum");
+        }
+        repo.delete(op.get());
+    }
+
 
     public NewOrUpdateFavouriteAlbum addNewFA(NewOrUpdateFavouriteAlbum request) {
         Optional<FavouriteAlbums> existingFavouriteSong = repo.findByUserIdAndAlbumId(request.getUserId(), request.getAlbumId());

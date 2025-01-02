@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
+import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
@@ -10,6 +11,7 @@ import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.AlbumService;
+import com.example.e_project_4_api.service.FavouriteAlbumService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,8 @@ import java.util.Map;
 public class AlbumController {
     @Autowired
     private AlbumService service;
+    @Autowired
+    private FavouriteAlbumService favService;
 
     @GetMapping("/public/albums")
     public ResponseEntity<List<AlbumResponse>> findAll() {
@@ -158,6 +162,17 @@ public class AlbumController {
         return new ResponseEntity<>(
                 Map.of(
                         "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("public/albums/unlike")
+    public ResponseEntity<Object> unlikeAlbum(@RequestBody @Valid UnlikeModelRequest request) {
+        favService.unlikeAlbum(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "unlike successfully"
                 ),
                 HttpStatus.OK
         );

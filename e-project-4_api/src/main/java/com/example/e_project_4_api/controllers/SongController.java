@@ -2,12 +2,14 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
+import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.service.FavouriteSongService;
 import com.example.e_project_4_api.service.SongService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import java.util.Map;
 public class SongController {
     @Autowired
     private SongService service;
+    @Autowired
+    private FavouriteSongService favService;
 
     @GetMapping("/public/songs")
     public ResponseEntity<List<SongResponse>> findAll() {
@@ -191,6 +195,17 @@ public class SongController {
         return new ResponseEntity<>(
                 Map.of(
                         "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("public/songs/unlike")
+    public ResponseEntity<Object> unlikeSong(@RequestBody @Valid UnlikeModelRequest request) {
+        favService.unlikeSong(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "unlike successfully"
                 ),
                 HttpStatus.OK
         );

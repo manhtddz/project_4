@@ -154,6 +154,7 @@ public class PlaylistService {
         BeanUtils.copyProperties(playlist, res);
         res.setIsDeleted(playlist.getIsDeleted());
         res.setUsername(playlist.getUserId().getUsername());
+        res.setSongQty(pSRepo.countSongsInPlaylist(playlist.getId()));
         return res;
     }
 

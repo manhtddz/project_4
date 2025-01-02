@@ -231,7 +231,7 @@ public class AlbumService {
 
     }
 
-    @CacheEvict(value = {"artistsDisplayForAdmin",
+    @CacheEvict(value = {"artistsDisplayForAdmin", "favAlbumsByUser",
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public void like(NewOrUpdateFavouriteAlbum likeModel) {

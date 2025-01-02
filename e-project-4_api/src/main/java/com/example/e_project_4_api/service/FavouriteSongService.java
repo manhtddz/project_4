@@ -1,9 +1,11 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
+import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.models.FavouriteAlbums;
 import com.example.e_project_4_api.models.FavouriteSongs;
 import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
@@ -12,6 +14,7 @@ import com.example.e_project_4_api.repositories.SongRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -51,6 +54,16 @@ public class FavouriteSongService {
             throw new NotFoundException("Can't find any FavouriteSong with id: " + id);
         }
         repo.deleteById(id);
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void unlikeSong(UnlikeModelRequest request) {
+        Optional<FavouriteSongs> op = repo.findByUserIdAndSongId(request.getUserId(), request.getUnlikeId());
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any FavouriteSong");
+        }
+        repo.delete(op.get());
     }
 
     public NewOrUpdateFavouriteSong addNewFS(NewOrUpdateFavouriteSong request) {
