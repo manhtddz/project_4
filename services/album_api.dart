@@ -1,78 +1,43 @@
 import 'dart:async';
-import '../models/album.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:pj_demo/dto/album_response.dart';
+import 'package:pj_demo/services/api.dart';
 import 'dart:convert';  // For json.decode
-import 'package:http/http.dart' as http;  // For http.get
+import 'urlConsts.dart';  // For http.get
 
-class AlbumApi {
-  final String baseUrl = "http://localhost:8080/api/public/albums";
-  Future<List<Album>> fetchItems() async {
-    final response = await http.get(Uri.parse(baseUrl));
+class AlbumApi extends Api {
+  // final String baseUrl = "http://localhost:8080/api/public/albums";
+  Future<List<AlbumResponse>> fetchItems(BuildContext context) async {
+    final response = await get(UrlConsts.ALBUMS, context);
 
     // Check if the response is successful
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Album.fromJson(json)).toList();
+      List<dynamic> data = json.decode(response.body);
+      return data.map((item) => AlbumResponse.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load genres');
+      throw Exception('Failed to load albums');
     }
   }
-  // Future<List<Album>> fetchAllAlbums() async {
-  //   await Future.delayed(const Duration(seconds: 1));
-  //   return [
-  //     Album(
-  //         id: 1,
-  //         title: 'BBB 3',
-  //         artistId: 1,
-  //         artistName: 'ST',
-  //         subjectId: 1,
-  //         subjectName: 'AAA',
-  //         imageUrl: 'assets/images/1.jpg'),
-  //     Album(
-  //         id: 2,
-  //         title: 'BBB 2',
-  //         artistId: 1,
-  //         artistName: 'ST',
-  //         subjectId: 1,
-  //         subjectName: 'BBB',
-  //         imageUrl: 'assets/images/4.jpg'),
-  //     Album(
-  //         id: 3,
-  //         title: 'BBB 3',
-  //         artistId: 1,
-  //         artistName: 'ST',
-  //         subjectId: 1,
-  //         subjectName: 'CCC',
-  //         imageUrl: 'assets/images/5.jpg'),
-  //     Album(
-  //         id: 4,
-  //         title: 'AHH 2',
-  //         artistId: 1,
-  //         artistName: 'Thuy Linh',
-  //         subjectId: 1,
-  //         subjectName: 'BBB',
-  //         imageUrl: 'assets/images/3.jpg'),
-  //   ];
-  // }
 
-  Future<List<Album>> fetchItemByKeyWord(String keyword) async {
-    final response = await http.get(Uri.parse('$baseUrl/search/$keyword'));
+  Future<List<AlbumResponse>> fetchItemByKeyWord(String keyword, BuildContext context) async {
+    final response = await get(UrlConsts.ALBUMS+'/search/$keyword',context);
 
     // Check if the response is successful
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Album.fromJson(json)).toList();
+      return data.map((item) => AlbumResponse.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load album with keyword $keyword');
     }
   }
 
-  Future<List<Album>> fetchFavAlbumOfUser(int uId) async {
-    final response = await http.get(Uri.parse('$baseUrl/byUser/display/$uId'));
+  Future<List<AlbumResponse>> fetchFavAlbumOfUser(int uId, BuildContext context) async {
+    final response = await get(UrlConsts.ALBUMS+'/byUser/display/$uId', context);
 
     // Check if the response is successful
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Album.fromJson(json)).toList();
+      List<dynamic> data = json.decode(response.body);
+      return data.map((item) => AlbumResponse.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load albums with id $uId');
     }

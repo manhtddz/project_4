@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/models/keyword.dart';
 import 'package:pj_demo/pages/search_result.dart';
 import 'package:pj_demo/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/album_provider.dart';
+import '../providers/keyword_provider.dart';
 import '../providers/song_provider.dart';
-import '../providers/user_favorites_provider.dart';
+import '../providers/user_favorites_provider111.dart';
 
 void main() {
   runApp(
@@ -17,9 +17,9 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => SongProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => ThemeProvider(),
+        // ),
         ChangeNotifierProvider(
           create: (context) => UserFavoritesProvider(),
         ),
@@ -51,7 +51,7 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<KeywordProvider>(context, listen: false)
-          .fetchAllKeyword();
+          .fetchAllKeyword(context);
     });
     return Scaffold(
       body: Container(

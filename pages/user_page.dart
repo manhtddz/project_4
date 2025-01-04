@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pj_demo/pages/favourite_page.dart';
+import 'package:pj_demo/pages/favorite_page.dart';
 import 'package:pj_demo/pages/playlist_page.dart';
 import 'package:pj_demo/pages/profile_detail.dart';
 import 'package:pj_demo/pages/user_playlist_list.dart';

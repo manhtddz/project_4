@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/general_widget/common_appbar.dart';
 import 'package:pj_demo/providers/album_provider.dart';
 import 'package:pj_demo/dto/playlist_response.dart';
+import 'package:pj_demo/providers/song_provider.dart';
 import 'package:pj_demo/providers/user_provider.dart';
 import 'package:pj_demo/pages/playlist_page.dart';
+import 'package:pj_demo/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/playlist_provider.dart';
+import '../services/urlConsts.dart';
 
 void main() {
   runApp(
@@ -19,6 +23,12 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SongProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
         ),
       ],
       child: MyApp(),
@@ -46,83 +56,21 @@ class PlaylistList extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<PlaylistProvider>(context, listen: false)
-          .fetchPlaylistOfUser(userId);
+          .fetchPlaylistOfUser(userId, context);
     });
 
     return Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(250.0),
-          child: Consumer<PlaylistProvider>(
-              builder: (context, playlistProvider, child) {
-            if (playlistProvider.isLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return AppBar(
-              flexibleSpace: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/favourite.png'),
-                          fit: BoxFit.cover,
-                          opacity: 0.7,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          left: 16, bottom: 50), // Adjust padding as needed
-                      child: Text(
-                        // "${currentUser!.username}'s Favourites",
-                        "Thu Thuy's Playlists",
-                        style: TextStyle(
-                            color: Colors.white, // Or any desired color
-                            fontSize: 26,
-                            fontWeight:
-                                FontWeight.bold // Adjust font size as needed
-                            ),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        bottom: 10,
-                      ), // Adjust padding as needed
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                NetworkImage('assets/images/avatar.png'),
-                          ), // Image.asset('${currentUser.image}'),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            // '${currentUser.username}',
-                            '${playlistProvider.playListList.length} Playlists',
-                            style: TextStyle(
-                              color: Colors.white, // Or any desired color
-                              fontSize: 16, // Adjust font size as needed
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ),
+            preferredSize: Size.fromHeight(250.0),
+            child: Consumer<PlaylistProvider>(
+                builder: (context, playlistProvider, child) {
+              return CommonAppBar(
+                label1: "Thu Thuy's Playlists",
+                label2: '${playlistProvider.playListList.length} Playlists',
+                appBarImg: UrlConsts.FAVORITE_IMAGES,
+                isUserFav: true,
+              );
+            })),
         body: Stack(
           children: [
             Container(

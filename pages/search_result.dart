@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/dto/album_response.dart';
 import 'package:pj_demo/services/album_api.dart';
 import 'package:pj_demo/providers/album_provider.dart';
 import 'package:pj_demo/pages/album_page.dart';
 import 'package:provider/provider.dart';
 import '../models/album.dart';
 
-// void main() {
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(
-//           create: (context) => AlbumProvider(),
-//         ),
-//       ],
-//       child: MyApp(),
-//     ),
-//   );
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: SearchResult(txtSearch: ''), // Your main screen widget
-//     );
-//   }
-// }
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AlbumProvider(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SearchResult(txtSearch: ''), // Your main screen widget
+    );
+  }
+}
 
 class SearchResult extends StatelessWidget {
   final String txtSearch;
@@ -40,7 +41,7 @@ class SearchResult extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AlbumProvider>(context, listen: false)
-          .searchAlbumByKeyword(txtSearch);
+          .searchAlbumByKeyword(txtSearch, context);
     });
     return Scaffold(
         body: Stack(children: [
@@ -149,7 +150,7 @@ class SearchResult extends StatelessWidget {
           if (keyword.isNotEmpty) {
             // Trigger the search when the user types in the search field
             Provider.of<AlbumProvider>(context, listen: false)
-                .searchAlbumByKeyword(keyword);
+                .searchAlbumByKeyword(keyword,context);
           } else {
             // Clear the list when the query is empty
             Provider.of<AlbumProvider>(context, listen: false).clearAlbums();
@@ -157,7 +158,7 @@ class SearchResult extends StatelessWidget {
         });
   }
 
-  Widget _renderItems(BuildContext context, Album album) {
+  Widget _renderItems(BuildContext context, AlbumResponse album) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -205,7 +206,7 @@ class SearchResult extends StatelessWidget {
     );
   }
 
-  void goToAlbum(BuildContext context, Album album) {
+  void goToAlbum(BuildContext context, AlbumResponse album) {
     Navigator.push(
         context,
         MaterialPageRoute(

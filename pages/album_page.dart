@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pj_demo/dto/album_response.dart';
+import 'package:pj_demo/general_widget/common_appbar.dart';
 import 'package:pj_demo/pages/song_page2.dart';
 import 'package:provider/provider.dart';
-
-import '../models/album.dart';
 import '../providers/song_provider.dart';
-import '../providers/user_favorites_provider.dart';
 
 class AlbumPage extends StatelessWidget {
-  final Album currentAlbum;
+  final AlbumResponse currentAlbum;
   final int userId = 1; // Example user ID
 
   AlbumPage({required this.currentAlbum});
@@ -16,7 +15,6 @@ class AlbumPage extends StatelessWidget {
     // Update the current song index in the provider
     Provider.of<SongProvider>(context, listen: false).currentSongIndex =
         songIndex;
-
     // Navigate to SongPage2
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => SongPage2()));
@@ -25,66 +23,27 @@ class AlbumPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Fetch the user's favorite songs only if not fetched
-    final favoriteProvider = Provider.of<UserFavoritesProvider>(context);
+    final favoriteProvider = Provider.of<SongProvider>(context);
     if (favoriteProvider.favoriteSongs.isEmpty) {
-      favoriteProvider.fetchUserFavorites(userId);
+      favoriteProvider.fetchFavSongOfUser(userId, context);
     }
 
     final songProvider = Provider.of<SongProvider>(context);
     // Fetch the songs of the current album if they are not fetched yet
     if (!songProvider.isLoading && songProvider.songList.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        songProvider.fetchSongOfAlbum(currentAlbum.id);
+        songProvider.fetchSongOfAlbum(currentAlbum.id, context);
       });
     }
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(250.0),
-        child: AppBar(
-          flexibleSpace: Stack(
-            children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/3.jpg'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16, bottom: 30),
-                  child: Text(
-                    '${currentAlbum.title}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16, bottom: 10),
-                  child: Text(
-                    '${currentAlbum.artistName}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+          preferredSize: Size.fromHeight(250.0),
+          child: CommonAppBar(
+              label1: currentAlbum.title,
+              label2: currentAlbum.artistName,
+              appBarImg: currentAlbum.image,
+              isUserFav: false)),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -100,7 +59,7 @@ class AlbumPage extends StatelessWidget {
             ? Center(child: CircularProgressIndicator())
             : songProvider.songList.isEmpty
                 ? Center(child: Text('No songs found.'))
-                : _renderListSong(context, songProvider, favoriteProvider),
+                : _renderListSong(context, songProvider),
       ),
     );
   }
@@ -123,13 +82,12 @@ class AlbumPage extends StatelessWidget {
           );
   }
 
-  Widget _renderListSong(BuildContext context, SongProvider songProvider,
-      UserFavoritesProvider favoriteProvider) {
+  Widget _renderListSong(BuildContext context, SongProvider songProvider) {
     return ListView.builder(
       itemCount: songProvider.songList.length,
       itemBuilder: (context, index) {
         final song = songProvider.songList[index];
-        final isFavorite = favoriteProvider.isFavorite(song.id);
+        final isFavorite = songProvider.isFavorite(userId, song.id, context);
         final isPlaying =
             songProvider.currentSongIndex == index && songProvider.isPlaying;
 
@@ -143,7 +101,7 @@ class AlbumPage extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.black54)),
               SizedBox(width: 5.0),
               CircleAvatar(
-                backgroundImage: NetworkImage(song.albumImagePath),
+                backgroundImage: NetworkImage(song.albumImage!),
               ),
             ],
           ),
@@ -170,10 +128,11 @@ class AlbumPage extends StatelessWidget {
                       isFavorite), // Show correct icon based on favorite status
                   onPressed: () {
                     if (isFavorite) {
-                      favoriteProvider
-                          .removeFavorite(song); // Remove from favorites
+                      songProvider.removeFavorite(
+                          userId, song, context); // Remove from favorites
                     } else {
-                      favoriteProvider.addFavorite(song); // Add to favorites
+                      songProvider.addFavorite(
+                          userId, song, context); // Add to favorites
                     }
                   },
                 ),
@@ -195,9 +154,9 @@ class AlbumPage extends StatelessWidget {
               CircleAvatar(
                   // backgroundColor: Colors.white,
                   child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.drag_indicator_rounded),
-                  )),
+                onPressed: () {},
+                icon: Icon(Icons.drag_indicator_rounded),
+              )),
             ],
           ),
         );

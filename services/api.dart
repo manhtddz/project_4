@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // import '../../pages/login_page.dart';
-import '../../shared_preference/share_preference_service.dart';
 import 'urlConsts.dart';
 
 class Api {
-  final SharedPreferencesService _prefsService = SharedPreferencesService();
+  // final SharedPreferencesService _prefsService = SharedPreferencesService();
 
   Future<http.Response> post(
       String path, dynamic request, BuildContext context) async {
@@ -35,18 +34,6 @@ class Api {
     return response;
   }
 
-  // void _handleSecurityError(http.Response response, BuildContext context) {
-  //   if (response.statusCode == 401) {
-  //     // Optionally clear stored user data
-  //     _prefsService.clear();
-      
-  //     // Navigate to the Login Page
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => LoginPage()),
-  //     );
-  //   }
-  // }
   void _handleSecurityError(http.Response response, BuildContext context) {
   if (response.statusCode == 401) {
     // Show an alert dialog
@@ -63,7 +50,7 @@ class Api {
                 Navigator.of(context).pop(); // Close the dialog
 
                 // Clear stored user data
-                _prefsService.clear();
+                // _prefsService.clear();
 
                 // Navigate to the Login Page
                 // Navigator.pushReplacement(
@@ -87,8 +74,8 @@ class Api {
     };
 
     if (!UrlConsts.isInWhilteList(path)) {
-      var token = await _prefsService.getToken();
-      map['Authorization'] = 'Bearer $token';
+      // var token = await _prefsService.getToken();
+      // map['Authorization'] = 'Bearer $token';
     }
 
     return map;

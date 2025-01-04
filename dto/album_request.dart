@@ -1,39 +1,24 @@
-class Album {
+class AlbumRequest {
   final int id;
   final String title;
   final String artistName;
   final String image;
-  final bool? isReleased;
+  // final bool? isReleased;
   final DateTime? releasedDate;
   final DateTime? createdAt;
   final DateTime? modifiedAt;
   final bool isDeleted;
 
-  Album(
+  AlbumRequest(
       {required this.id,
         required this.title,
         required this.artistName,
         required this.isDeleted,
         this.createdAt,
         this.modifiedAt,
-        // this.subjectName,
         required this.image,
-        this.isReleased,
+        // this.isReleased,
         this.releasedDate});
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-        id: json['id'],
-        title: json['title'],
-        artistName: json['artistName'],
-        // subjectName: map['subjectName'],
-        image: json['image'],
-        isReleased: json['isReleased'],
-        isDeleted: json['isDeleted'],
-        releasedDate: json['releasedDate'],
-        createdAt: json['createdAt'],
-        modifiedAt: json['modifiedAt']);
-  }
 
   Map<String, dynamic> toJson(){
     return {
@@ -42,7 +27,7 @@ class Album {
       'artistName': artistName,
       // 'subjectName': subjectName,
       'image': image,
-      'isReleased': isReleased,
+      // 'isReleased': isReleased,
       'isDeleted': isDeleted,
       'createdAt': createdAt,
       'modifiedAt': modifiedAt,

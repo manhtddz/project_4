@@ -27,7 +27,7 @@ class SongPage2 extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(currentSong.albumImagePath!), // Background image
+                  image: AssetImage(currentSong.albumImage!), // Background image
                   fit: BoxFit.cover,
                 ),
               ),
@@ -64,7 +64,7 @@ class SongPage2 extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              currentSong.albumImagePath!,
+                              currentSong.albumImage!,
                               fit: BoxFit.cover,
                             ),
                           ),
