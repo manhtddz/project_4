@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +19,7 @@ public class GenresResponse implements Serializable {
     private Boolean isDeleted;
     private Date createdAt;
     private Date modifiedAt;
-
+    private String color;
+    private Integer colorId;
 
 }

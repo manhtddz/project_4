@@ -20,5 +20,6 @@ public class GenreDisplayForAdmin implements Serializable {
     private Date createdAt;
     private Date modifiedAt;
     private Integer totalSong;
+    private String color;
 
 }

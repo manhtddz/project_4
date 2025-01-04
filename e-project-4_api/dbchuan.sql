@@ -163,6 +163,35 @@ create Table view_in_month(
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE
 );
 
+-- chạy đống này là có color
+create table colors(
+id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100)
+);
+-- tạo bảng colors
+INSERT INTO colors (title)
+VALUES 
+    ('Green'),
+    ('Blue'),
+    ('Yellow');
+-- insert dữ liệu vào colors(ko làm là đi)
+
+ALTER TABLE genres
+ADD COLUMN color_id INT(11) NOT NULL;
+-- Thêm cột color_id vào bảng genres
+
+-- trc khi làm cái này, vào các cột ở bảng genre, điền id của màu vào cột color_id mới tạo ở genre(phải làm cái này trc mới tạo khóa ngoại dc)
+ALTER TABLE genres
+ADD CONSTRAINT fk_color_id
+FOREIGN KEY (color_id)
+REFERENCES colors(id)
+ON DELETE CASCADE;
+
+-- cứ làm như thế này trc đã, vì ai cx có database rồi nên để như này update thêm thôi, sau này sẽ có 1 file database chuẩn khác
+-- chạy đống này là có color
+
+
+
 -- Bảng artists: 
 -- Thêm chỉ mục cho cột `artist_name` để tìm kiếm nghệ sĩ theo tên.
 CREATE INDEX idx_artists_name ON artists (artist_name);

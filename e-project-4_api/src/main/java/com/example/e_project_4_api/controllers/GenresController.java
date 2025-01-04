@@ -5,6 +5,7 @@ import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.Colors;
 import com.example.e_project_4_api.service.GenresService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +105,10 @@ public class GenresController {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @GetMapping("/public/colors")
+    public ResponseEntity<List<Colors>> findAllColors() {
+        return new ResponseEntity<>(service.getAllColors(), HttpStatus.OK);
     }
 }

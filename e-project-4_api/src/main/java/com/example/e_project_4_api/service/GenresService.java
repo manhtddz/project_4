@@ -5,7 +5,11 @@ import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.Albums;
+import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.Colors;
 import com.example.e_project_4_api.models.Genres;
+import com.example.e_project_4_api.repositories.ColorRepository;
 import com.example.e_project_4_api.repositories.GenreSongRepository;
 import com.example.e_project_4_api.repositories.GenresRepository;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +28,8 @@ public class GenresService {
     private GenresRepository repo;
     @Autowired
     private GenreSongRepository gSRepo;
+    @Autowired
+    private ColorRepository colorRepository;
     @Autowired
     private FileService fileService;
 
@@ -87,17 +93,20 @@ public class GenresService {
             if (op.isPresent()) {
                 errors.add(Map.of("titleError", "Already exist title"));
             }
-
+            Optional<Colors> colorOp = colorRepository.findById(request.getColorId());
+            if (colorOp.isEmpty()) {
+                errors.add(Map.of("colorError", "Can't find color"));
+            }
 
             if (!errors.isEmpty()) {
                 throw new ValidationException(errors);
             }
 
-
             Genres newGenre = new Genres(
                     request.getTitle(),
                     request.getImage(),
                     false,
+                    colorOp.get(),
                     new Date(),
                     new Date()
             );
@@ -128,7 +137,10 @@ public class GenresService {
             errors.add(Map.of("titleError", "Already exist title"));
         }
 
-
+        Optional<Colors> colorOp = colorRepository.findById(request.getColorId());
+        if (colorOp.isEmpty()) {
+            errors.add(Map.of("colorError", "Can't find color"));
+        }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
@@ -142,6 +154,7 @@ public class GenresService {
         }
         genre.setTitle(request.getTitle());
         genre.setModifiedAt(new Date());
+        genre.setColorId(colorOp.get());
         repo.save(genre);
 
         return request;
@@ -150,6 +163,9 @@ public class GenresService {
 
     public GenresResponse toGenreResponse(Genres genre) {
         GenresResponse res = new GenresResponse();
+        res.setColor(genre.getColorId().getTitle());
+        res.setColor(genre.getColorId().getTitle());
+        res.setColorId(genre.getColorId().getId());
         BeanUtils.copyProperties(genre, res);
         return res;
     }
@@ -161,6 +177,11 @@ public class GenresService {
                 .stream()
                 .toList()
                 .size());
+        res.setColor(genre.getColorId().getTitle());
         return res;
+    }
+
+    public List<Colors> getAllColors() {
+        return colorRepository.findAll();
     }
 }

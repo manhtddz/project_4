@@ -19,5 +19,7 @@ public class NewOrUpdateGenres {
     @NotBlank(message = "title is required")
     private String title;
     private String image;
+    @NotNull(message = "colorId is required")
+    private Integer colorId;
 
 }

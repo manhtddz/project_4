@@ -4,25 +4,24 @@
  */
 package com.example.e_project_4_api.models;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+
 /**
- *
  * @author admin
  */
 @Entity
-@Table(name = "genres")
+@Table(name = "colors")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Genres implements Serializable {
+public class Colors implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -33,29 +32,12 @@ public class Genres implements Serializable {
     @Basic(optional = false)
     @Column(name = "title")
     private String title;
-    @Column(name = "image")
-    private String image;
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-    @OneToMany(mappedBy = "genreId")
-    private Collection<GenreSong> genreSongCollection;
-    @JoinColumn(name = "color_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Colors colorId;
+    @OneToMany(mappedBy = "colorId")
+    private Collection<Genres> genresCollection;
 
-    public Genres(String title, String image, Boolean isDeleted, Colors colorId, Date createdAt, Date modifiedAt) {
+
+    public Colors(String title) {
         this.title = title;
-        this.image = image;
-        this.isDeleted = isDeleted;
-        this.colorId = colorId;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
     }
 
     @Override
@@ -68,10 +50,10 @@ public class Genres implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Genres)) {
+        if (!(object instanceof Colors)) {
             return false;
         }
-        Genres other = (Genres) object;
+        Colors other = (Colors) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -80,7 +62,7 @@ public class Genres implements Serializable {
 
     @Override
     public String toString() {
-        return "models.Genres[ id=" + id + " ]";
+        return "models.Albums[ id=" + id + " ]";
     }
-    
+
 }
