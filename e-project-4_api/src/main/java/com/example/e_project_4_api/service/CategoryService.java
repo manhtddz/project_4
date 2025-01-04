@@ -101,7 +101,7 @@ public class CategoryService {
             throw new ValidationException(errors);
         }
         Date currentDate = new Date();
-        Categories newSub = new Categories(request.getTitle(), request.getImage(), request.getDescription(), false, currentDate, currentDate);
+        Categories newSub = new Categories(request.getTitle(), request.getDescription(), false, currentDate, currentDate);
         cateRepository.save(newSub);
         return request;
     }
@@ -127,7 +127,6 @@ public class CategoryService {
         Date currentDate = new Date();
         Categories sub = op.get();
         sub.setTitle(request.getTitle());
-        sub.setImage(request.getImage());
         sub.setDescription(request.getDescription());
         sub.setModifiedAt(currentDate);
         cateRepository.save(sub);

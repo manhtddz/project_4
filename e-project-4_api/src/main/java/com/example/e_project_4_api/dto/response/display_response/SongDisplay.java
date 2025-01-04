@@ -24,8 +24,6 @@ public class SongDisplay implements Serializable {
     private Integer id;
     private String title;
     private String audioPath;
-    private Integer listenAmount;
-    private Integer totalFavourite;
     private String lyricFilePath;
     private String featureArtist;
     private Boolean isPending;

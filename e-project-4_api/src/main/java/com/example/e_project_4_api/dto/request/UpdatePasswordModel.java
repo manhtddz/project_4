@@ -7,17 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class NewOrUpdateGenres {
+public class UpdatePasswordModel {
+    @NotNull(message = "userId is required")
     private Integer id;
-    @NotBlank(message = "title is required")
-    private String title;
-    private String image;
-
+    @NotBlank(message = "newPassword is required")
+    private String newPassword;
+    @NotBlank(message = "oldPassword is required")
+    private String oldPassword;
 }

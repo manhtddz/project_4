@@ -6,8 +6,7 @@ import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
-import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
-import com.example.e_project_4_api.ex.NotFoundException;
+import com.example.e_project_4_api.dto.response.mix_response.SongWithViewInMonth;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.FavouriteSongService;
 import com.example.e_project_4_api.service.SongService;
@@ -94,19 +93,14 @@ public class SongController {
 
     @GetMapping("/public/songs/mostListened")
     public ResponseEntity<Object> findMostListenedSongInMonth() {
-        SongWithLikeAndViewInMonth song = service.getMostListenedSongInMonth();
+        SongWithViewInMonth song = service.getMostListenedSongInMonth();
         return new ResponseEntity<>(song, HttpStatus.OK);
     }
 
-    @GetMapping("/public/songs/mostFav")
-    public ResponseEntity<Object> findMostFavouriteSongInMonth() {
-        SongWithLikeAndViewInMonth song = service.getMostFavouriteSongInMonth();
-        return new ResponseEntity<>(song, HttpStatus.OK);
-    }
 
     @GetMapping("/public/songs/topFive")
     public ResponseEntity<Object> findTop5SongInMonth() {
-        List<SongWithLikeAndViewInMonth> songs = service.getMost5ListenedSongInMonth();
+        List<SongWithViewInMonth> songs = service.getMost5ListenedSongInMonth();
         return new ResponseEntity<>(songs, HttpStatus.OK);
     }
 

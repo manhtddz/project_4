@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +28,8 @@ public class ArtistService {
     private ArtistRepository repo;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private FileService fileService;
 
     @Cacheable("artistsDisplay")
     public List<ArtistResponse> getAllArtists() {
@@ -79,21 +82,28 @@ public class ArtistService {
 
     @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
     public NewOrUpdateArtist addNewArtist(NewOrUpdateArtist request) {
-        List<Map<String, String>> errors = new ArrayList<>();
+        try {
 
-        Optional<Artists> op = repo.findByArtistName(request.getArtistName());
-        if (op.isPresent()) {
-            errors.add(Map.of("artistNameError", "Already exist artist name"));
+            List<Map<String, String>> errors = new ArrayList<>();
+
+            Optional<Artists> op = repo.findByArtistName(request.getArtistName());
+            if (op.isPresent()) {
+                errors.add(Map.of("artistNameError", "Already exist artist name"));
+            }
+
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+
+            Artists newArtist = new Artists(request.getArtistName(), request.getImage(),
+                    request.getBio(), false, new Date(), new Date());
+            repo.save(newArtist);
+            return request;
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteImageFile(request.getImage());
+            throw e;
         }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-
-        Artists newArtist = new Artists(request.getArtistName(), request.getImage(),
-                request.getBio(), false, new Date(), new Date());
-        repo.save(newArtist);
-        return request;
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
@@ -134,9 +144,12 @@ public class ArtistService {
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-
+        if (!StringUtils.isEmpty(request.getImage())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteImageFile(artist.getImage());
+            artist.setImage(request.getImage());
+        }
         artist.setArtistName(request.getArtistName());
-        artist.setImage(request.getImage());
         artist.setBio(request.getBio());
         artist.setModifiedAt(new Date());
         repo.save(artist);

@@ -24,12 +24,12 @@ import lombok.Setter;
  * @author admin
  */
 @Entity
-@Table(name = "like_and_view_in_month")
+@Table(name = "view_in_month")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LikeAndViewInMonth implements Serializable {
+public class ViewInMonth implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,8 +37,6 @@ public class LikeAndViewInMonth implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "like_amount")
-    private Integer likeAmount;
     @Column(name = "listen_amount")
     private Integer listenAmount;
     @JoinColumn(name = "month_id", referencedColumnName = "id")
@@ -58,10 +56,10 @@ public class LikeAndViewInMonth implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof LikeAndViewInMonth)) {
+        if (!(object instanceof ViewInMonth)) {
             return false;
         }
-        LikeAndViewInMonth other = (LikeAndViewInMonth) object;
+        ViewInMonth other = (ViewInMonth) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

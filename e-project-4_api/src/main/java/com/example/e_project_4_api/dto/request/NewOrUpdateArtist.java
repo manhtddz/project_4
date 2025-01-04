@@ -19,7 +19,6 @@ public class NewOrUpdateArtist {
     private Integer id;
     @NotBlank(message = "artistName is required")
     private String artistName;
-    @NotBlank(message = "image is required")
     private String image;
     @NotNull(message = "bio is required")
     private String bio;

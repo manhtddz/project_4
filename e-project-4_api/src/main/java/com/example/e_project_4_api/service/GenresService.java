@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +23,9 @@ public class GenresService {
     @Autowired
     private GenresRepository repo;
     @Autowired
-    private GenreSongRepository gSrepo;
+    private GenreSongRepository gSRepo;
+    @Autowired
+    private FileService fileService;
 
     @Cacheable("genresDisplay")
     public List<GenresResponse> getAllGenres() {
@@ -31,6 +34,7 @@ public class GenresService {
                 .map(this::toGenreResponse)
                 .collect(Collectors.toList());
     }
+
     public int getNumberOfGenre() {
         return repo.getNumberOfAllNotDeleted(false);
     }
@@ -74,31 +78,38 @@ public class GenresService {
 
     @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateGenres addNewGenre(NewOrUpdateGenres request) {
-        List<Map<String, String>> errors = new ArrayList<>();
+        try {
+
+            List<Map<String, String>> errors = new ArrayList<>();
 
 
-        Optional<Genres> op = repo.findByTitle(request.getTitle());
-        if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist title"));
+            Optional<Genres> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add(Map.of("titleError", "Already exist title"));
+            }
+
+
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+
+
+            Genres newGenre = new Genres(
+                    request.getTitle(),
+                    request.getImage(),
+                    false,
+                    new Date(),
+                    new Date()
+            );
+
+            repo.save(newGenre);
+
+            return request;
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteImageFile(request.getImage());
+            throw e;
         }
-
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-
-
-        Genres newGenre = new Genres(
-                request.getTitle(),
-                request.getImage(),
-                false,
-                new Date(),
-                new Date()
-        );
-
-        repo.save(newGenre);
-
-        return request;
     }
 
     @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
@@ -124,8 +135,12 @@ public class GenresService {
 
 
         Genres genre = op.get();
+        if (!StringUtils.isEmpty(request.getImage())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteImageFile(genre.getImage());
+            genre.setImage(request.getImage());
+        }
         genre.setTitle(request.getTitle());
-        genre.setImage(request.getImage());
         genre.setModifiedAt(new Date());
         repo.save(genre);
 
@@ -142,7 +157,7 @@ public class GenresService {
     public GenreDisplayForAdmin toGenreDisplayForAdmin(Genres genre) {
         GenreDisplayForAdmin res = new GenreDisplayForAdmin();
         BeanUtils.copyProperties(genre, res);
-        res.setTotalSong(gSrepo.findByGenreId(genre.getId(), false)
+        res.setTotalSong(gSRepo.findByGenreId(genre.getId(), false)
                 .stream()
                 .toList()
                 .size());

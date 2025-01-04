@@ -40,8 +40,6 @@ public class Categories implements Serializable {
     @Basic(optional = false)
     @Column(name = "title")
     private String title;
-    @Column(name = "image")
-    private String image;
     @Lob
     @Column(name = "description")
     private String description;
@@ -54,9 +52,8 @@ public class Categories implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
 
-    public Categories(String title, String image, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
+    public Categories(String title, String description, Boolean isDeleted, Date createdAt, Date modifiedAt) {
         this.title = title;
-        this.image = image;
         this.description = description;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;

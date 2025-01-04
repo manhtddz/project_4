@@ -1,7 +1,9 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
+import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
@@ -19,8 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,7 +42,10 @@ public class UserService {
 
     @Autowired
     private ArtistRepository artistRepo;
-
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    AuthenticationManager authManager;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Caching(evict = {
@@ -46,7 +55,7 @@ public class UserService {
     })
     public UserResponse updateUser(NewOrUpdateUser request) {
         List<Map<String, String>> errors = new ArrayList<>();
-        Optional<Users> op = repo.findById(request.getId());
+        Optional<Users> op = repo.findByIdAndIsDeleted(request.getId(), false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any user with id: " + request.getId());
         }
@@ -72,7 +81,6 @@ public class UserService {
             errors.add(Map.of("phoneError", "Already exist phone number"));
         }
 
-
         if (!EmailValidator.isValidEmail(request.getEmail())) {
             errors.add(Map.of("emailError", "Email is not valid"));
         }
@@ -86,10 +94,14 @@ public class UserService {
             throw new ValidationException(errors);
         }
         Users user = op.get();
+        if (!StringUtils.isEmpty(request.getAvatar())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteImageFile(user.getAvatar());
+            user.setAvatar(request.getAvatar());
+        }
         user.setUsername(request.getUsername());
         user.setPassword(encoder.encode(request.getPassword()));
         user.setFullName(request.getFullName());
-        user.setAvatar(request.getAvatar());
         user.setPhone(request.getPhone());
         user.setEmail(request.getEmail());
         user.setDob(request.getDob());
@@ -103,7 +115,7 @@ public class UserService {
             @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
     })
     public void updateEachPartOfUser(UpdateUserWithAttribute request) {
-        Optional<Users> op = repo.findById(request.getId());
+        Optional<Users> op = repo.findByIdAndIsDeleted(request.getId(), false);
         List<Map<String, String>> errors = new ArrayList<>();
 
         if (op.isEmpty()) {
@@ -120,17 +132,11 @@ public class UserService {
                 }
                 user.setUsername(request.getValue());
                 break;
-            case "password":
-                if (!PasswordValidator.isValidPassword(request.getValue())) {
-                    errors.add(Map.of("passwordError",
-                            "Password is not strong enough, at least 8 character with special character and number"));
-                }
-                user.setPassword(encoder.encode(request.getValue()));
-                break;
             case "fullName":
                 user.setFullName(request.getValue());
                 break;
             case "avatar":
+                fileService.deleteImageFile(user.getAvatar());
                 user.setAvatar(request.getValue());
                 break;
             case "phone":
@@ -180,6 +186,33 @@ public class UserService {
         repo.save(user);
     }
 
+    public void updatePassword(UpdatePasswordModel request) {
+        List<Map<String, String>> errors = new ArrayList<>();
+        Optional<Users> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any user with id: " + request.getId());
+        }
+        Users user = op.get();
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getOldPassword())
+        );
+
+        if (!authentication.isAuthenticated()) {
+            errors.add(Map.of("passwordError",
+                    "Your old password is wrong"));
+        }
+        if (!PasswordValidator.isValidPassword(request.getNewPassword())) {
+            errors.add(Map.of("passwordError",
+                    "Password is not strong enough, at least 8 character with special character and number"));
+        }
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+        user.setPassword(encoder.encode(request.getNewPassword()));
+        user.setModifiedAt(new Date());
+        repo.save(user);
+    }
+
     @Cacheable(value = "users")
     public List<UserResponse> getAllUsers() {
         return repo.findAllByIsDeleted(false)
@@ -221,7 +254,7 @@ public class UserService {
             @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
     })
     public boolean deleteById(int id) {
-        Optional<Users> op = repo.findById(id);
+        Optional<Users> op = repo.findByIdAndIsDeleted(id, false);
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any user with id: " + id);
         }

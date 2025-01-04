@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,11 +26,14 @@ import java.util.stream.Collectors;
 public class NewsService {
     @Autowired
     private NewsRepository repo;
+    @Autowired
+    private FileService fileService;
 
     @Cacheable("newsDisplay")
     public List<NewsResponse> getAllNews() {
         return repo.findAll()
                 .stream()
+                .filter(News::getIsActive)
                 .map(this::toNewsResponse)
                 .collect(Collectors.toList());
     }
@@ -76,29 +80,36 @@ public class NewsService {
 
     @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
     public NewOrUpdateNews addNew(NewOrUpdateNews request) {
-        List<Map<String, String>> errors = new ArrayList<>();
+        try {
 
-        Optional<News> op = repo.findByTitle(request.getTitle());
-        if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist title"));
+            List<Map<String, String>> errors = new ArrayList<>();
+
+            Optional<News> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add(Map.of("titleError", "Already exist title"));
+            }
+
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+
+            News newNews = new News(
+                    request.getTitle(),
+                    request.getContent(),
+                    request.getImage(),
+                    request.getIsActive(),
+                    new Date(),
+                    new Date()
+            );
+
+            repo.save(newNews);
+
+            return request;
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteImageFile(request.getImage());
+            throw e;
         }
-
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-
-        News newNews = new News(
-                request.getTitle(),
-                request.getContent(),
-                request.getImage(),
-                request.getIsActive(),
-                new Date(),
-                new Date()
-        );
-
-        repo.save(newNews);
-
-        return request;
     }
 
     @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
@@ -122,6 +133,11 @@ public class NewsService {
 
 
         News news = op.get();
+        if (!StringUtils.isEmpty(request.getImage())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteImageFile(news.getImage());
+            news.setImage(request.getImage());
+        }
         news.setTitle(request.getTitle());
         news.setContent(request.getContent());
         news.setImage(request.getImage());

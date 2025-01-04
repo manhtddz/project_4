@@ -20,7 +20,6 @@ public class NewOrUpdateNews {
     private String title;
     @NotBlank(message = "content is required")
     private String content;
-    @NotBlank(message = "image is required")
     private String image;
     @NotNull(message = "isActive is required")
     private Boolean isActive;

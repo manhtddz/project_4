@@ -30,7 +30,7 @@ public class KeywordService {
     public List<KeywordResponse> getAllKeywords() {
         return repo.findAll()
                 .stream()
-                .filter(keywords -> keywords.getIsActive())
+                .filter(Keywords::getIsActive)
                 .map(this::toKeywordResponse)
                 .collect(Collectors.toList());
     }

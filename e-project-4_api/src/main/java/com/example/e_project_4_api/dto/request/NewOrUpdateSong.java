@@ -20,14 +20,11 @@ public class NewOrUpdateSong {
     private Integer id;
     @NotBlank(message = "title is required")
     private String title;
-    @NotBlank(message = "audioPath is required")
     private String audioPath;
     private Integer listenAmount;
-    @NotBlank(message = "lyricFilePath is required")
     private String lyricFilePath;
     @NotBlank(message = "featureArtist is required")
     private String featureArtist;
-    @NotNull(message = "isPending is required")
     private Boolean isPending;
     @NotNull(message = "albumId is required")
     private Integer albumId;

@@ -15,7 +15,6 @@ import java.util.Date;
 public class CategoryResponse implements Serializable {
     private Integer id;
     private String title;
-    private String image;
     private String description;
     private Boolean isDeleted;
     private Date createdAt;

@@ -21,7 +21,6 @@ public class NewOrUpdateUser {
     private String username;
     @NotBlank(message = "fullName is required")
     private String fullName;
-    @NotBlank(message = "avatar is required")
     private String avatar;
     @NotBlank(message = "password is required")
     private String password;

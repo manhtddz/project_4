@@ -1,10 +1,9 @@
 package com.example.e_project_4_api.service;
 
+import com.example.e_project_4_api.dto.request.CheckLikeModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteAlbumResponse;
-import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.models.*;
@@ -91,6 +90,11 @@ public class FavouriteAlbumService {
 
         repo.save(ps);
         return request;
+    }
+
+    public boolean checkIsLikeAlbum(CheckLikeModel request) {
+        Optional<FavouriteAlbums> op = repo.findByUserIdAndAlbumId(request.getUserId(), request.getLikeId());
+        return op.isPresent();
     }
 
     private FavouriteAlbumResponse toResponse(FavouriteAlbums ps) {

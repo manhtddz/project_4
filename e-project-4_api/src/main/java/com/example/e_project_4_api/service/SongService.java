@@ -2,12 +2,12 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
-import com.example.e_project_4_api.dto.request.NewOrUpdateLikeAndViewInMonth;
+import com.example.e_project_4_api.dto.request.NewOrUpdateViewInMonth;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
-import com.example.e_project_4_api.dto.response.mix_response.SongWithLikeAndViewInMonth;
+import com.example.e_project_4_api.dto.response.mix_response.SongWithViewInMonth;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.*;
@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -40,14 +41,15 @@ public class SongService {
     @Autowired
     private PlaylistSongRepository playlistSongRepo;
     @Autowired
-    private LikeAndViewRepository likeAndViewRepository;
+    private ViewInMonthRepository likeAndViewRepository;
     @Autowired
     private GenresRepository genRepo;
     @Autowired
-    private LikeAndViewInMonthService likeAndViewInMonthService;
+    private ViewInMonthService viewInMonthService;
     @Autowired
     private FavouriteSongService favouriteSongService;
-
+    @Autowired
+    private FileService fileService;
     @Autowired
     private GenreSongService genreSongService;
 
@@ -118,40 +120,31 @@ public class SongService {
         return toSongDisplayAdmin(op.get());
     }
 
-    public SongWithLikeAndViewInMonth getMostListenedSongInMonth() {
+    public SongWithViewInMonth getMostListenedSongInMonth() {
         LocalDate cuDate = LocalDate.now();
         Pageable pageable = PageRequest.of(0, 1);
-        LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxListenAmount(cuDate.getMonthValue(), pageable)
-                .stream().findFirst().orElseThrow(() -> new NotFoundException("Can't most listened song"));
+        ViewInMonth mostListenedSong = likeAndViewRepository.findSongsWithMaxListenAmount(cuDate.getMonthValue(), pageable)
+                .stream().findFirst().orElseThrow(() -> new NotFoundException("Can't find most listened song"));
         return toSongWithLikeAndViewAmount(mostListenedSong);
     }
 
-    public SongWithLikeAndViewInMonth getMostFavouriteSongInMonth() {
-        LocalDate cuDate = LocalDate.now();
 
-        Pageable pageable = PageRequest.of(0, 1);
-        LikeAndViewInMonth mostListenedSong = likeAndViewRepository.findSongWithMaxLikeAmount(cuDate.getMonthValue(), pageable)
-                .stream().findFirst().orElseThrow(() -> new NotFoundException("Can't most listened song"));
-        return toSongWithLikeAndViewAmount(mostListenedSong);
-    }
-
-    public List<SongWithLikeAndViewInMonth> getMost5ListenedSongInMonth() {
+    public List<SongWithViewInMonth> getMost5ListenedSongInMonth() {
         LocalDate cuDate = LocalDate.now();
 
         Pageable pageable = PageRequest.of(0, 5);
-        List<LikeAndViewInMonth> mostListenedSongs = likeAndViewRepository.findSongsWithMaxListenAmount(cuDate.getMonthValue(), pageable);
+        List<ViewInMonth> mostListenedSongs = likeAndViewRepository.findSongsWithMaxListenAmount(cuDate.getMonthValue(), pageable);
         return mostListenedSongs.stream()
                 .map(this::toSongWithLikeAndViewAmount)
                 .collect(Collectors.toList());
     }
 
-    private SongWithLikeAndViewInMonth toSongWithLikeAndViewAmount(LikeAndViewInMonth mostListenedSong) {
-        SongWithLikeAndViewInMonth res = new SongWithLikeAndViewInMonth();
+    private SongWithViewInMonth toSongWithLikeAndViewAmount(ViewInMonth mostListenedSong) {
+        SongWithViewInMonth res = new SongWithViewInMonth();
         res.setSongId(mostListenedSong.getSongId().getId());
         res.setSongName(mostListenedSong.getSongId().getTitle());
         res.setArtistName(mostListenedSong.getSongId().getArtistId().getArtistName());
         res.setAlbumName(mostListenedSong.getSongId().getAlbumId().getTitle());
-        res.setLikeInMonth(mostListenedSong.getLikeAmount());
         res.setListenInMonth(mostListenedSong.getListenAmount());
         return res;
     }
@@ -201,34 +194,41 @@ public class SongService {
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
     public NewOrUpdateSong addNewSong(NewOrUpdateSong request) {
-        List<Map<String, String>> errors = new ArrayList<>();
+        try {
+            List<Map<String, String>> errors = new ArrayList<>();
 
-        Optional<Songs> op = repo.findByTitle(request.getTitle());
-        if (op.isPresent()) {
-            errors.add(Map.of("titleError", "Already exist title"));
-        }
-        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
-        Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
-        if (artist.isEmpty()) {
-            errors.add(Map.of("artistError", "Can't find artist"));
-        }
-        if (album.isEmpty()) {
-            errors.add(Map.of("albumError", "Can't find album"));
-        }
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-        Songs newSong = new Songs(request.getTitle(), request.getAudioPath(),
-                0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
-                new Date(), new Date(), album.get(), artist.get());
-        repo.save(newSong);
+            Optional<Songs> op = repo.findByTitle(request.getTitle());
+            if (op.isPresent()) {
+                errors.add(Map.of("titleError", "Already exist title"));
+            }
+            Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
+            Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
+            if (artist.isEmpty()) {
+                errors.add(Map.of("artistError", "Can't find artist"));
+            }
+            if (album.isEmpty()) {
+                errors.add(Map.of("albumError", "Can't find album"));
+            }
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+            Songs newSong = new Songs(request.getTitle(), request.getAudioPath(),
+                    0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
+                    new Date(), new Date(), album.get(), artist.get());
+            repo.save(newSong);
 
-        request.getGenreIds()
-                .stream()
-                .map(it -> new NewOrUpdateGenreSong(null, it, newSong.getId()))
-                .forEach(newOrUpdateGenreSong -> genreSongService.addNewGenreSong(newOrUpdateGenreSong));
+            request.getGenreIds()
+                    .stream()
+                    .map(it -> new NewOrUpdateGenreSong(null, it, newSong.getId()))
+                    .forEach(newOrUpdateGenreSong -> genreSongService.addNewGenreSong(newOrUpdateGenreSong));
 
-        return request;
+            return request;
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteLRCFile(request.getLyricFilePath());
+            fileService.deleteAudioFile(request.getAudioPath());
+            throw e;
+        }
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",
@@ -260,11 +260,19 @@ public class SongService {
             throw new ValidationException(errors);
         }
         Songs song = op.get();
+        if (!StringUtils.isEmpty(request.getAudioPath())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteAudioFile(song.getAudioPath());
+            song.setAudioPath(request.getAudioPath());
+        }
+        if (!StringUtils.isEmpty(request.getLyricFilePath())) {
+            //check xem có ảnh ko, có thì thay mới, ko thì thôi
+            fileService.deleteLRCFile(song.getLyricFilePath());
+            song.setLyricFilePath(request.getLyricFilePath());
+        }
         song.setTitle(request.getTitle());
-        song.setAudioPath(request.getAudioPath());
         song.setListenAmount(request.getListenAmount());
         song.setFeatureArtist(request.getFeatureArtist());
-        song.setLyricFilePath(request.getLyricFilePath());
         song.setIsPending(request.getIsPending());
         song.setModifiedAt(new Date());
         song.setAlbumId(album.get());
@@ -288,7 +296,7 @@ public class SongService {
         Songs song = op.get();
         song.setListenAmount(song.getListenAmount() + 1);
         repo.save(song);
-        likeAndViewInMonthService.increaseListenAmountOrCreateNew(new NewOrUpdateLikeAndViewInMonth(songId));
+        viewInMonthService.increaseListenAmountOrCreateNew(new NewOrUpdateViewInMonth(songId));
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",
@@ -301,7 +309,6 @@ public class SongService {
             throw new NotFoundException("Can't find any song with id: " + likeModel.getSongId());
         }
         favouriteSongService.addNewFS(likeModel);
-        likeAndViewInMonthService.increaseLikeAmountOrCreateNew(new NewOrUpdateLikeAndViewInMonth(likeModel.getSongId()));
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",
@@ -341,8 +348,6 @@ public class SongService {
         res.setAlbumTitle(song.getAlbumId().getTitle());
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
-        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
-        res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())
@@ -371,10 +376,8 @@ public class SongService {
     }
 
     public SongDisplay toSongDisplay(FavouriteSongs fsSong) {
-        Songs song = repo.findById(fsSong.getSongId().getId()).get();
+        Songs song = repo.findByIdAndIsDeleted(fsSong.getSongId().getId(), false).get();
         SongDisplay res = new SongDisplay();
-        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
-        res.setTotalFavourite(favCount);
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
@@ -390,7 +393,7 @@ public class SongService {
     }
 
     public SongDisplay toSongDisplay(GenreSong genreSong) {
-        Songs song = repo.findById(genreSong.getSongId().getId()).get();
+        Songs song = repo.findByIdAndIsDeleted(genreSong.getSongId().getId(), false).get();
 
         SongDisplay res = new SongDisplay();
         BeanUtils.copyProperties(song, res);
@@ -400,7 +403,6 @@ public class SongService {
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         int favCount = favRepo.findFSBySongId(song.getId(), false).size();
-        res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())
@@ -410,7 +412,7 @@ public class SongService {
     }
 
     public SongDisplay toSongDisplay(PlaylistSong playlistSong) {
-        Songs song = repo.findById(playlistSong.getSongId().getId()).get();
+        Songs song = repo.findByIdAndIsDeleted(playlistSong.getSongId().getId(), false).get();
 
         SongDisplay res = new SongDisplay();
         BeanUtils.copyProperties(song, res);
@@ -420,7 +422,6 @@ public class SongService {
         res.setAlbumImage(song.getAlbumId().getImage());
         res.setArtistName(song.getArtistId().getArtistName());
         int favCount = favRepo.findFSBySongId(song.getId(), false).size();
-        res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())

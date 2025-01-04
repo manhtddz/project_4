@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.controllers;
 
+import com.example.e_project_4_api.dto.request.CheckLikeModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteAlbumResponse;
@@ -33,6 +34,16 @@ class FavouriteAlbumController {
 
         FavouriteAlbumResponse sub = service.findById(id);
         return new ResponseEntity<>(sub, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/public/favourite-albums/check")
+    public ResponseEntity<Object> checkIsLike(@RequestBody @Valid CheckLikeModel request) {
+
+        boolean result = service.checkIsLikeAlbum(request);
+        return new ResponseEntity<>(Map.of(
+                "isLike", result
+        ), HttpStatus.OK);
 
     }
 

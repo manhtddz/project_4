@@ -170,7 +170,7 @@ public class AlbumService {
             return request;
         } catch (RuntimeException e) {
             // Xóa file nếu insert database thất bại
-            fileService.deleteFile(request.getImage());
+            fileService.deleteImageFile(request.getImage());
             throw e;
         }
 
@@ -216,7 +216,7 @@ public class AlbumService {
         album.setTitle(request.getTitle());
         if (!StringUtils.isEmpty(request.getImage())) {
             //check xem có ảnh ko, có thì thay mới, ko thì thôi
-            fileService.deleteFile(album.getImage());
+            fileService.deleteImageFile(album.getImage());
             album.setImage(request.getImage());
         }
         album.setReleaseDate(request.getReleaseDate());
@@ -294,7 +294,7 @@ public class AlbumService {
 
     public AlbumDisplay toAlbumDisplay(CategoryAlbum categoryAlbum) {
         int albumId = categoryAlbum.getAlbumId().getId();
-        Albums album = repo.findById(albumId).get();
+        Albums album = repo.findByIdAndIsDeleted(albumId, false).get();
 
         AlbumDisplay res = new AlbumDisplay();
         res.setTitle(album.getTitle());
@@ -312,7 +312,7 @@ public class AlbumService {
 
     public AlbumDisplay toAlbumDisplay(FavouriteAlbums favAlbum) {
         int albumId = favAlbum.getAlbumId().getId();
-        Albums album = repo.findById(albumId).get();
+        Albums album = repo.findByIdAndIsDeleted(albumId, false).get();
 
         AlbumDisplay res = new AlbumDisplay();
         res.setTitle(album.getTitle());

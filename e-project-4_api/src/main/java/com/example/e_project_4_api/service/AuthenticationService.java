@@ -38,7 +38,8 @@ public class AuthenticationService {
 
     @Autowired
     AuthenticationManager authManager;
-
+    @Autowired
+    private FileService fileService;
     @Autowired
     private ArtistRepository artistRepo;
 
@@ -47,7 +48,72 @@ public class AuthenticationService {
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
     })
+    public UserResponse registerForAdmin(NewOrUpdateUser request) {
+        try {
+
+            List<Map<String, String>> errors = new ArrayList<>();
+            Users newUser = new Users();
+
+            // nếu ko null thì mới check unique title(do là album nên cần check trùng title)
+            Optional<Users> op = repo.findByUsername(request.getUsername());
+            if (op.isPresent()) {
+                errors.add(Map.of("usernameError", "Already exist username"));
+            }
+
+            if (!PasswordValidator.isValidPassword(request.getPassword())) {
+                errors.add(Map.of("passwordError",
+                        "Password is not strong enough, at least 8 character with special character and number"));
+            }
+
+            if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
+                errors.add(Map.of("phoneError", "Phone number is not valid"));
+            }
+            Optional<Users> opPhone = repo.findByPhone(request.getPhone());
+            if (opPhone.isPresent()) {
+//            errors.add(Map.of("phoneError", "Already exist user with phone number: " + request.getPhone()));
+                errors.add(Map.of("phoneError", "Already exist phone number"));
+            }
+
+            if (!EmailValidator.isValidEmail(request.getEmail())) {
+                errors.add(Map.of("emailError", "Email is not valid"));
+            }
+            Optional<Users> opEmail = repo.findByEmail(request.getEmail());
+            if (opEmail.isPresent()) {
+                errors.add(Map.of("emailError", "Already exist email"));
+            }
+
+            if (!Objects.equals(request.getRole(), Role.ROLE_USER.toString())
+                    && !Objects.equals(request.getRole(), Role.ROLE_ADMIN.toString())
+                    && !Objects.equals(request.getRole(), Role.ROLE_ARTIST.toString())) {
+                errors.add(Map.of("roleError", "Role is not valid"));
+            }
+
+            if (!errors.isEmpty()) {
+                throw new ValidationException(errors);
+            }
+            newUser.setUsername(request.getUsername());
+            newUser.setPassword(encoder.encode(request.getPassword()));
+            newUser.setFullName(request.getFullName());
+            newUser.setAvatar(request.getAvatar());
+            newUser.setPhone(request.getPhone());
+            newUser.setEmail(request.getEmail());
+            newUser.setRole(request.getRole());
+            newUser.setDob(request.getDob());
+            newUser.setIsDeleted(false);
+            newUser.setCreatedAt(new Date());
+            newUser.setModifiedAt(new Date());
+
+            repo.save(newUser);
+            return toUserResponse(newUser);
+        } catch (RuntimeException e) {
+            // Xóa file nếu insert database thất bại
+            fileService.deleteImageFile(request.getAvatar());
+            throw e;
+        }
+    }
+
     public UserResponse register(NewOrUpdateUser request) {
+
         List<Map<String, String>> errors = new ArrayList<>();
         Users newUser = new Users();
 
@@ -114,7 +180,7 @@ public class AuthenticationService {
             Users user = repo.findByUsernameAndIsDeleted(request.getUsername(), false)
                     .orElseThrow(() -> new NotFoundException("User not found"));
 
-            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserForLogin(user), 60 * 60 * 1000);
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), toUserForLogin(user));
         }
 
         return null;

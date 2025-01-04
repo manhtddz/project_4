@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.service;
 
+import com.example.e_project_4_api.dto.request.CheckLikeModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
@@ -95,6 +96,11 @@ public class FavouriteSongService {
 
         repo.save(ps);
         return request;
+    }
+
+    public boolean checkIsLikeSong(CheckLikeModel request) {
+        Optional<FavouriteSongs> op = repo.findByUserIdAndSongId(request.getUserId(), request.getLikeId());
+        return op.isPresent();
     }
 
     private FavouriteSongResponse toResponse(FavouriteSongs ps) {

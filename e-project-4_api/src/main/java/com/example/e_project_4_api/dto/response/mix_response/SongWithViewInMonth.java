@@ -9,12 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SongWithLikeAndViewInMonth {
+public class SongWithViewInMonth {
     private int songId;
     private String songName;
     private String artistName;
     private String albumName;
-    private int likeInMonth;
     private int listenInMonth;
 
 }

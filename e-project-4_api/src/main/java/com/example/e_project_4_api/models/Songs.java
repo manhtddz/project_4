@@ -16,8 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -76,7 +74,7 @@ public class Songs implements Serializable {
     @OneToMany(mappedBy = "songId")
     private Collection<GenreSong> genreSongCollection;
     @OneToMany(mappedBy = "songId")
-    private Collection<LikeAndViewInMonth> likeAndViewInMonthCollection;
+    private Collection<ViewInMonth> likeAndViewInMonthCollection;
 
     public Songs(String title, String audioPath, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
         this.title = title;

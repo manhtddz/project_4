@@ -34,7 +34,6 @@ CREATE TABLE artists (
 create table categories(
  id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    image VARCHAR(150),
     description text,
      is_deleted BOOLEAN,
     created_at DATETIME ,
@@ -155,11 +154,10 @@ CREATE TABLE month_of_year (
     title VARCHAR(100) NOT NULL
 );
 
-create Table like_and_view_in_month(
+create Table view_in_month(
 	id INT(11) AUTO_INCREMENT PRIMARY KEY,
 	song_id INT(11),
     month_id int(11),
-    like_amount int(11),
     listen_amount int(11),
      FOREIGN KEY (month_id) REFERENCES month_of_year(id) ON DELETE CASCADE,
     FOREIGN KEY (song_id) REFERENCES songs(id) ON DELETE CASCADE

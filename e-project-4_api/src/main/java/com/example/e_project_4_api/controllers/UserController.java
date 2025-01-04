@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
@@ -88,6 +89,27 @@ public class UserController {
     public ResponseEntity<Object> update(@RequestBody @Valid UpdateUserWithAttribute request) {
         try {
             service.updateEachPartOfUser(request);
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "User updated successfully"
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @PutMapping("/public/users/updatePassword")
+    public ResponseEntity<Object> updatePassword(@RequestBody @Valid UpdatePasswordModel request) {
+        try {
+            service.updatePassword(request);
 
             return new ResponseEntity<>(
                     Map.of(

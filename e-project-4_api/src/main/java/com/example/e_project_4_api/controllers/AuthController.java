@@ -47,6 +47,27 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/registerForAdmin")
+    public ResponseEntity<Object> registerForAdmin(@RequestBody @Valid NewOrUpdateUser user) {
+        try {
+            UserResponse newUser = service.register(user);
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "Register successfully",
+                            "data", newUser
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody @Valid LoginRequest user) {
         try {
@@ -64,6 +85,7 @@ public class AuthController {
             );
         }
     }
+
     @PostMapping("/loginForAdmin")
     public ResponseEntity<Object> loginAdmin(@RequestBody @Valid LoginRequest user) {
         try {
