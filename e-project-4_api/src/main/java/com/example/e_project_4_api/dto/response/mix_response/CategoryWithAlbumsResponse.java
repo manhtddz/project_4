@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -13,10 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CategoryWithAlbumsResponse {
+public class CategoryWithAlbumsResponse implements Serializable {
     private Integer id;
     private String title;
-    private String image;
     private String description;
     private Boolean isDeleted;
     private Date createdAt;
