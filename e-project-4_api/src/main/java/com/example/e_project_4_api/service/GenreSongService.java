@@ -2,8 +2,6 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategoryAlbum;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
-import com.example.e_project_4_api.dto.request.UpdateCategoriesForAlbum;
-import com.example.e_project_4_api.dto.request.UpdateGenresForSong;
 import com.example.e_project_4_api.dto.response.common_response.GenreSongResponse;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
