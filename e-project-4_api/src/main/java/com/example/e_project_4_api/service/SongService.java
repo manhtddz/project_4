@@ -1,9 +1,6 @@
 package com.example.e_project_4_api.service;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
-import com.example.e_project_4_api.dto.request.NewOrUpdateGenreSong;
-import com.example.e_project_4_api.dto.request.NewOrUpdateViewInMonth;
-import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
+import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
@@ -201,20 +198,18 @@ public class SongService {
             if (op.isPresent()) {
                 errors.add(Map.of("titleError", "Already exist title"));
             }
-            Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
             Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
             if (artist.isEmpty()) {
                 errors.add(Map.of("artistError", "Can't find artist"));
             }
-            if (album.isEmpty()) {
-                errors.add(Map.of("albumError", "Can't find album"));
-            }
+
+
             if (!errors.isEmpty()) {
                 throw new ValidationException(errors);
             }
             Songs newSong = new Songs(request.getTitle(), request.getAudioPath(),
                     0, request.getFeatureArtist(), request.getLyricFilePath(), false, false,
-                    new Date(), new Date(), album.get(), artist.get());
+                    new Date(), new Date(), artist.get());
             repo.save(newSong);
 
             request.getGenreIds()
@@ -242,24 +237,29 @@ public class SongService {
         if (op.isEmpty()) {
             throw new NotFoundException("Can't find any song with id: " + request.getId());
         }
+        Songs song = op.get();
 
         Optional<Songs> opTitle = repo.findByTitle(request.getTitle());
         if (opTitle.isPresent() && opTitle.get().getTitle() != op.get().getTitle()) {
             errors.add(Map.of("titleError", "Already exist title"));
         }
 
-        Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
         Optional<Artists> artist = artistRepo.findByIdAndIsDeleted(request.getArtistId(), false);
         if (artist.isEmpty()) {
             errors.add(Map.of("artistError", "Can't find artist"));
         }
-        if (album.isEmpty()) {
-            errors.add(Map.of("albumError", "Can't find album"));
+
+        if (request.getAlbumId() != null) {
+            Optional<Albums> album = albumRepo.findByIdAndIsDeleted(request.getAlbumId(), false);
+            if (album.isPresent()) {
+                song.setAlbumId(album.get());
+            } else {
+                errors.add(Map.of("albumError", "Can't find album"));
+            }
         }
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-        Songs song = op.get();
         if (!StringUtils.isEmpty(request.getAudioPath())) {
             //check xem có ảnh ko, có thì thay mới, ko thì thôi
             fileService.deleteAudioFile(song.getAudioPath());
@@ -273,9 +273,7 @@ public class SongService {
         song.setTitle(request.getTitle());
         song.setListenAmount(request.getListenAmount());
         song.setFeatureArtist(request.getFeatureArtist());
-        song.setIsPending(request.getIsPending());
         song.setModifiedAt(new Date());
-        song.setAlbumId(album.get());
         song.setArtistId(artist.get());
         repo.save(song);
 
@@ -302,13 +300,23 @@ public class SongService {
     @CacheEvict(value = {"artistsDisplayForAdmin",
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
-    public void like(NewOrUpdateFavouriteSong likeModel) {
-        Optional<Songs> op = repo.findByIdAndIsDeleted(likeModel.getSongId(), false);
+    public void like(LikeBaseModel likeModel) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(likeModel.getItemId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any song with id: " + likeModel.getSongId());
+            throw new NotFoundException("Can't find any song with id: " + likeModel.getItemId());
         }
-        favouriteSongService.addNewFS(likeModel);
+        favouriteSongService.addNewFS(new NewOrUpdateFavouriteSong(null, likeModel.getItemId(), likeModel.getUserId()));
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void unlikeSong(LikeBaseModel request) {
+        Optional<FavouriteSongs> op = favRepo.findByUserIdAndSongId(request.getUserId(), request.getItemId());
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any FavouriteSong");
+        }
+        favRepo.delete(op.get());
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",

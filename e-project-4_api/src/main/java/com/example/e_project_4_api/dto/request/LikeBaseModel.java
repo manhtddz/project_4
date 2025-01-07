@@ -10,10 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnlikeModelRequest {
+public class LikeBaseModel {
     @NotNull(message = "userId is required")
     private Integer userId;
-    @NotNull(message = "unlikeId is required")
-    private Integer unlikeId;
-
+    @NotNull(message = "itemId is required")
+    private Integer itemId;
 }

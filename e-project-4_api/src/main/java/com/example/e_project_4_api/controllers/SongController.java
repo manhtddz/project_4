@@ -1,8 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
+import com.example.e_project_4_api.dto.request.LikeBaseModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
-import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
@@ -172,7 +171,7 @@ public class SongController {
     }
 
     @PutMapping("/public/songs/like")
-    public ResponseEntity<Object> likeSong(@RequestBody @Valid NewOrUpdateFavouriteSong request) {
+    public ResponseEntity<Object> likeSong(@RequestBody @Valid LikeBaseModel request) {
         service.like(request);
         return new ResponseEntity<>(
                 Map.of(
@@ -195,8 +194,8 @@ public class SongController {
     }
 
     @DeleteMapping("public/songs/unlike")
-    public ResponseEntity<Object> unlikeSong(@RequestBody @Valid UnlikeModelRequest request) {
-        favService.unlikeSong(request);
+    public ResponseEntity<Object> unlikeSong(@RequestBody @Valid LikeBaseModel request) {
+        service.unlikeSong(request);
         return new ResponseEntity<>(
                 Map.of(
                         "message", "unlike successfully"

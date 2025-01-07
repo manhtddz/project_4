@@ -220,7 +220,6 @@ public class AlbumService {
             album.setImage(request.getImage());
         }
         album.setReleaseDate(request.getReleaseDate());
-        album.setIsReleased(request.getIsReleased());
         album.setArtistId(artist.get());
         album.setModifiedAt(new Date());
         categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
@@ -234,13 +233,22 @@ public class AlbumService {
     @CacheEvict(value = {"artistsDisplayForAdmin", "favAlbumsByUser",
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
-    public void like(NewOrUpdateFavouriteAlbum likeModel) {
-        Optional<Albums> op = repo.findByIdAndIsDeleted(likeModel.getAlbumId(), false);
+    public void like(LikeBaseModel likeModel) {
+        Optional<Albums> op = repo.findByIdAndIsDeleted(likeModel.getItemId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
-            throw new NotFoundException("Can't find any album with id: " + likeModel.getAlbumId());
+            throw new NotFoundException("Can't find any album with id: " + likeModel.getItemId());
         }
-        favouriteAlbumService.addNewFA(likeModel);
+        favouriteAlbumService.addNewFA(new NewOrUpdateFavouriteAlbum(null, likeModel.getItemId(), likeModel.getUserId()));
+    }
+
+    @CacheEvict(value = {"albumsDisplayForAdmin", "favAlbumsByUser", "artistsDisplayForAdmin"}, allEntries = true)
+    public void unlikeAlbum(LikeBaseModel request) {
+        Optional<FavouriteAlbums> op = favRepo.findByUserIdAndAlbumId(request.getUserId(), request.getItemId());
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any FavouriteAlbum");
+        }
+        favRepo.delete(op.get());
     }
 
     @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)

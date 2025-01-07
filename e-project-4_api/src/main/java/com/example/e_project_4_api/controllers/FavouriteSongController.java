@@ -1,9 +1,8 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.CheckLikeModel;
+import com.example.e_project_4_api.dto.request.LikeBaseModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
-import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.FavouriteSongService;
 import jakarta.validation.Valid;
@@ -34,8 +33,8 @@ class FavouriteSongController {
 
     }
 
-    @GetMapping("/public/favourite-songs/check")
-    public ResponseEntity<Object> checkIsLike(@RequestBody @Valid CheckLikeModel request) {
+    @PostMapping("/public/favourite-songs/check")
+    public ResponseEntity<Object> checkIsLike(@RequestBody @Valid LikeBaseModel request) {
 
         boolean result = service.checkIsLikeSong(request);
         return new ResponseEntity<>(Map.of(

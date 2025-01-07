@@ -20,7 +20,7 @@ public class NewOrUpdateArtist {
     @NotBlank(message = "artistName is required")
     private String artistName;
     private String image;
-    @NotNull(message = "bio is required")
+    @NotBlank(message = "bio is required")
     private String bio;
     private Integer userId;
 

@@ -25,8 +25,6 @@ public class NewOrUpdateSong {
     private String lyricFilePath;
     @NotBlank(message = "featureArtist is required")
     private String featureArtist;
-    private Boolean isPending;
-    @NotNull(message = "albumId is required")
     private Integer albumId;
     @NotNull(message = "artistId is required")
     private Integer artistId;

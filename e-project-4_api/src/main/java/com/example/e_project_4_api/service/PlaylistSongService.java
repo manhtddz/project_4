@@ -68,6 +68,19 @@ public class PlaylistSongService {
         return request;
     }
 
+    public NewOrUpdatePlaylistSong deleteByPlaylistIdAndSongId(NewOrUpdatePlaylistSong request) {
+        Optional<PlaylistSong> existingPlaylistSong = repo.findByPlaylistIdAndSongId(request.getPlaylistId(), request.getSongId());
+        if (existingPlaylistSong.isEmpty()) {
+            throw new AlreadyExistedException("A PlaylistSong not existed");
+        }
+        Playlists playlist = playlistRepo.findByIdAndIsDeleted(request.getPlaylistId(), false)
+                .orElseThrow(() -> new NotFoundException("Playlist not found with id: " + request.getPlaylistId()));
+        Songs song = songRepo.findByIdAndIsDeleted(request.getSongId(), false)
+                .orElseThrow(() -> new NotFoundException("Song not found with id: " + request.getSongId()));
+        repo.delete(existingPlaylistSong.get());
+        return request;
+    }
+
     public NewOrUpdatePlaylistSong updatePS(NewOrUpdatePlaylistSong request) {
         Optional<PlaylistSong> op = repo.findById(request.getId());
         if (op.isEmpty()) {

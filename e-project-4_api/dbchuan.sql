@@ -20,7 +20,7 @@ CREATE TABLE users (
 CREATE TABLE artists (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     artist_name VARCHAR(100) NOT NULL,
-    image VARCHAR(40),
+    image VARCHAR(150),
     bio TEXT,
     user_id int unique,
 	is_deleted BOOLEAN,

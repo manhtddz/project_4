@@ -76,7 +76,7 @@ public class Songs implements Serializable {
     @OneToMany(mappedBy = "songId")
     private Collection<ViewInMonth> likeAndViewInMonthCollection;
 
-    public Songs(String title, String audioPath, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Albums albumId, Artists artistId) {
+    public Songs(String title, String audioPath, Integer listenAmount, String featureArtist, String lyricFilePath, Boolean isPending, Boolean isDeleted, Date createdAt, Date modifiedAt, Artists artistId) {
         this.title = title;
         this.audioPath = audioPath;
         this.listenAmount = listenAmount;
@@ -86,7 +86,6 @@ public class Songs implements Serializable {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.albumId = albumId;
         this.artistId = artistId;
     }
 

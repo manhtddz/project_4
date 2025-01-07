@@ -1,9 +1,6 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.NewOrUpdateAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
-import com.example.e_project_4_api.dto.request.UnlikeModelRequest;
+import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
@@ -146,7 +143,7 @@ public class AlbumController {
     }
 
     @PutMapping("/public/albums/like")
-    public ResponseEntity<Object> likeAlbum(@RequestBody @Valid NewOrUpdateFavouriteAlbum request) {
+    public ResponseEntity<Object> likeAlbum(@RequestBody @Valid LikeBaseModel request) {
         service.like(request);
         return new ResponseEntity<>(
                 Map.of(
@@ -168,8 +165,8 @@ public class AlbumController {
     }
 
     @DeleteMapping("public/albums/unlike")
-    public ResponseEntity<Object> unlikeAlbum(@RequestBody @Valid UnlikeModelRequest request) {
-        favService.unlikeAlbum(request);
+    public ResponseEntity<Object> unlikeAlbum(@RequestBody @Valid LikeBaseModel request) {
+        service.unlikeAlbum(request);
         return new ResponseEntity<>(
                 Map.of(
                         "message", "unlike successfully"

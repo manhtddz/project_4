@@ -64,6 +64,28 @@ class PlaylistSongController {
         }
     }
 
+    @DeleteMapping("/public/playlist-song")
+    public ResponseEntity<Object> delete(@RequestBody @Valid NewOrUpdatePlaylistSong request) {
+        try {
+            NewOrUpdatePlaylistSong newSub = service.deleteByPlaylistIdAndSongId(request);
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "PlaylistSong deleted successfully",
+                            "data", newSub
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(
+                    Map.of(
+                            "listError", e.getErrors()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
     @PutMapping("/public/playlist-song")
     public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdatePlaylistSong request) {
         try {

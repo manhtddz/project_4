@@ -1,14 +1,10 @@
 package com.example.e_project_4_api.controllers;
 
-import com.example.e_project_4_api.dto.request.CheckLikeModel;
+import com.example.e_project_4_api.dto.request.LikeBaseModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteAlbum;
-import com.example.e_project_4_api.dto.request.NewOrUpdateFavouriteSong;
 import com.example.e_project_4_api.dto.response.common_response.FavouriteAlbumResponse;
-import com.example.e_project_4_api.dto.response.common_response.FavouriteSongResponse;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.FavouriteAlbums;
 import com.example.e_project_4_api.service.FavouriteAlbumService;
-import com.example.e_project_4_api.service.FavouriteSongService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,8 +33,8 @@ class FavouriteAlbumController {
 
     }
 
-    @GetMapping("/public/favourite-albums/check")
-    public ResponseEntity<Object> checkIsLike(@RequestBody @Valid CheckLikeModel request) {
+    @PostMapping("/public/favourite-albums/check")
+    public ResponseEntity<Object> checkIsLike(@RequestBody @Valid LikeBaseModel request) {
 
         boolean result = service.checkIsLikeAlbum(request);
         return new ResponseEntity<>(Map.of(

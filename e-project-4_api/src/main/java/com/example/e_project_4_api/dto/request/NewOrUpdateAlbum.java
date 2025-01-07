@@ -23,7 +23,6 @@ public class NewOrUpdateAlbum {
     @NotBlank(message = "title is required")
     private String title;
     private String image;
-    private Boolean isReleased;
     @NotNull(message = "releaseDate is required")
     private Date releaseDate;
     @NotNull(message = "artistId is required")
