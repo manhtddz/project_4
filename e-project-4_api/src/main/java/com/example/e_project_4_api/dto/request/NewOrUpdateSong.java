@@ -23,7 +23,7 @@ public class NewOrUpdateSong {
     private String audioPath;
     private Integer listenAmount;
     private String lyricFilePath;
-    @NotBlank(message = "featureArtist is required")
+    @NotNull(message = "featureArtist is required")
     private String featureArtist;
     private Integer albumId;
     @NotNull(message = "artistId is required")
