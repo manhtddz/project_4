@@ -338,7 +338,9 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumId(song.getAlbumId().getId());
+        if (song.getAlbumId() != null) {
+            res.setAlbumId(song.getAlbumId().getId());
+        }
         res.setArtistId(song.getArtistId().getId());
         List<Integer> genreIds = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
@@ -353,8 +355,10 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTitle(song.getAlbumId().getTitle());
-        res.setAlbumImage(song.getAlbumId().getImage());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
         res.setArtistName(song.getArtistId().getArtistName());
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
@@ -371,8 +375,10 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTitle(song.getAlbumId().getTitle());
-        res.setAlbumImage(song.getAlbumId().getImage());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
         res.setArtistName(song.getArtistId().getArtistName());
         res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
@@ -389,8 +395,10 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTitle(song.getAlbumId().getTitle());
-        res.setAlbumImage(song.getAlbumId().getImage());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
         res.setArtistName(song.getArtistId().getArtistName());
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
@@ -407,10 +415,11 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTitle(song.getAlbumId().getTitle());
-        res.setAlbumImage(song.getAlbumId().getImage());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
         res.setArtistName(song.getArtistId().getArtistName());
-        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())
@@ -426,10 +435,11 @@ public class SongService {
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());
-        res.setAlbumTitle(song.getAlbumId().getTitle());
-        res.setAlbumImage(song.getAlbumId().getImage());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
         res.setArtistName(song.getArtistId().getArtistName());
-        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())
