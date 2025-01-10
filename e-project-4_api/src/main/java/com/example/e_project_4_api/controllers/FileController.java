@@ -92,7 +92,16 @@ public class FileController {
     @GetMapping("/download/image/{filename}")
     public ResponseEntity<?> downloadImageFile(@PathVariable("filename") String filename) throws IOException {
         String filePath = FOLDER + "images/" + filename;
-
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        MediaType mediaType = switch (extension) {
+            case "jpeg", "jpg" -> MediaType.IMAGE_JPEG;
+            case "png" -> MediaType.IMAGE_PNG;
+            case "gif" -> MediaType.IMAGE_GIF;
+            case "webp" -> MediaType.parseMediaType("image/webp");
+            default ->
+                // Trường hợp không xác định loại file, trả về lỗi hoặc mặc định là JPEG
+                    MediaType.IMAGE_JPEG;
+        };
         File file = new File(filePath);
 
         // Kiểm tra xem file có tồn tại không
@@ -105,8 +114,9 @@ public class FileController {
 
         // Trả về file với đúng Content-Type và tên file trong header
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)  // Content-Type cho file ảnh JPEG
+                .contentType(mediaType)  // Content-Type cho file ảnh JPEG
                 .body(fileContent);
+
     }
 }
 

@@ -16,6 +16,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -42,9 +44,10 @@ public class NewsService {
         return repo.getNumberOfAll();
     }
 
-    @Cacheable("newsDisplayForAdmin")
-    public List<NewsDisplayForAdmin> getAllNewsForAdmin() {
-        return repo.findAll()
+    @Cacheable(value = "newsDisplayForAdmin", key = "#page")
+    public List<NewsDisplayForAdmin> getAllNewsForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.findAllPaging(pageable)
                 .stream()
                 .map(this::toNewsDisplayForAdmin)
                 .collect(Collectors.toList());

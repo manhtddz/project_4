@@ -6,6 +6,7 @@ import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,8 +26,14 @@ public interface AlbumRepository extends JpaRepository<Albums, Integer>, JpaSpec
     @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted AND a.isReleased = :isReleased")
     List<Albums> findAllByArtistId(@Param("arId") Integer artistId, @Param("isReleased") boolean isReleased);
 
+    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted AND a.isReleased = :isReleased")
+    List<Albums> findAllByArtistIdPaging(@Param("arId") Integer artistId, @Param("isReleased") boolean isReleased, Pageable pageable);
+
     @Query("Select a from Albums a where a.isDeleted = :isDeleted")
-    List<Albums> findAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+    List<Albums> findAllNotDeleted(boolean isDeleted);
+
+    @Query("Select a from Albums a where a.isDeleted = :isDeleted")
+    List<Albums> findAllNotDeletedPaging(boolean isDeleted, Pageable pageable);
 
     @Query("Select COUNT(a) from Albums a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);

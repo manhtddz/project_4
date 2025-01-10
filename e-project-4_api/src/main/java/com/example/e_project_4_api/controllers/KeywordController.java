@@ -32,8 +32,9 @@ public class KeywordController {
     }
 
     @GetMapping("/admin/keywords/display")
-    public ResponseEntity<List<KeywordDisplayForAdmin>> findAllForAdmin() {
-        return new ResponseEntity<>(service.getAllKeywordsForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<KeywordDisplayForAdmin>> findAllForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllKeywordsForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/keywords/count")

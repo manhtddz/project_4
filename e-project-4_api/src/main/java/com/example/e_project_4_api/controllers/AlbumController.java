@@ -38,8 +38,9 @@ public class AlbumController {
     }
 
     @GetMapping("/admin/albums/display")
-    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsDisplayForAdmin() {
-        return new ResponseEntity<>(service.getAllAlbumsDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllAlbumsDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/albums/count")
@@ -50,6 +51,12 @@ public class AlbumController {
     @GetMapping("/public/albums/byArtist/display/{id}")
     public ResponseEntity<List<AlbumDisplay>> findAllAlbumsByArtistIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllAlbumsByArtistIdForDisplay(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/albums/byArtist/display/{id}")
+    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsByArtistIdForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllAlbumsByArtistIdForAdmin(id, page), HttpStatus.OK);
     }
 
     @GetMapping("/public/albums/{id}")
@@ -81,9 +88,22 @@ public class AlbumController {
         return new ResponseEntity<>(service.getAllFavAlbumsByUserId(id), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/albums/byUser/display/{id}")
+    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsByUserIdForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllFavAlbumsByUserIdForAdmin(id, page), HttpStatus.OK);
+    }
+
     @GetMapping("/public/albums/byCategory/display/{id}")
     public ResponseEntity<List<AlbumDisplay>> findAllAlbumsBySubjectIdForDisplay(@PathVariable("id") int id) {
         List<AlbumDisplay> album = service.getAllAlbumsBySubjectIdForDisplay(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/albums/byCategory/display/{id}")
+    public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsBySubjectIdForDisplay
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        List<AlbumDisplayForAdmin> album = service.getAllAlbumsBySubjectIdForAdmin(id, page);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 

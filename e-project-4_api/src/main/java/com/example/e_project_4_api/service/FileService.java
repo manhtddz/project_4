@@ -1,10 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,13 +37,19 @@ public class FileService {
             if (originalFilename == null || !originalFilename.contains(".")) {
                 throw new IllegalArgumentException("Invalid file name.");
             }
+            List<String> validExtensions = Arrays.asList(".png", ".gif", ".jpg", ".jpeg", ".webp");
 
             // Lấy phần mở rộng
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            if (!validExtensions.contains(extension.toLowerCase())) {
+                throw new IllegalArgumentException("Invalid type of file.");
+            }
+
+            String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
 
             // Tạo tên file mới với chuỗi ngẫu nhiên
             String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
+            String newFilename = baseName + "_" + randomString + extension;
 
             // Lưu file vào folder tạm
             Path tempFilePath = Paths.get(uploadFolder, newFilename);
@@ -81,12 +86,19 @@ public class FileService {
                 throw new IllegalArgumentException("Invalid file name.");
             }
 
+            List<String> validExtensions = Arrays.asList(".mp3", ".mp4");
+
             // Lấy phần mở rộng
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            if (!validExtensions.contains(extension.toLowerCase())) {
+                throw new IllegalArgumentException("Invalid type of file.");
+            }
+
+            String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
 
             // Tạo tên file mới với chuỗi ngẫu nhiên
             String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
+            String newFilename = baseName + "_" + randomString + extension;
 
             // Lưu file vào folder tạm
             Path tempFilePath = Paths.get(uploadFolder, newFilename);
@@ -115,19 +127,24 @@ public class FileService {
             if (!tempDir.exists()) {
                 tempDir.mkdirs();
             }
-
-            // Lấy tên file gốc và kiểm tra hợp lệ
             String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || !originalFilename.contains(".")) {
                 throw new IllegalArgumentException("Invalid file name.");
             }
 
+            List<String> validExtensions = Arrays.asList(".lrc");
+
             // Lấy phần mở rộng
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            if (!validExtensions.contains(extension.toLowerCase())) {
+                throw new IllegalArgumentException("Invalid type of file.");
+            }
+
+            String baseName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
 
             // Tạo tên file mới với chuỗi ngẫu nhiên
             String randomString = UUID.randomUUID().toString();
-            String newFilename = randomString + extension;
+            String newFilename = baseName + "_" + randomString + extension;
 
             // Lưu file vào folder tạm
             Path tempFilePath = Paths.get(uploadFolder, newFilename);
@@ -153,6 +170,7 @@ public class FileService {
             // Log lỗi nhưng không throw để tránh che dấu lỗi chính
         }
     }
+
     public void deleteAudioFile(String fileName) {
         try {
             Files.deleteIfExists(Paths.get(FOLDER + fileName));
@@ -160,6 +178,7 @@ public class FileService {
             // Log lỗi nhưng không throw để tránh che dấu lỗi chính
         }
     }
+
     public void deleteLRCFile(String fileName) {
         try {
             Files.deleteIfExists(Paths.get(FOLDER + fileName));

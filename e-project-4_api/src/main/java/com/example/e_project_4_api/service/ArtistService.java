@@ -15,6 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,9 +45,10 @@ public class ArtistService {
         return repo.getNumberOfAllNotDeleted(false);
     }
 
-    @Cacheable("artistsDisplayForAdmin")
-    public List<ArtistDisplayForAdmin> getAllArtistsDisplayForAdmin() {
-        return repo.findAllNotDeleted(false)
+    @Cacheable(value = "artistsDisplayForAdmin", key = "#page")
+    public List<ArtistDisplayForAdmin> getAllArtistsDisplayForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.findAllNotDeletedPaging(false, pageable)
                 .stream()
                 .map(this::toArtistDisplayForAdmin)
                 .collect(Collectors.toList());

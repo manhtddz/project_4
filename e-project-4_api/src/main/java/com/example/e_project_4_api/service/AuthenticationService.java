@@ -47,6 +47,7 @@ public class AuthenticationService {
 
     @Caching(evict = {
             @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+            @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
     })
     public UserResponse registerForAdmin(NewOrUpdateUser request) {
         try {

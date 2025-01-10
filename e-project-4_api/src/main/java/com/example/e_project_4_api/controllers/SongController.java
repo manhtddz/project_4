@@ -37,8 +37,9 @@ public class SongController {
     }
 
     @GetMapping("/admin/songs/display")
-    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsDisplayForAdmin() {
-        return new ResponseEntity<>(service.getAllSongsForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllSongsForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/songs/count")
@@ -51,9 +52,21 @@ public class SongController {
         return new ResponseEntity<>(service.getAllSongsByArtistIdForDisplay(id), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/songs/byArtist/display/{id}")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByArtistIdForDisplayForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllSongsByArtistIdForAdmin(id, page), HttpStatus.OK);
+    }
+
     @GetMapping("/public/songs/byAlbum/display/{id}")
     public ResponseEntity<List<SongDisplay>> findAllSongsByAlbumIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllSongsByAlbumIdForDisplay(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/songs/byAlbum/display/{id}")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByAlbumIdForDisplayForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllSongsByAlbumIdForAdmin(id, page), HttpStatus.OK);
     }
 
     @GetMapping("/public/songs/byUser/display/{id}")
@@ -61,14 +74,32 @@ public class SongController {
         return new ResponseEntity<>(service.getAllFavSongsByUserId(id), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/songs/byUser/display/{id}")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByUserIdForDisplayForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllFavSongsByUserIdForAdmin(id, page), HttpStatus.OK);
+    }
+
     @GetMapping("/public/songs/byGenre/display/{id}")
     public ResponseEntity<List<SongDisplay>> findAllSongsByGenreIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllSongsByGenreId(id), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/songs/byGenre/display/{id}")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByGenreIdForDisplayForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllSongsByGenreIdForAdmin(id, page), HttpStatus.OK);
+    }
+
     @GetMapping("/public/songs/byPlaylist/display/{id}")
     public ResponseEntity<List<SongDisplay>> findAllSongsByPlaylistIdForDisplay(@PathVariable("id") int id) {
         return new ResponseEntity<>(service.getAllSongsByPlaylistId(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/songs/byPlaylist/display/{id}")
+    public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByPlaylistIdForDisplayForAdmin
+            (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllSongsByPlaylistIdFoAdmin(id, page), HttpStatus.OK);
     }
 
     @GetMapping("/public/songs/{id}")
@@ -170,7 +201,7 @@ public class SongController {
 
     }
 
-    @PutMapping("/public/songs/like")
+    @PostMapping("/public/songs/like")
     public ResponseEntity<Object> likeSong(@RequestBody @Valid LikeBaseModel request) {
         service.like(request);
         return new ResponseEntity<>(

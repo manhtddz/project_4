@@ -31,8 +31,9 @@ public class GenresController {
     }
 
     @GetMapping("/admin/genres/display")
-    public ResponseEntity<List<GenreDisplayForAdmin>> findAllGenreDisplayForAdmin() {
-        return new ResponseEntity<>(service.getAllGenreDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<GenreDisplayForAdmin>> findAllGenreDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllGenreDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/genres/count")

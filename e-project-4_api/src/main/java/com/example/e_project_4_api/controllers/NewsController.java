@@ -32,8 +32,9 @@ public class NewsController {
     }
 
     @GetMapping("/admin/news/display")
-    public ResponseEntity<List<NewsDisplayForAdmin>> findAllForAdmin() {
-        return new ResponseEntity<>(service.getAllNewsForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<NewsDisplayForAdmin>> findAllForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllNewsForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/news/count")

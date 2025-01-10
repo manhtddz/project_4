@@ -19,6 +19,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -43,9 +45,10 @@ public class CategoryService {
         return cateRepository.getNumberOfAllNotDeleted(false);
     }
 
-    @Cacheable("categoriesDisplayForAdmin")
-    public List<CategoryDisplayForAdmin> getAllCategoriesDisplayForAdmin() {
-        return cateRepository.findAllNotDeleted(false)
+    @Cacheable(value = "categoriesDisplayForAdmin", key = "#page")
+    public List<CategoryDisplayForAdmin> getAllCategoriesDisplayForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return cateRepository.findAllNotDeletedPaging(false, pageable)
                 .stream()
                 .map(this::toCategoryCategoryDisplayForAdmin)
                 .collect(Collectors.toList());

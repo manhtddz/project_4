@@ -38,8 +38,9 @@ public class PlaylistController {
     }
 
     @GetMapping("/admin/playlists/display")
-    public ResponseEntity<List<PlaylistDisplayForAdmin>> findAllPlaylistsDisplayForAdmin() {
-        return new ResponseEntity<>(service.getAllPlaylistsDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<PlaylistDisplayForAdmin>> findAllPlaylistsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllPlaylistsDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/public/playlists/byUser/display/{id}")

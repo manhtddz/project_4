@@ -69,9 +69,11 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable("songsDisplayForAdmin")
-    public List<SongDisplayForAdmin> getAllSongsForAdmin() {
-        return repo.findAllNotDeleted(false)
+    @Cacheable(value = "songsDisplayForAdmin", key = "#page")
+    public List<SongDisplayForAdmin> getAllSongsForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        return repo.findAllNotDeletedPaging(false, pageable)
                 .stream()
                 .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());
@@ -85,11 +87,27 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    public List<SongDisplayForAdmin> getAllSongsByArtistIdForAdmin(int artistId, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return repo.findAllByArtistIdForAdmin(artistId, false, pageable)
+                .stream()
+                .map(this::toSongDisplayAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable(value = "songsByAlbum", key = "#albumId")
     public List<SongDisplay> getAllSongsByAlbumIdForDisplay(int albumId) {
         return repo.findAllByAlbumId(albumId, false, true)
                 .stream()
                 .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplayForAdmin> getAllSongsByAlbumIdForAdmin(int albumId, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return repo.findAllByAlbumIdPaging(albumId, false, pageable)
+                .stream()
+                .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -155,6 +173,15 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    public List<SongDisplayForAdmin> getAllFavSongsByUserIdForAdmin(Integer id, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+
+        return favRepo.findFSByUserIdPaging(id, false, pageable)
+                .stream()
+                .map(this::toSongDisplayAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable(value = "songsByGenre", key = "#id")
     public List<SongDisplay> getAllSongsByGenreId(Integer id) {
         return genSongRepo.findByGenreId(id, false)
@@ -164,12 +191,30 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    public List<SongDisplayForAdmin> getAllSongsByGenreIdForAdmin(Integer id, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+
+        return genSongRepo.findByGenreIdPaging(id, false, pageable)
+                .stream()
+                .map(this::toSongDisplayAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable(value = "songsByPlaylist", key = "#id")
     public List<SongDisplay> getAllSongsByPlaylistId(Integer id) {
         return playlistSongRepo.findByPlaylistId(id, false)
                 .stream()
                 .filter(it -> it.getSongId().getIsPending())
                 .map(this::toSongDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplayForAdmin> getAllSongsByPlaylistIdFoAdmin(Integer id, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+
+        return playlistSongRepo.findByPlaylistId(id, false)
+                .stream()
+                .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -371,6 +416,7 @@ public class SongService {
     public SongDisplayForAdmin toSongDisplayAdmin(Songs song) {
         SongDisplayForAdmin res = new SongDisplayForAdmin();
         int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
 
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
@@ -380,7 +426,6 @@ public class SongService {
             res.setAlbumImage(song.getAlbumId().getImage());
         }
         res.setArtistName(song.getArtistId().getArtistName());
-        res.setTotalFavourite(favCount);
         List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
                 .stream()
                 .map(it -> it.getGenreId().getTitle())
@@ -408,6 +453,30 @@ public class SongService {
         return res;
     }
 
+    public SongDisplayForAdmin toSongDisplayAdmin(FavouriteSongs fsSong) {
+        Songs song = repo.findByIdAndIsDeleted(fsSong.getSongId().getId(), false).get();
+        SongDisplayForAdmin res = new SongDisplayForAdmin();
+
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
+        res.setArtistName(song.getArtistId().getArtistName());
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getGenreId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
+        return res;
+    }
+
+
     public SongDisplay toSongDisplay(GenreSong genreSong) {
         Songs song = repo.findByIdAndIsDeleted(genreSong.getSongId().getId(), false).get();
 
@@ -428,10 +497,54 @@ public class SongService {
         return res;
     }
 
+    public SongDisplayForAdmin toSongDisplayAdmin(GenreSong genreSong) {
+        Songs song = repo.findByIdAndIsDeleted(genreSong.getSongId().getId(), false).get();
+
+        SongDisplayForAdmin res = new SongDisplayForAdmin();
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
+        res.setArtistName(song.getArtistId().getArtistName());
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getGenreId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
+        return res;
+    }
+
     public SongDisplay toSongDisplay(PlaylistSong playlistSong) {
         Songs song = repo.findByIdAndIsDeleted(playlistSong.getSongId().getId(), false).get();
 
         SongDisplay res = new SongDisplay();
+        BeanUtils.copyProperties(song, res);
+        res.setIsDeleted(song.getIsDeleted());
+        res.setIsPending(song.getIsPending());
+        if (song.getAlbumId() != null) {
+            res.setAlbumTitle(song.getAlbumId().getTitle());
+            res.setAlbumImage(song.getAlbumId().getImage());
+        }
+        res.setArtistName(song.getArtistId().getArtistName());
+        List<String> genreNames = genSongRepo.findBySongId(song.getId(), false)
+                .stream()
+                .map(it -> it.getGenreId().getTitle())
+                .toList();
+        res.setGenreNames(genreNames);
+        return res;
+    }
+
+    public SongDisplayForAdmin toSongDisplayAdmin(PlaylistSong playlistSong) {
+        Songs song = repo.findByIdAndIsDeleted(playlistSong.getSongId().getId(), false).get();
+
+        SongDisplayForAdmin res = new SongDisplayForAdmin();
+        int favCount = favRepo.findFSBySongId(song.getId(), false).size();
+        res.setTotalFavourite(favCount);
         BeanUtils.copyProperties(song, res);
         res.setIsDeleted(song.getIsDeleted());
         res.setIsPending(song.getIsPending());

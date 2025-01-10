@@ -27,8 +27,9 @@ public class CategoryController {
     }
 
     @GetMapping("/admin/categories/display")
-    public ResponseEntity<List<CategoryDisplayForAdmin>> findAllForAdmin() {
-        return new ResponseEntity<>(service.getAllCategoriesDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<CategoryDisplayForAdmin>> findAllForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(service.getAllCategoriesDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/categories/count")

@@ -29,8 +29,9 @@ public class ArtistController {
     }
 
     @GetMapping("/admin/artists/display")
-    public ResponseEntity<List<ArtistDisplayForAdmin>> getAllArtistsDisplayForAdmin() {
-        return new ResponseEntity<>(artistService.getAllArtistsDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<ArtistDisplayForAdmin>> getAllArtistsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
+        return new ResponseEntity<>(artistService.getAllArtistsDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/artists/count")

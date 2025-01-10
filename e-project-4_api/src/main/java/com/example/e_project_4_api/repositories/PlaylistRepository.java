@@ -4,6 +4,7 @@ import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Genres;
 import com.example.e_project_4_api.models.Playlists;
 import com.example.e_project_4_api.models.Users;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +23,8 @@ public interface PlaylistRepository extends JpaRepository<Playlists, Integer> {
 
     @Query("Select a from Playlists a where a.isDeleted = :isDeleted")
     List<Playlists> findAllNotDeleted(boolean isDeleted);
+    @Query("Select a from Playlists a where a.isDeleted = :isDeleted")
+    List<Playlists> findAllNotDeletedPaging(boolean isDeleted, Pageable pageable);
 
     @Query("Select COUNT(a) from Playlists a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);

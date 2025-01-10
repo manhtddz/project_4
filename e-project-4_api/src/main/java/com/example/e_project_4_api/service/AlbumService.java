@@ -13,6 +13,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,9 +62,10 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable("albumsDisplayForAdmin")
-    public List<AlbumDisplayForAdmin> getAllAlbumsDisplayForAdmin() {
-        return repo.findAllNotDeleted(false)
+    @Cacheable(value = "albumsDisplayForAdmin", key = "#page")
+    public List<AlbumDisplayForAdmin> getAllAlbumsDisplayForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.findAllNotDeletedPaging(false, pageable)
                 .stream()
                 .map(this::toAlbumDisplayForAdmin)
                 .collect(Collectors.toList());
@@ -77,12 +80,28 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    public List<AlbumDisplayForAdmin> getAllAlbumsByArtistIdForAdmin(int artistId, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return repo.findAllByArtistIdPaging(artistId, false, pageable)
+                .stream()
+                .map(this::toAlbumDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
     @Cacheable(value = "albumsByCate", key = "#cateId")
     public List<AlbumDisplay> getAllAlbumsBySubjectIdForDisplay(int cateId) {
         return categoryAlbumRepo.findAllByCategoryId(cateId, false)
                 .stream()
                 .filter(categoryAlbum -> categoryAlbum.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplayForAdmin> getAllAlbumsBySubjectIdForAdmin(int cateId, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return categoryAlbumRepo.findAllByCategoryIdPaging(cateId, false, pageable)
+                .stream()
+                .map(this::toAlbumDisplayForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -117,6 +136,14 @@ public class AlbumService {
                 .stream()
                 .filter(favouriteAlbums -> favouriteAlbums.getAlbumId().getIsReleased())
                 .map(this::toAlbumDisplay)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplayForAdmin> getAllFavAlbumsByUserIdForAdmin(Integer id, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return favRepo.findFAByUserIdPaging(id, false, pageable)
+                .stream()
+                .map(this::toAlbumDisplayForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -190,7 +217,7 @@ public class AlbumService {
 //        }
 //    }
 
-    @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
         List<Map<String, String>> errors = new ArrayList<>();
 
@@ -230,9 +257,7 @@ public class AlbumService {
 
     }
 
-    @CacheEvict(value = {"artistsDisplayForAdmin", "favAlbumsByUser",
-            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
-            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public void like(LikeBaseModel likeModel) {
         Optional<Albums> op = repo.findByIdAndIsDeleted(likeModel.getItemId(), false);
         //check sự tồn tại
@@ -242,7 +267,7 @@ public class AlbumService {
         favouriteAlbumService.addNewFA(new NewOrUpdateFavouriteAlbum(null, likeModel.getItemId(), likeModel.getUserId()));
     }
 
-    @CacheEvict(value = {"albumsDisplayForAdmin", "favAlbumsByUser", "artistsDisplayForAdmin"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public void unlikeAlbum(LikeBaseModel request) {
         Optional<FavouriteAlbums> op = favRepo.findByUserIdAndAlbumId(request.getUserId(), request.getItemId());
         if (op.isEmpty()) {
@@ -251,7 +276,7 @@ public class AlbumService {
         favRepo.delete(op.get());
     }
 
-    @CacheEvict(value = {"categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public void toggleAlbumReleaseStatus(int albumId) {
         Optional<Albums> op = repo.findByIdAndIsDeleted(albumId, false);
         if (op.isEmpty()) {
@@ -318,11 +343,47 @@ public class AlbumService {
         return res;
     }
 
+    public AlbumDisplayForAdmin toAlbumDisplayForAdmin(CategoryAlbum categoryAlbum) {
+        int albumId = categoryAlbum.getAlbumId().getId();
+        Albums album = repo.findByIdAndIsDeleted(albumId, false).get();
+
+        AlbumDisplayForAdmin res = new AlbumDisplayForAdmin();
+        res.setTitle(album.getTitle());
+        res.setImage(album.getImage());
+        res.setReleaseDate(album.getReleaseDate());
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        res.setId(albumId);
+        res.setCreatedAt(album.getCreatedAt());
+        res.setModifiedAt(album.getModifiedAt());
+        return res;
+    }
+
     public AlbumDisplay toAlbumDisplay(FavouriteAlbums favAlbum) {
         int albumId = favAlbum.getAlbumId().getId();
         Albums album = repo.findByIdAndIsDeleted(albumId, false).get();
 
         AlbumDisplay res = new AlbumDisplay();
+        res.setTitle(album.getTitle());
+        res.setImage(album.getImage());
+        res.setReleaseDate(album.getReleaseDate());
+        res.setIsDeleted(album.getIsDeleted());
+        res.setIsReleased(album.getIsReleased());
+        res.setArtistName(album.getArtistId().getArtistName());
+        res.setArtistImage(album.getArtistId().getImage());
+        res.setId(albumId);
+        res.setCreatedAt(album.getCreatedAt());
+        res.setModifiedAt(album.getModifiedAt());
+        return res;
+    }
+
+    public AlbumDisplayForAdmin toAlbumDisplayForAdmin(FavouriteAlbums favAlbum) {
+        int albumId = favAlbum.getAlbumId().getId();
+        Albums album = repo.findByIdAndIsDeleted(albumId, false).get();
+
+        AlbumDisplayForAdmin res = new AlbumDisplayForAdmin();
         res.setTitle(album.getTitle());
         res.setImage(album.getImage());
         res.setReleaseDate(album.getReleaseDate());
