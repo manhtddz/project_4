@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -122,6 +123,22 @@ public class GenresService {
             fileService.deleteImageFile(request.getImage());
             throw e;
         }
+    }
+
+    @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void updateGenreImage(UpdateFileModel request) {
+        Optional<Genres> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any genre with id: " + request.getId());
+        }
+        Genres genre = op.get();
+        fileService.deleteImageFile(genre.getImage());
+        genre.setImage(request.getFileName());
+
+        genre.setModifiedAt(new Date());
+        repo.save(genre);
+
     }
 
     @CacheEvict(value = {"genresDisplay", "genresDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs", "songsByGenre", "songsByPlaylist"}, allEntries = true)

@@ -165,7 +165,7 @@ public class FileService {
 
     public void deleteImageFile(String fileName) {
         try {
-            Files.deleteIfExists(Paths.get(FOLDER + fileName));
+            Files.deleteIfExists(Paths.get(FOLDER + "images/" + fileName));
         } catch (IOException ex) {
             // Log lỗi nhưng không throw để tránh che dấu lỗi chính
         }
@@ -173,7 +173,7 @@ public class FileService {
 
     public void deleteAudioFile(String fileName) {
         try {
-            Files.deleteIfExists(Paths.get(FOLDER + fileName));
+            Files.deleteIfExists(Paths.get(FOLDER + "audio/" + fileName));
         } catch (IOException ex) {
             // Log lỗi nhưng không throw để tránh che dấu lỗi chính
         }
@@ -181,7 +181,7 @@ public class FileService {
 
     public void deleteLRCFile(String fileName) {
         try {
-            Files.deleteIfExists(Paths.get(FOLDER + fileName));
+            Files.deleteIfExists(Paths.get(FOLDER + "lrc/" + fileName));
         } catch (IOException ex) {
             // Log lỗi nhưng không throw để tránh che dấu lỗi chính
         }

@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
@@ -10,6 +11,7 @@ import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.models.Artists;
+import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
@@ -184,6 +186,25 @@ public class UserService {
         }
         user.setModifiedAt(new Date());
         repo.save(user);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true), // Xóa toàn bộ danh sách
+            @CacheEvict(value = "usersForAdmin", allEntries = true), // Xóa toàn bộ danh sách
+    })
+    public void updateUserAvatar(UpdateFileModel request) {
+        Optional<Users> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any user with id: " + request.getId());
+        }
+        Users user = op.get();
+        fileService.deleteAudioFile(user.getAvatar());
+        user.setAvatar(request.getFileName());
+
+        user.setModifiedAt(new Date());
+        repo.save(user);
+
     }
 
     public void updatePassword(UpdatePasswordModel request) {

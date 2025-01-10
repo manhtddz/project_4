@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.LikeBaseModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
@@ -99,7 +100,7 @@ public class SongController {
     @GetMapping("/admin/songs/byPlaylist/display/{id}")
     public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsByPlaylistIdForDisplayForAdmin
             (@PathVariable("id") int id, @RequestParam(value = "page", defaultValue = "0") int page) {
-        return new ResponseEntity<>(service.getAllSongsByPlaylistIdFoAdmin(id, page), HttpStatus.OK);
+        return new ResponseEntity<>(service.getAllSongsByPlaylistIdForAdmin(id, page), HttpStatus.OK);
     }
 
     @GetMapping("/public/songs/{id}")
@@ -165,6 +166,28 @@ public class SongController {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @PutMapping("/admin/songs/change/rlc")
+    public ResponseEntity<Object> changeRLC(@RequestBody @Valid UpdateFileModel request) {
+        service.updateSongRLC(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/admin/songs/change/audio")
+    public ResponseEntity<Object> changeAudio(@RequestBody @Valid UpdateFileModel request) {
+        service.updateSongAudio(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/public/songs")

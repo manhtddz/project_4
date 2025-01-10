@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.service.ArtistService;
@@ -67,6 +68,16 @@ public class ArtistController {
         }
     }
 
+    @PutMapping("/admin/artists/change/image")
+    public ResponseEntity<Object> changeImage(@RequestBody @Valid UpdateFileModel request) {
+        artistService.updateArtistImage(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @PutMapping("/public/artists")
     public ResponseEntity<Object> updateArtist(@RequestBody @Valid NewOrUpdateArtist request) {

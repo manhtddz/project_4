@@ -1,11 +1,13 @@
 package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateArtist;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.ArtistResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
+import com.example.e_project_4_api.models.Albums;
 import com.example.e_project_4_api.models.Artists;
 import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
@@ -107,6 +109,22 @@ public class ArtistService {
             fileService.deleteImageFile(request.getImage());
             throw e;
         }
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)
+    public void updateArtistImage(UpdateFileModel request) {
+        Optional<Artists> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any artist with id: " + request.getId());
+        }
+        Artists artist = op.get();
+        fileService.deleteImageFile(artist.getImage());
+        artist.setImage(request.getFileName());
+
+        artist.setModifiedAt(new Date());
+        repo.save(artist);
+
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin", "artistsDisplay"}, allEntries = true)

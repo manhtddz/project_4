@@ -162,7 +162,7 @@ public class AlbumController {
         }
     }
 
-    @PutMapping("/public/albums/like")
+    @PostMapping("/public/albums/like")
     public ResponseEntity<Object> likeAlbum(@RequestBody @Valid LikeBaseModel request) {
         service.like(request);
         return new ResponseEntity<>(
@@ -176,6 +176,17 @@ public class AlbumController {
     @PutMapping("/admin/albums/toggle/release")
     public ResponseEntity<Object> toggleReleaseAlbum(@PathVariable("id") int id) {
         service.toggleAlbumReleaseStatus(id);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/admin/albums/change/image")
+    public ResponseEntity<Object> changeImage(@RequestBody @Valid UpdateFileModel request) {
+        service.updateAlbumImage(request);
         return new ResponseEntity<>(
                 Map.of(
                         "message", "changes successfully"

@@ -204,18 +204,21 @@ public class AlbumService {
 
     }
 
-//    public void uploadAndInsert(MultipartFile file, NewOrUpdateAlbum request) {
-//        String fileName = fileService.uploadImageFile(file);
-//        try {
-//            // Bước 2: Insert vào database
-//            request.setImage(fileName);
-//            addNewAlbum(request);
-//        } catch (Exception e) {
-//            // Xóa file nếu insert database thất bại
-//            fileService.deleteFile(fileName);
-//            throw e;
-//        }
-//    }
+    @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
+    public void updateAlbumImage(UpdateFileModel request) {
+        Optional<Albums> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any album with id: " + request.getId());
+        }
+        Albums album = op.get();
+        fileService.deleteImageFile(album.getImage());
+        album.setImage(request.getFileName());
+
+        album.setModifiedAt(new Date());
+        repo.save(album);
+
+    }
 
     @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)
     public NewOrUpdateAlbum updateAlbum(NewOrUpdateAlbum request) {
@@ -251,7 +254,6 @@ public class AlbumService {
         album.setModifiedAt(new Date());
         categoryAlbumService.updateCategoriesForAlbum(request.getId(), request.getCateIds());
         repo.save(album);
-
 
         return request;
 

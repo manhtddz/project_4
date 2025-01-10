@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
@@ -87,6 +88,16 @@ public class NewsController {
         }
     }
 
+    @PutMapping("/admin/news/change/image")
+    public ResponseEntity<Object> changeImage(@RequestBody @Valid UpdateFileModel request) {
+        service.updateNewsImage(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
 
     @PutMapping("/public/news")
     public ResponseEntity<Object> update(@RequestBody @Valid NewOrUpdateNews request) {

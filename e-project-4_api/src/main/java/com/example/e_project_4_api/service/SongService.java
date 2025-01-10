@@ -209,10 +209,10 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
-    public List<SongDisplayForAdmin> getAllSongsByPlaylistIdFoAdmin(Integer id, int page) {
+    public List<SongDisplayForAdmin> getAllSongsByPlaylistIdForAdmin(Integer id, int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
-        return playlistSongRepo.findByPlaylistId(id, false)
+        return playlistSongRepo.findByPlaylistIdPaging(id, false, pageable)
                 .stream()
                 .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());
@@ -269,6 +269,41 @@ public class SongService {
             fileService.deleteAudioFile(request.getAudioPath());
             throw e;
         }
+    }
+
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void updateSongRLC(UpdateFileModel request) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + request.getId());
+        }
+        Songs song = op.get();
+        fileService.deleteLRCFile(song.getLyricFilePath());
+        song.setLyricFilePath(request.getFileName());
+
+        song.setModifiedAt(new Date());
+        repo.save(song);
+
+    }
+    @CacheEvict(value = {"artistsDisplayForAdmin",
+            "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
+            "songsByGenre", "songsByPlaylist"}, allEntries = true)
+    public void updateSongAudio(UpdateFileModel request) {
+        Optional<Songs> op = repo.findByIdAndIsDeleted(request.getId(), false);
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any song with id: " + request.getId());
+        }
+        Songs song = op.get();
+        fileService.deleteAudioFile(song.getAudioPath());
+        song.setAudioPath(request.getFileName());
+
+        song.setModifiedAt(new Date());
+        repo.save(song);
+
     }
 
     @CacheEvict(value = {"artistsDisplayForAdmin",

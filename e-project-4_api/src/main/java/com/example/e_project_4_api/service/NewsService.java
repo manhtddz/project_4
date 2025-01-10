@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
@@ -113,6 +114,22 @@ public class NewsService {
             fileService.deleteImageFile(request.getImage());
             throw e;
         }
+    }
+
+    @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)
+    public void updateNewsImage(UpdateFileModel request) {
+        Optional<News> op = repo.findById(request.getId());
+        //check sự tồn tại
+        if (op.isEmpty()) {
+            throw new NotFoundException("Can't find any news with id: " + request.getId());
+        }
+        News news = op.get();
+        fileService.deleteImageFile(news.getImage());
+        news.setImage(request.getFileName());
+
+        news.setModifiedAt(new Date());
+        repo.save(news);
+
     }
 
     @CacheEvict(value = {"newsDisplay", "newsDisplayForAdmin"}, allEntries = true)

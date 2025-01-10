@@ -1,6 +1,7 @@
 package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
+import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
@@ -58,6 +59,17 @@ public class UserController {
         return new ResponseEntity<>(
                 Map.of(
                         "message", "Deleted successfully"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/admin/users/change/avatar")
+    public ResponseEntity<Object> changeAvatar(@RequestBody @Valid UpdateFileModel request) {
+        service.updateUserAvatar(request);
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", "changes successfully"
                 ),
                 HttpStatus.OK
         );
