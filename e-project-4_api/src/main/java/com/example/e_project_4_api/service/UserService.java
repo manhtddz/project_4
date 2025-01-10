@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -246,9 +248,11 @@ public class UserService {
         return repo.getNumberOfAllNotDeleted(false);
     }
 
-    @Cacheable(value = "usersForAdmin")
-    public List<UserDisplayForAdmin> getAllUsersDisplayForAdmin() {
-        return repo.findAllByIsDeleted(false)
+    @Cacheable(value = "usersForAdmin", key = "#page")
+    public List<UserDisplayForAdmin> getAllUsersDisplayForAdmin(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        return repo.findAllNotDeletedPaging(false, pageable)
                 .stream()
                 .map(this::toUserDisplayForAdmin)
                 .collect(Collectors.toList());

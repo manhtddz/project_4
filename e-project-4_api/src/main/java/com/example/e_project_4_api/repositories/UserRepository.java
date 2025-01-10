@@ -3,6 +3,7 @@ package com.example.e_project_4_api.repositories;
 import com.example.e_project_4_api.models.Genres;
 import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,9 @@ public interface UserRepository extends JpaRepository<Users, Integer> {
     Optional<Users> findByUsername(String username);
 
     List<Users> findAllByIsDeleted(boolean isDeleted);
+
+    @Query("Select a from Users a where a.isDeleted = :isDeleted")
+    List<Users> findAllNotDeletedPaging(boolean isDeleted, Pageable pageable);
 
     Optional<Users> findByIdAndIsDeleted(Integer id, boolean isDeleted);
 

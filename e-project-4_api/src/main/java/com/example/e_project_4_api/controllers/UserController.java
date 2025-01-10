@@ -31,8 +31,9 @@ public class UserController {
     }
 
     @GetMapping("/admin/users/display")
-    public ResponseEntity<List<UserDisplayForAdmin>> findAllForAdmin() {
-        return new ResponseEntity<>(service.getAllUsersDisplayForAdmin(), HttpStatus.OK);
+    public ResponseEntity<List<UserDisplayForAdmin>> findAllForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page){
+        return new ResponseEntity<>(service.getAllUsersDisplayForAdmin(page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/users/count")
