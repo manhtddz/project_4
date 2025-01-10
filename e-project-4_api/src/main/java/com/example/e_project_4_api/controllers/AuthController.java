@@ -50,7 +50,7 @@ public class AuthController {
     @PostMapping("/registerForAdmin")
     public ResponseEntity<Object> registerForAdmin(@RequestBody @Valid NewOrUpdateUser user) {
         try {
-            UserResponse newUser = service.register(user);
+            UserResponse newUser = service.registerForAdmin(user);
             return new ResponseEntity<>(
                     Map.of(
                             "message", "Register successfully",
