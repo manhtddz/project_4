@@ -99,9 +99,9 @@ public class NewsService {
 
             News newNews = new News(
                     request.getTitle(),
-                    request.getContent(),
                     request.getImage(),
-                    request.getIsActive(),
+                    request.getContent(),
+                    true,
                     new Date(),
                     new Date()
             );
