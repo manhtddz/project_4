@@ -198,6 +198,7 @@ public class UserService {
         Optional<Users> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteImageFile(request.getFileName());
             throw new NotFoundException("Can't find any user with id: " + request.getId());
         }
         Users user = op.get();

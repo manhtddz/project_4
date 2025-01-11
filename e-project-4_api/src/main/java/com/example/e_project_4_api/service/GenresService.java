@@ -130,6 +130,7 @@ public class GenresService {
         Optional<Genres> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteImageFile(request.getFileName());
             throw new NotFoundException("Can't find any genre with id: " + request.getId());
         }
         Genres genre = op.get();

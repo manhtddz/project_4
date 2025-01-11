@@ -209,6 +209,7 @@ public class AlbumService {
         Optional<Albums> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteImageFile(request.getFileName());
             throw new NotFoundException("Can't find any album with id: " + request.getId());
         }
         Albums album = op.get();
@@ -217,7 +218,6 @@ public class AlbumService {
 
         album.setModifiedAt(new Date());
         repo.save(album);
-
     }
 
     @CacheEvict(value = {"categoriesDisplayForAdmin", "categoriesWithAlbumDisplay", "artistsDisplayForAdmin", "albumsDisplayForAdmin", "albumsByCate", "favAlbumsByUser", "albumsByArtist", "albumsDisplay"}, allEntries = true)

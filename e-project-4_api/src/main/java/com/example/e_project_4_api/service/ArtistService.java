@@ -116,6 +116,7 @@ public class ArtistService {
         Optional<Artists> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteImageFile(request.getFileName());
             throw new NotFoundException("Can't find any artist with id: " + request.getId());
         }
         Artists artist = op.get();
