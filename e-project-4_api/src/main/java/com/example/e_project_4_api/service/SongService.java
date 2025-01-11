@@ -278,6 +278,7 @@ public class SongService {
         Optional<Songs> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteLRCFile(request.getFileName());
             throw new NotFoundException("Can't find any song with id: " + request.getId());
         }
         Songs song = op.get();
@@ -288,6 +289,7 @@ public class SongService {
         repo.save(song);
 
     }
+
     @CacheEvict(value = {"artistsDisplayForAdmin",
             "albumsDisplayForAdmin", "songsDisplayForAdmin", "songsDisplay", "songsByArtist", "songsByAlbum", "favSongs",
             "songsByGenre", "songsByPlaylist"}, allEntries = true)
@@ -295,6 +297,7 @@ public class SongService {
         Optional<Songs> op = repo.findByIdAndIsDeleted(request.getId(), false);
         //check sự tồn tại
         if (op.isEmpty()) {
+            fileService.deleteAudioFile(request.getFileName());
             throw new NotFoundException("Can't find any song with id: " + request.getId());
         }
         Songs song = op.get();
