@@ -23,11 +23,11 @@ public interface AlbumRepository extends JpaRepository<Albums, Integer>, JpaSpec
 
     Optional<Albums> findByIdAndIsDeleted(Integer id, boolean isDeleted);
 
-    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted AND a.isReleased = :isReleased")
-    List<Albums> findAllByArtistId(@Param("arId") Integer artistId, @Param("isReleased") boolean isReleased);
+    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted AND a.isReleased = true")
+    List<Albums> findAllByArtistId(@Param("arId") Integer artistId, @Param("isDeleted") boolean isDeleted);
 
-    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted AND a.isReleased = :isReleased")
-    List<Albums> findAllByArtistIdPaging(@Param("arId") Integer artistId, @Param("isReleased") boolean isReleased, Pageable pageable);
+    @Query("Select a from Albums a where a.artistId.id = :arId AND a.isDeleted = :isDeleted")
+    List<Albums> findAllByArtistIdPaging(@Param("arId") Integer artistId, @Param("isDeleted") boolean isDeleted, Pageable pageable);
 
     @Query("Select a from Albums a where a.isDeleted = :isDeleted")
     List<Albums> findAllNotDeleted(boolean isDeleted);
