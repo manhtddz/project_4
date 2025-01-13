@@ -1,113 +1,188 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
-import 'package:pj_demo/dto/song_response.dart';
-import 'package:pj_demo/dto/user_favourite_response.dart';
 import 'package:pj_demo/services/api.dart';
 import 'package:pj_demo/services/urlConsts.dart';
+import 'package:http/http.dart' as http;
+
+import '../dto/user_favourite_request.dart';
 
 class UserFavoritesAPI extends Api {
-  // Method to fetch a user's favorite songs
-  Future<List<SongResponse>> fetchFavoriteSongsOfUser(
-      int userId, BuildContext context) async {
-    // final mockResponse = {
-    //   'user_id': userId,
-    //   'favorite_song_ids': [
-    //     1,
-    //     2,
-    //     3,
-    //     4
-    //   ] // Example favorite song IDs for the user
-    // };
+  // API to check if a song is already liked by the user
+  Future<bool> checkIfSongIsLiked(LikeRequest requestData, BuildContext context) async {
+    final String url = '${UrlConsts.FAVOURITE_SONGS}/check'; // Ensure the URL is correct
 
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
-    final response =
-        await get(UrlConsts.SONGS + '/byUser/display/$userId', context);
-    if (response.statusCode == 200) {
-      dynamic data = json.decode(response.body);
-      return data.map((item) => UserFavoriteResponse.fromJson(item));
-    } else {
-      throw Exception('Failed to load albums with id $userId');
+    try {
+      // Sending POST request to check if song is liked
+      final response = await post(url, requestData, context); // Correctly calling the `post` method
+
+      if (response.statusCode == 200) {
+        // Assuming the response is a JSON containing 'isLike'
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        return responseData['isLike'] ?? false; // Return the "isLike" status, default to false if null
+      } else {
+        print("Failed to check if song is liked. Status code: ${response.statusCode}");
+        return false; // Return false if there's an error
+      }
+    } catch (e) {
+      print("Error checking song like status: $e");
+      return false; // Return false in case of exception
     }
   }
 
-  // Method to add a song to the user's favorites
-  Future<void> addSongToFavorites(int userId, int songId) async {
-    // Simulate a successful API call to add a song to favorites
-    await Future.delayed(const Duration(seconds: 1));
 
-    print("Song with ID $songId added to favorites for user $userId.");
-    // In a real app, here you would send a POST request to the server to add the song
+  // API to add a song to the user's favorites
+  Future<void> addSongToFavorites(LikeRequest requestData, BuildContext context) async {
+    // Check if the song is already liked by the user
+    bool isLiked = await checkIfSongIsLiked(requestData, context);
+
+    if (isLiked) {
+      // If the song is already liked, we return without adding it again
+      print("Song with ID ${requestData.itemId} is already in the favorites list for user ${requestData.userId}.");
+      return; // Early return since the song is already in the favorites
+    }
+
+    final String url = '${UrlConsts.SONGS}/like';
+
+    try {
+      // Sending POST request to add the song to favorites
+      final response = await post(url, requestData, context);  // Use the 'post' method from the previous code
+
+      // Check if the response status code is 200 (OK)
+      if (response.statusCode == 200) {
+        print("Song with ID ${requestData.itemId} added to favorites for user ${requestData.userId}.");
+      } else {
+        // Handle unexpected response codes (e.g., 4xx, 5xx)
+        print("Failed to add song to favorites. Status code: ${response.statusCode}. Error: ${response.body}");
+      }
+    } catch (e) {
+      // Handle network errors or any other exceptions that occur during the API call
+      print("Error adding song to favorites: $e");
+    }
   }
 
-  // Method to remove a song from the user's favorites
-  Future<void> removeSongFromFavorites(int userId, int songId) async {
-    // Simulate a successful API call to remove a song from favorites
-    await Future.delayed(const Duration(seconds: 1));
 
-    print("Song with ID $songId removed from favorites for user $userId.");
-    // In a real app, here you would send a DELETE request to the server to remove the song
+  // API to remove a song from the user's favorites
+  Future<void> removeSongFromFavorites(LikeRequest requestData, BuildContext context) async {
+    final String url = '${UrlConsts.SONGS}/unlike';
+
+    final Map<String, dynamic> body = {
+      'userId': requestData.userId.toString(), // Convert to string if needed
+      'itemId': requestData.itemId.toString(), // Convert to string if needed
+    };
+
+    try {
+      // Send the DELETE request with the request body
+      final response = await delete(url, context, params: body);
+
+      if (response.statusCode == 200) {
+        print("Song with ID ${requestData.itemId} removed from favorites for user ${requestData.userId}.");
+      } else {
+        print("Failed to remove song from favorites. Error: ${response.body}");
+      }
+    } catch (error) {
+      print("Error during removal: $error");
+    }
   }
 
-  // Method to get all the favorite songs of the user
-  // Future<List<SongResponse>> getFavoriteSongs(int userId, BuildContext context) async {
-  // final mockResponse = [
-  //   {
-  //     'id': 1,
-  //     'title': 'Không Thể Say',
-  //     'artistName': "HIEUTHUHAI",
-  //     'artist_id': 1,
-  //     'listen_amount': 12,
-  //     'album_id': 1,
-  //     'albumImagePath': "assets/images/2.jpg",
-  //     'audio_path': "audio/Không Thể Say.mp3",
-  //     'lyric_file_path': "lyrics/Limbo.lrc",
-  //     'is_active': true,
-  //     'albumTitle': 'No name',
-  //   },
-  //   {
-  //     'id': 2,
-  //     'title': 'Señorita',
-  //     'artist_id': 1,
-  //     'listenAmount': 12,
-  //     'album_id': 1,
-  //     'artistName': "Shawn Mendes",
-  //     'albumImagePath': "assets/images/3.jpg",
-  //     'audioPath': "audio/Señorita.mp3",
-  //     'lyric_file_path': "lyrics/Senorita.lrc",
-  //     'is_active': true,
-  //     'albumTitle': 'No name'
-  //   },
-  //   // Add more songs as needed
-  // ];
 
-  //   await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
-  //
-  //   try {
-  //     // Mock the favorite song IDs for user with ID = 1
-  //     final response = await get(UrlConsts.SONGS+'');
-  //
-  //     // Filter songs based on the favorite song IDs
-  //     final favoriteSongs = mockResponse.where((song) {
-  //       return mockFavoriteSongIds.contains(song['id']);
-  //     }).map((it) {
-  //       return Song.fromJson(it);  // Using the factory constructor for parsing
-  //     }).toList();
-  //
-  //     return favoriteSongs;
-  //   } catch (error) {
-  //     print("Error fetching favorite songs: $error");
-  //     return [];
-  //   }
-  // }
-  //
-  // // Helper method to mock favorite song IDs for a given user ID
-  // List<int> _getMockFavoriteSongs(int userId) {
-  //   if (userId == 1) {
-  //     // Mock favorite song IDs for user with ID 1
-  //     return [1, 2, 3]; // These are the song IDs the user has favorited
-  //   }
-  //   // Add mock data for other users if needed
-  //   return [];
-  // }
+  Future<bool> checkIfAlbumIsLiked(
+      LikeRequest requestData, BuildContext context) async {
+    final String url = '${UrlConsts.FAVOURITE_ALBUMS}/check';
+
+    // LikeRequest requestData = LikeRequest(userId: userId, itemId: albumId);
+
+    // Sending POST request to check if song is liked
+    final response = await post(url, requestData, context);
+
+    // Check the response from API
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData['isLike']; // Return the "isLike" status
+    } else {
+      print('Request Data: ${json.encode(requestData)}');
+      print("responseStatus: ${response.statusCode}");
+      print("Failed to check if album is liked. Error: ${response.body}");
+      return false; // Return false if there's an error
+    }
+  }
+
+  // API to add a album to the user's favorites
+  Future<void> addAlbumToFavorites(
+      LikeRequest requestData, BuildContext context) async {
+    // Check if the song is already liked by the user
+    bool isLiked = await checkIfAlbumIsLiked(requestData, context);
+
+    if (isLiked) {
+      print(
+          "Album with ID ${requestData.itemId} is already in the favorites list for user ${requestData.userId}.");
+      return; // The song is already liked, no need to add again
+    }
+
+    final String url = '${UrlConsts.ALBUMS}/like';
+
+    // // Create the request object
+    // LikeRequest request = LikeRequest(userId: userId, itemId: albumId);
+
+    // Send POST request to add the song to favorites
+    final response = await post(url, requestData, context);
+
+    if (response.statusCode == 200) {
+      print(
+          "Album with ID ${requestData.itemId} added to favorites for user ${requestData.userId}.");
+    } else {
+      print("Failed to add album to favorites. Error: ${response.body}");
+    }
+  }
+
+  Future<void> removeAlbumFromFavorites(LikeRequest requestData, BuildContext context) async {
+    final String url = '${UrlConsts.ALBUMS}/unlike'; // Your API endpoint
+
+    // Create the request body (ensure the values are strings where needed)
+    final Map<String, dynamic> body = {
+      'userId': requestData.userId.toString(), // Convert to string if needed
+      'itemId': requestData.itemId.toString(), // Convert to string if needed
+    };
+
+    try {
+      // Send the DELETE request with the request body
+      final response = await delete(url, context, params: body);
+
+      if (response.statusCode == 200) {
+        print("Album with ID ${requestData.itemId} removed from favorites for user ${requestData.userId}.");
+      } else {
+        print("Failed to remove album from favorites. Error: ${response.body}");
+      }
+    } catch (error) {
+      print("Error during removal: $error");
+    }
+  }
+
 }
+
+
+
+  // Future<void> removeAlbumFromFavorites(LikeRequest requestData, BuildContext context) async {
+  //   final String url = 'http://${UrlConsts.HOST}${UrlConsts.ALBUMS}/unlike';
+  //
+  //   // Prepare the request data as a JSON object
+  //   final Map<String, dynamic> body = {
+  //     'userId': requestData.userId,
+  //     'itemId': requestData.itemId,
+  //   };
+  //
+  //   // Send DELETE request to remove the album from favorites
+  //   final response = await http.delete(
+  //     Uri.parse(url),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: json.encode(body), // Encode the body as JSON
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     print(
+  //         "Album with ID ${requestData.itemId} removed from favorites for user ${requestData.userId}.");
+  //   } else {
+  //     print("Failed to remove album from favorites. Error: ${response.body}");
+  //   }
+
+

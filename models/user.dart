@@ -1,58 +1,66 @@
 class User {
-  final int id;
-  final String fullname;
-  final String username;
-  final String image;
-  final String password;
-  final String phone;
-  final String email;
-  final String role; // 'artist' or 'normal'
-  final String bio;
-  final DateTime dob;
-  // final String? artistId; // Nullable, only for artists
+  int? id;
+  String? username;
+  String? fullName;
+  String? avatar;
+  String? password;
+  String? phone;
+  String? email;
+  String? role;
 
-  User({
-    required this.id,
-    required this.fullname,
-    required this.username,
-    required this.image,
-    required this.password,
-    required this.phone,
-    required this.email,
-    required this.role,
-    required this.bio,
-    required this.dob,
-  });
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      id: map['id'],
-      fullname: map['fullname'],
-      username: map['username'],
-      image: map['image'],
-      password: map['password'],
-      phone: map['phone'],
-      email: map['email'],
-      role: map['role'],
-      bio: map['bio'],
-      dob: DateTime.parse(map['dob']),
-      // artistId: map['artist_id'],
-    );
+  DateTime? dob;
+  bool? isDeleted;
+  DateTime? createdAt;
+  DateTime? modifiedAt;
+
+  User(
+      {this.id,
+      this.username,
+      this.fullName,
+      this.avatar,
+      this.password,
+      this.phone,
+      this.email,
+      this.role,
+      this.dob,
+      this.isDeleted,
+      this.createdAt,
+      this.modifiedAt});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    username = json['username'];
+    fullName = json['fullName'];
+    avatar = json['avatar'];
+    password = json['password'];
+    phone = json['phone'];
+    email = json['email'];
+    role = json['role'];
+
+    dob = json['dob'] != null
+        ? DateTime.parse(json['dob']) // Convert string to DateTime
+        : null;
+    isDeleted = json['isDeleted'];
+    createdAt =
+        json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null;
+    modifiedAt =
+        json['modifiedAt'] != null ? DateTime.parse(json['modifiedAt']) : null;
   }
 
-  // Convert User to a Map
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'fullname': fullname,
-      'username': username,
-      'image': image,
-      'password': password,
-      'phone': phone,
-      'email': email,
-      'role': role,
-      'bio': bio,
-      'dob': dob.toIso8601String(),
-      // 'artist_id': artistId,
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['username'] = this.username;
+    data['fullName'] = this.fullName;
+    data['avatar'] = this.avatar;
+    data['password'] = this.password;
+    data['phone'] = this.phone;
+    data['email'] = this.email;
+    data['role'] = this.role;
+    data['dob'] = this.dob?.toIso8601String();
+    data['isDeleted'] = this.isDeleted;
+    data['createdAt'] = this.createdAt?.toIso8601String();
+    data['modifiedAt'] = this.modifiedAt?.toIso8601String();
+    return data;
   }
 }

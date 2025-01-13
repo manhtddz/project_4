@@ -183,30 +183,16 @@ class SongProvider extends ChangeNotifier {
 
     try {
       _favoriteSongs = await _songService.fetchFavSongOfUser(userId, context);
-      // _favoriteSongs = result.isNotEmpty ? result : [];
     } catch (error) {
       _errorMessage = 'Failed to fetch albums: $error';
+      print("Error: $error"); // Debug: Check error message
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  bool isFavorite(int userId, int songId, BuildContext context) {
-    fetchFavSongOfUser(userId, context);
-    // Check if a song with the given ID is in the list of favorite songs
-    return _favoriteSongs.any((song) => song.id == songId);
-  }
-
-  void addFavorite(int userId, SongResponse song, BuildContext context) {
-    if (!isFavorite(userId, song.id, context)) {
-      _favoriteSongs.add(song);
-      notifyListeners(); // This is important!
-    }
-  }
-
-  void removeFavorite(int userId, SongResponse song, BuildContext context) {
-    _favoriteSongs.removeWhere((item) => item.id == song.id);
-    notifyListeners(); // This is important!
-  }
+  // bool isFavorite(int userId, int songId, BuildContext context) {
+  //   return _favoriteSongs.any((song) => song.id == songId);
+  // }
 }

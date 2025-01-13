@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pj_demo/dto/album_response.dart';
-import 'package:pj_demo/general_widget/common_appbar.dart';
+import 'package:pj_demo/components/common_appbar.dart';
+import 'package:pj_demo/dto/user_favourite_request.dart';
 import 'package:pj_demo/pages/song_page2.dart';
+import 'package:pj_demo/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/song_provider.dart';
+import '../providers/user_favorites_provider.dart'; // Import the provider
 
 class AlbumPage extends StatelessWidget {
   final AlbumResponse currentAlbum;
-  final int userId = 1; // Example user ID
+  // final int userId = 5; // Example user ID
 
   AlbumPage({required this.currentAlbum});
 
@@ -22,13 +25,11 @@ class AlbumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fetch the user's favorite songs only if not fetched
-    final favoriteProvider = Provider.of<SongProvider>(context);
-    if (favoriteProvider.favoriteSongs.isEmpty) {
-      favoriteProvider.fetchFavSongOfUser(userId, context);
-    }
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     final songProvider = Provider.of<SongProvider>(context);
+    final userFavoritesProvider = Provider.of<UserFavoritesProvider>(context);
+
     // Fetch the songs of the current album if they are not fetched yet
     if (!songProvider.isLoading && songProvider.songList.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,6 +44,7 @@ class AlbumPage extends StatelessWidget {
               label1: currentAlbum.title,
               label2: currentAlbum.artistName,
               appBarImg: currentAlbum.image,
+              albumId: currentAlbum.id,
               isUserFav: false)),
       body: Container(
         decoration: BoxDecoration(
@@ -59,35 +61,32 @@ class AlbumPage extends StatelessWidget {
             ? Center(child: CircularProgressIndicator())
             : songProvider.songList.isEmpty
                 ? Center(child: Text('No songs found.'))
-                : _renderListSong(context, songProvider),
+                : _renderListSong(
+                    context, songProvider, userFavoritesProvider, userProvider),
       ),
     );
   }
 
-  // Get the favorite icon based on whether the song is in favorites
-  Icon getFavoriteIcon(bool isFavorite) {
-    return isFavorite
-        ? Icon(
-            Icons.favorite,
-            color: Colors
-                .grey, // You might want to change to red to signify it is favorited
-            size: 22.0, // Set the icon size to 22 pixels
-            semanticLabel: 'Favorite', // Helps with accessibility
-          )
-        : Icon(
-            Icons.favorite_border,
-            color: Colors.grey, // Set the icon color to grey
-            size: 22.0, // Set the icon size to 22 pixels
-            semanticLabel: 'Favorite', // Helps with accessibility
-          );
+  Widget _getFavIcon(UserFavoritesProvider favProvider, LikeRequest requestData) {
+    return Icon(
+      favProvider.isFavouriteSong(requestData)
+          ? Icons.favorite
+          : Icons.favorite_border,
+      color: favProvider.isFavouriteSong(requestData)
+          ? Colors.red
+          : Colors.grey,
+    );
   }
 
-  Widget _renderListSong(BuildContext context, SongProvider songProvider) {
+  Widget _renderListSong(BuildContext context, SongProvider songProvider,
+      UserFavoritesProvider userFavoritesProvider, UserProvider userProvider) {
     return ListView.builder(
       itemCount: songProvider.songList.length,
       itemBuilder: (context, index) {
         final song = songProvider.songList[index];
-        final isFavorite = songProvider.isFavorite(userId, song.id, context);
+        final currentUser = userProvider.currentUser;
+        LikeRequest requestData =
+            LikeRequest(userId: currentUser!.id!, itemId: song.id);
         final isPlaying =
             songProvider.currentSongIndex == index && songProvider.isPlaying;
 
@@ -101,7 +100,7 @@ class AlbumPage extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.black54)),
               SizedBox(width: 5.0),
               CircleAvatar(
-                backgroundImage: NetworkImage(song.albumImage!),
+                backgroundImage: NetworkImage(song.albumImage),
               ),
             ],
           ),
@@ -121,21 +120,40 @@ class AlbumPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.white,
-                child: IconButton(
-                  icon: getFavoriteIcon(
-                      isFavorite), // Show correct icon based on favorite status
-                  onPressed: () {
-                    if (isFavorite) {
-                      songProvider.removeFavorite(
-                          userId, song, context); // Remove from favorites
-                    } else {
-                      songProvider.addFavorite(
-                          userId, song, context); // Add to favorites
-                    }
-                  },
-                ),
+              Consumer<UserFavoritesProvider>(
+                builder: (context, favProvider, child) {
+                  // If the song's favorite status is not cached, fetch it
+                  if (!favProvider.isFavouriteSong(requestData)) {
+                    favProvider.fetchFavoriteSongStatus(
+                        requestData, context); // Fetch data asynchronously once
+                  }
+
+                  return CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: IconButton(
+                      icon: _getFavIcon(favProvider, requestData),
+                      onPressed: () async {
+                        // Handle toggling favorite status
+                        if (favProvider.isFavouriteSong(requestData)) {
+                          // Remove song from favorites
+                          await favProvider.removeUserFavoriteSong(
+                              requestData, context);
+                        } else {
+                          // Add song to favorites
+                          await favProvider.addUserFavoriteSong(
+                              requestData, context);
+                        }
+
+                        // After the operation, we fetch the updated favorite status again
+                        favProvider.fetchFavoriteSongStatus(
+                            requestData, context);
+
+                        // Notify listeners to trigger a UI update
+                        favProvider.notifyListeners();
+                      },
+                    ),
+                  );
+                },
               ),
               IconButton(
                 icon: Icon(
@@ -152,11 +170,11 @@ class AlbumPage extends StatelessWidget {
                 },
               ),
               CircleAvatar(
-                  // backgroundColor: Colors.white,
-                  child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.drag_indicator_rounded),
-              )),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.drag_indicator_rounded),
+                ),
+              ),
             ],
           ),
         );

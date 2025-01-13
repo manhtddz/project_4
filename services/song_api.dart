@@ -10,7 +10,7 @@ import 'api.dart';
 class SongApi extends Api{
   Future<List<SongResponse>> fetchAllSongOfPlaylist(int playlistId, BuildContext context) async {
     await Future.delayed(const Duration(seconds: 1));
-      final response = await get(UrlConsts.SONGS+'/byPlaylist/display/$playlistId', context);
+      final response = await get('${UrlConsts.SONGS}/byPlaylist/display/$playlistId', context);
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((item) => SongResponse.fromJson(item)).toList();
@@ -21,7 +21,7 @@ class SongApi extends Api{
 
   Future<List<SongResponse>> fetchAllSongOfAlbum(int albumId, BuildContext context) async {
     await Future.delayed(const Duration(seconds: 1));
-    final response = await get(UrlConsts.SONGS+'/byAlbum/display/$albumId', context);
+    final response = await get('${UrlConsts.SONGS}/byAlbum/display/$albumId', context);
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((item) => SongResponse.fromJson(item)).toList();
@@ -31,7 +31,7 @@ class SongApi extends Api{
   }
 
   Future<List<SongResponse>> fetchFavSongOfUser(int userId, BuildContext context) async {
-    final response = await get(UrlConsts.SONGS+'/byUser/display/$userId',context);
+    final response = await get('${UrlConsts.SONGS}/byUser/display/$userId',context);
 
     // Check if the response is successful
     if (response.statusCode == 200) {

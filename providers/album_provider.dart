@@ -22,7 +22,7 @@ class AlbumProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _albumList = await _albumService.fetchItemByKeyWord(keyword, context);
+      _albumList = await _albumService.fetchItemByKeyWord(keyword,context);
     } catch (error) {
       _errorMessage = 'Failed to fetch albums: $error';
     } finally {

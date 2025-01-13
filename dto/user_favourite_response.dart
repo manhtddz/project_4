@@ -12,7 +12,7 @@ class UserFavoriteResponse {
   factory UserFavoriteResponse.fromJson(Map<String, dynamic> json) {
     return UserFavoriteResponse(
       userId: json['userId'],
-      songId: json['songId'],
+      songId: json['likeId'],
     );
   }
 }

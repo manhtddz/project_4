@@ -1,14 +1,10 @@
-import 'package:pj_demo/sample%20P/genre.dart';
-
-import 'genre_response.dart';
-
 class SongResponse {
   final int id;
   final String title;
   final String audioPath;
-  final int listenAmount;
-  final int totalFavourite;
-  final String? featureArtist;
+  // final int listenAmount;
+  // final int totalFavourite;
+  // final String? featureArtist;
   final String lyricFilePath;
   final bool isPending;
   final bool isDeleted;
@@ -23,15 +19,15 @@ class SongResponse {
       {required this.id,
         required this.title,
         required this.audioPath,
-        required this.listenAmount,
+        // required this.listenAmount,
         required this.lyricFilePath,
         required this.genreNames,
         required this.isPending,
         required this.isDeleted,
-        this.featureArtist,
+        // this.featureArtist,
         this.createdAt,
         this.modifiedAt,
-        required this.totalFavourite,
+        // required this.totalFavourite,
         required this.albumTitle,
         required this.albumImage,
         required this.artistName,
@@ -46,15 +42,15 @@ class SongResponse {
       id: json['id'],
       title: json['title'],
       audioPath: json['audioPath'],
-      listenAmount: json['listenAmount'],
+      // listenAmount: json['listenAmount'],
       lyricFilePath: json['lyricFilePath'],
       isPending: json['isPending'],
       isDeleted: json['isDeleted'],
-      totalFavourite: json['totalFavourite'],
+      // totalFavourite: json['totalFavourite'],
       createdAt: DateTime.parse(json['createdAt']),
       modifiedAt: DateTime.parse(json['modifiedAt']),
       albumImage: json['albumImage'],
-      featureArtist: json['featureArtist'],
+      // featureArtist: json['featureArtist'],
       artistName: json['artistName'],
       albumTitle: json['albumTitle'],
       genreNames: genreList,

@@ -1,27 +1,15 @@
-class UserFavoriteRequest {
+class LikeRequest {
   final int userId;
+  final int itemId;
 
   // Constructor
-  UserFavoriteRequest({required this.userId});
+  LikeRequest({required this.userId, required this.itemId});
 
-  // Method to convert the UserFavorites object into a Map
+  // Method to convert the UserFavoriteRequest object into a Map
   Map<String, dynamic> toJson() {
     return {
-      'user_id': userId,
+      'userId': userId,
+      'itemId': itemId,
     };
   }
-
-  // void addFavorite(int songId) {
-  //   if (!favoriteSongIds.contains(songId)) {
-  //     favoriteSongIds.add(songId);
-  //   }
-  // }
-  //
-  // void removeFavorite(int songId) {
-  //   favoriteSongIds.remove(songId);
-  // }
-  //
-  // bool isFavorite(int songId) {
-  //   return favoriteSongIds.contains(songId);
-  // }
 }

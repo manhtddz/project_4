@@ -1,16 +1,14 @@
 class PlaylistRequest {
-  final int id;
   final String title;
-  final String userId;
+  final int userId;
 
   PlaylistRequest(
-      {required this.id, required this.title, required this.userId});
+      {required this.userId, required this.title});
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'title': title,
-      'user_id': userId,
+      'userId': userId,
     };
   }
 }
