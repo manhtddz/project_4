@@ -4,7 +4,6 @@ import 'package:pj_demo/models/keyword.dart';
 import 'package:pj_demo/pages/profile_detail_page.dart';
 import 'package:pj_demo/pages/search_result_page.dart';
 import 'package:pj_demo/providers/user_provider.dart';
-import 'package:pj_demo/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/album_provider.dart';
