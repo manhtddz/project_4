@@ -173,7 +173,7 @@ public class AlbumController {
         );
     }
 
-    @PutMapping("/admin/albums/toggle/release")
+    @PutMapping("/admin/albums/toggle/release/{id}")
     public ResponseEntity<Object> toggleReleaseAlbum(@PathVariable("id") int id) {
         service.toggleAlbumReleaseStatus(id);
         return new ResponseEntity<>(

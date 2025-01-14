@@ -109,7 +109,7 @@ public class KeywordController {
         }
     }
 
-    @PutMapping("/admin/keywords/toggle/active")
+    @PutMapping("/admin/keywords/toggle/active/{id}")
     public ResponseEntity<Object> toggleKeywordActive(@PathVariable("id") int id) {
         service.toggleKeywordActiveStatus(id);
         return new ResponseEntity<>(

@@ -236,7 +236,7 @@ public class SongController {
 
     }
 
-    @PutMapping("/admin/songs/toggle/pending")
+    @PutMapping("/admin/songs/toggle/pending/{id}")
     public ResponseEntity<Object> toggleSongPending(@PathVariable("id") int id) {
         service.toggleSongPendingStatus(id);
         return new ResponseEntity<>(
