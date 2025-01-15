@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:pj_demo/dto/user_update_request.dart';
+import 'package:pj_demo/pages/change_password_page.dart';
 import 'package:provider/provider.dart';
 import '../models/user.dart';
 import '../providers/user_provider.dart';
@@ -26,13 +27,13 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ProfilePage(),
+      home: ChangePasswordPage(),
     );
   }
 }
 
 class ProfilePage extends StatelessWidget {
-  final int userId = 5; // Example user ID
+  // final int userId = 5; // Example user ID
 
   // var _txtBio = TextEditingController();
   var _txtPhone = TextEditingController();
@@ -43,14 +44,6 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    // Fetch user data after the widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // if (userProvider.currentUser == null && !userProvider.isLoading) {
-      //   userProvider.fetchUserData(userId, context);
-      // }
-      userProvider.fetchUserData(userId, context);
-    });
 
     return Scaffold(
       appBar: PreferredSize(
@@ -76,7 +69,8 @@ class ProfilePage extends StatelessWidget {
                   padding: EdgeInsets.only(bottom: 100),
                   child: CircleAvatar(
                     radius: 40,
-                    backgroundImage: NetworkImage(userProvider.currentUser!.avatar!), // Update image URL dynamically
+                    backgroundImage: NetworkImage(userProvider
+                        .currentUser!.avatar!), // Update image URL dynamically
                   ),
                 ),
               ),
@@ -117,7 +111,8 @@ class ProfilePage extends StatelessWidget {
       ),
       body: Consumer<UserProvider>(builder: (context, userProvider, child) {
         if (userProvider.isLoading) {
-          return Center(child: CircularProgressIndicator()); // Show loading spinner
+          return Center(
+              child: CircularProgressIndicator()); // Show loading spinner
         }
 
         if (userProvider.currentUser == null) {
@@ -158,22 +153,22 @@ class ProfilePage extends StatelessWidget {
       color: Color(0xFFF2F2F2),
       child: Column(
         children: [
-          _buildInfoRow(currentUser, 'fullName', _txtFullname.text, _txtFullname, context),
+          _buildInfoRow('fullName', _txtFullname.text, _txtFullname, context),
           // _buildInfoTextbox('Bio', _txtBio.text, _txtBio, context),
-          _buildInfoRow(currentUser, 'dob', _txtBirthday.text, _txtBirthday, context),
+          _buildInfoRow('dob', _txtBirthday.text, _txtBirthday, context),
           _buildDropdownRow('Gender', ['Male', 'Female', 'Other'], 'Other'),
         ],
       ),
     );
   }
 
-  Widget _renderInfoField(User currentUser,BuildContext context) {
+  Widget _renderInfoField(User currentUser, BuildContext context) {
     return Card(
       color: Color(0xFFF2F2F2),
       child: Column(
         children: [
-          _buildInfoRow(currentUser, 'phone', _txtPhone.text, _txtPhone, context),
-          _buildInfoRow(currentUser, 'email', _txtEmail.text, _txtEmail, context),
+          _buildInfoRow('phone', _txtPhone.text, _txtPhone, context),
+          _buildInfoRow('email', _txtEmail.text, _txtEmail, context),
         ],
       ),
     );
@@ -188,12 +183,12 @@ class ProfilePage extends StatelessWidget {
         ));
   }
 
-  Widget _buildInfoRow(User currentUser, String label, String value, TextEditingController txt,
+  Widget _buildInfoRow(String label, String value, TextEditingController txt,
       BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
         child:
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('$label:',
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.black54)),
@@ -204,7 +199,7 @@ class ProfilePage extends StatelessWidget {
                 style: TextStyle(color: Colors.black54),
               ),
               IconButton(
-                onPressed: () => _showEditDialog(currentUser, label, txt, context),
+                onPressed: () => _showEditDialog(label, txt, context),
                 icon: Icon(Icons.arrow_forward),
                 color: Colors.blue,
               )
@@ -213,7 +208,7 @@ class ProfilePage extends StatelessWidget {
         ]));
   }
 
-  void _showEditDialog(User currentUser,
+  void _showEditDialog(
       String label, TextEditingController controller, BuildContext context) {
     showDialog(
       context: context,
@@ -223,7 +218,8 @@ class ProfilePage extends StatelessWidget {
           child: AlertDialog(
             title: Text(
               'Edit Info',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
             ),
             content: SingleChildScrollView(
               child: Column(
@@ -231,7 +227,8 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   label == 'dob'
                       ? _buildEditableDatePickerRow(controller, context)
-                      : _buildEditableRow(label, controller, 1),  // TextField for other fields
+                      : _buildEditableRow(
+                          label, controller, 1), // TextField for other fields
                   SizedBox(
                     width: 100,
                     child: ElevatedButton(
@@ -239,7 +236,7 @@ class ProfilePage extends StatelessWidget {
                         minimumSize: Size(50, 40),
                         backgroundColor: Color(0xFFADDFFF),
                       ),
-                      onPressed: () => _saveInfo(currentUser, label, controller, context),
+                      onPressed: () => _saveInfo(label, controller, context),
                       child: Text(
                         'Save',
                         style: TextStyle(color: Colors.black54),
@@ -256,7 +253,8 @@ class ProfilePage extends StatelessWidget {
   }
 
   // Custom method to display the DatePicker for DOB
-  Widget _buildEditableDatePickerRow(TextEditingController controller, BuildContext context) {
+  Widget _buildEditableDatePickerRow(
+      TextEditingController controller, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -272,25 +270,30 @@ class ProfilePage extends StatelessWidget {
                 context: context,
                 initialDate: controller.text.isNotEmpty
                     ? DateFormat('yyyy-MM-dd').parse(controller.text)
-                    : DateTime.now(),  // Default to today's date if no value exists
+                    : DateTime
+                        .now(), // Default to today's date if no value exists
                 firstDate: DateTime(1900),
                 lastDate: DateTime.now(),
               );
 
               if (selectedDate != null) {
                 // Format the selected date to match the format
-                String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-                controller.text = formattedDate;  // Update the controller with the selected date
+                String formattedDate =
+                    DateFormat('yyyy-MM-dd').format(selectedDate);
+                controller.text =
+                    formattedDate; // Update the controller with the selected date
               }
             },
-            child: AbsorbPointer(  // Prevent user from typing directly
+            child: AbsorbPointer(
+              // Prevent user from typing directly
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
                   hintText: 'Select date of birth',
                   border: InputBorder.none,
                 ),
-                readOnly: true,  // Make the TextField read-only since we're using DatePicker
+                readOnly:
+                    true, // Make the TextField read-only since we're using DatePicker
               ),
             ),
           ),
@@ -300,7 +303,8 @@ class ProfilePage extends StatelessWidget {
   }
 
   // Default editable row for other fields
-  Widget _buildEditableRow(String label, TextEditingController controller, int maxLines) {
+  Widget _buildEditableRow(
+      String label, TextEditingController controller, int maxLines) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -346,22 +350,19 @@ class ProfilePage extends StatelessWidget {
         ));
   }
 
-  void _saveInfo(User currentUser, String attribute, TextEditingController controller, BuildContext context) {
+  void _saveInfo(String attribute, TextEditingController controller,
+      BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     // Create UpdateUserWithAttribute with the selected attribute and its value
     UpdateUserWithAttribute userInfo = UpdateUserWithAttribute(
-        id: currentUser.id!,
+        id: userProvider.currentUser!.id!,
         attribute: attribute,
-        value: controller.text
-    );
+        value: controller.text);
 
     // Call the provider method to update the user info
     userProvider.editUserInfoByPart(userInfo, context);
 
     Navigator.pop(context); // Close the dialog after saving
   }
-
 }
-
-

@@ -83,7 +83,7 @@ class UserApi extends Api {
 
   Future<User?> fetchUserData(int userId, BuildContext context) async {
     try {
-      var response = await getNoAuth('${UrlConsts.USERBYID}/$userId', context);
+      var response = await get('${UrlConsts.USERBYID}/$userId', context);
       if (response.statusCode == 200) {
         return User.fromJson(jsonDecode(response.body));
       } else {
@@ -102,7 +102,30 @@ class UserApi extends Api {
       final updatedData = requestData.toJson(); // Assuming `toJson()` is implemented in User model
 
       // Send the PUT or PATCH request to the API
-      var response = await putNoAuth('${UrlConsts.USERS}/updatePart', updatedData, context);
+      var response = await put('${UrlConsts.USERS}/updatePart', updatedData, context);
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        print('User information updated successfully');
+        return true;  // Return true if the update was successful
+      } else {
+        print('Failed to update user info: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return false;  // Return false if the update failed
+      }
+    } catch (e) {
+      print('Error updating user info: $e');
+      return false;  // Return false in case of any error
+    }
+  }
+
+  Future<bool> changeUserPassword(UpdateUserPassword requestData, BuildContext context) async {
+    try {
+      // Prepare the updated user data (convert User object to a Map)
+      final updatedData = requestData.toJson(); // Assuming `toJson()` is implemented in User model
+
+      // Send the PUT or PATCH request to the API
+      var response = await put('${UrlConsts.USERS}/updatePassword', updatedData, context);
 
       // Check the response status code
       if (response.statusCode == 200) {

@@ -148,6 +148,41 @@ class Api {
     return response;
   }
 
+  Future<http.Response> put(String path, dynamic request, BuildContext context) async {
+    var uri = Uri.http(UrlConsts.HOST, path); // Build the URI for the request
+
+    // Convert request to JSON string
+    var body = jsonEncode(request);
+
+    // Assuming _makeHeader is a method that returns necessary headers (like Authorization)
+    var headers = await _makeHeader(path);
+
+    try {
+      // Send the POST request
+      var response = await http.put(
+        uri,
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Failed to load data. Status code: ${response.statusCode}');
+      }
+
+      if (response.statusCode == 401) {
+        print("Unauthorized: Token expired");
+      }
+
+      _handleSecurityError(response, context);
+
+      return response;
+    } catch (e) {
+      print("Error in POST request: $e");
+      rethrow; // Re-throw the error so the caller can handle it
+    }
+  }
+
   // common put method without Auth. Comment out later.
   Future<http.Response> putNoAuth(String path, Map<String, dynamic> body, BuildContext context, {Map<String, String>? params}) async {
     try {

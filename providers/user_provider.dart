@@ -197,4 +197,32 @@ class UserProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> changeUserPassword(UpdateUserPassword requestData, BuildContext context) async {
+    try {
+      // Set loading state
+      _isLoading = true;
+      notifyListeners();
+
+      // Call the API to edit the user information
+      bool success = await _userApi.changeUserPassword(requestData, context);
+
+      // If the update is successful, update the user data
+      if (success) {
+        // Optionally, fetch the updated user data if needed
+        _currentUser = await _userApi.fetchUserData(requestData.id, context);
+      }
+
+      // Set loading state to false and notify listeners
+      _isLoading = false;
+      notifyListeners();
+
+      return success;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      print('Error during update: $e');
+      return false;
+    }
+  }
 }
