@@ -286,7 +286,6 @@ public class AlbumService {
         }
         Albums album = op.get();
         album.setIsReleased(!album.getIsReleased());
-        album.setReleaseDate(new Date());
         album.setModifiedAt(new Date());
         repo.save(album);
 
