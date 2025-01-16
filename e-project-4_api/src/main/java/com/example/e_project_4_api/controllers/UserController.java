@@ -5,6 +5,7 @@ import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -32,8 +33,14 @@ public class UserController {
 
     @GetMapping("/admin/users/display")
     public ResponseEntity<List<UserDisplayForAdmin>> findAllForAdmin
-            (@RequestParam(value = "page", defaultValue = "0") int page){
+            (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllUsersDisplayForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/users/display/search")
+    public ResponseEntity<List<UserDisplayForAdmin>> getSearchedSongsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchUsersDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/users/count")

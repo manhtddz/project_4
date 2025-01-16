@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.SongWithViewInMonth;
@@ -74,6 +75,14 @@ public class SongService {
         Pageable pageable = PageRequest.of(page, 10);
 
         return repo.findAllNotDeletedPaging(false, pageable)
+                .stream()
+                .map(this::toSongDisplayAdmin)
+                .collect(Collectors.toList());
+    }
+
+    public List<SongDisplayForAdmin> getSearchSongsDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
                 .stream()
                 .map(this::toSongDisplayAdmin)
                 .collect(Collectors.toList());

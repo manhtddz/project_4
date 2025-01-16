@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.LikeBaseModel;
 import com.example.e_project_4_api.dto.request.NewOrUpdateSong;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.SongResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.SongWithViewInMonth;
@@ -41,6 +42,12 @@ public class SongController {
     public ResponseEntity<List<SongDisplayForAdmin>> findAllSongsDisplayForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllSongsForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/songs/display/search")
+    public ResponseEntity<List<SongDisplayForAdmin>> getSearchedSongsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchSongsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/songs/count")

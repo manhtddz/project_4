@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
+import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -41,6 +42,12 @@ public class AlbumController {
     public ResponseEntity<List<AlbumDisplayForAdmin>> findAllAlbumsDisplayForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllAlbumsDisplayForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/albums/display/search")
+    public ResponseEntity<List<AlbumDisplayForAdmin>> getSearchedAlbumsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchAlbumsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/albums/count")

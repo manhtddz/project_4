@@ -3,6 +3,7 @@ package com.example.e_project_4_api.service;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -56,7 +57,13 @@ public class GenresService {
                 .map(this::toGenreDisplayForAdmin)
                 .collect(Collectors.toList());
     }
-
+    public List<GenreDisplayForAdmin> getSearchGenresDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
+                .stream()
+                .map(this::toGenreDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
 
     public GenresResponse findById(int id) {
         Optional<Genres> op = repo.findByIdAndIsDeleted(id, false);

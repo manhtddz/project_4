@@ -56,6 +56,13 @@ public class ArtistService {
                 .collect(Collectors.toList());
     }
 
+    public List<ArtistDisplayForAdmin> getSearchArtistsDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
+                .stream()
+                .map(this::toArtistDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
 
     public ArtistResponse findById(int id) {
         Optional<Artists> op = repo.findByIdAndIsDeleted(id, false);

@@ -5,6 +5,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.GenresService;
@@ -36,6 +37,12 @@ public class NewsController {
     public ResponseEntity<List<NewsDisplayForAdmin>> findAllForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllNewsForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/news/display/search")
+    public ResponseEntity<List<NewsDisplayForAdmin>> getSearchedNewsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchNewsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/news/count")

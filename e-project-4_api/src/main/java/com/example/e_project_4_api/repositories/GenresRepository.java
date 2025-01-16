@@ -25,4 +25,7 @@ public interface GenresRepository extends JpaRepository<Genres, Integer> {
 
     @Query("Select COUNT(a) from Genres a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Genres a where a.title Like %:searchTxt% AND a.isDeleted = :isDeleted")
+    List<Genres> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, boolean isDeleted, Pageable pageable);
 }

@@ -3,6 +3,7 @@ package com.example.e_project_4_api.service;
 import com.example.e_project_4_api.dto.request.*;
 import com.example.e_project_4_api.dto.response.common_response.AlbumResponse;
 import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
+import com.example.e_project_4_api.dto.response.display_for_admin.ArtistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.display_response.SongDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -66,6 +67,14 @@ public class AlbumService {
     public List<AlbumDisplayForAdmin> getAllAlbumsDisplayForAdmin(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         return repo.findAllNotDeletedPaging(false, pageable)
+                .stream()
+                .map(this::toAlbumDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlbumDisplayForAdmin> getSearchAlbumsDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
                 .stream()
                 .map(this::toAlbumDisplayForAdmin)
                 .collect(Collectors.toList());

@@ -4,6 +4,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateKeyword;
 import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.response.common_response.KeywordResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.ex.ValidationException;
 import com.example.e_project_4_api.service.KeywordService;
@@ -35,6 +36,12 @@ public class KeywordController {
     public ResponseEntity<List<KeywordDisplayForAdmin>> findAllForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllKeywordsForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/keywords/display/search")
+    public ResponseEntity<List<KeywordDisplayForAdmin>> getSearchedKeywordsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchKeywordsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/keywords/count")

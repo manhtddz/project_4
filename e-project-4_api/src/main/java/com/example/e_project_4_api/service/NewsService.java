@@ -5,6 +5,7 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateNews;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
 import com.example.e_project_4_api.dto.response.common_response.NewsResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.KeywordDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.NewsDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -53,7 +54,13 @@ public class NewsService {
                 .map(this::toNewsDisplayForAdmin)
                 .collect(Collectors.toList());
     }
-
+    public List<NewsDisplayForAdmin> getSearchNewsDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, pageable)
+                .stream()
+                .map(this::toNewsDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
 
     public NewsResponse findById(int id) {
         Optional<News> op = repo.findById(id);

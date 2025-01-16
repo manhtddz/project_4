@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
 import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -55,6 +56,14 @@ public class PlaylistService {
     public List<PlaylistDisplayForAdmin> getAllPlaylistsDisplayForAdmin(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         return repo.findAllNotDeletedPaging(false,pageable)
+                .stream()
+                .map(this::toPlaylistDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
+    public List<PlaylistDisplayForAdmin> getSearchPlaylistsDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
                 .stream()
                 .map(this::toPlaylistDisplayForAdmin)
                 .collect(Collectors.toList());

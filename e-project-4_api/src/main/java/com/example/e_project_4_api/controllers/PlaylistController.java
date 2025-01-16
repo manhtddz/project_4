@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdatePlaylist;
 import com.example.e_project_4_api.dto.response.common_response.PlaylistResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.PlaylistDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.PlaylistDisplay;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -35,6 +36,12 @@ public class PlaylistController {
     @GetMapping("/admin/playlists/count")
     public ResponseEntity<Object> getQuantity() {
         return new ResponseEntity<>(Map.of("qty", service.getNumberOfPlaylist()), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/playlists/display/search")
+    public ResponseEntity<List<PlaylistDisplayForAdmin>> getSearchedPlaylistsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchPlaylistsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/playlists/display")

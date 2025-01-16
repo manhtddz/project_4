@@ -2,6 +2,7 @@ package com.example.e_project_4_api.service;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
 import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_response.AlbumDisplay;
 import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
@@ -49,6 +50,14 @@ public class CategoryService {
     public List<CategoryDisplayForAdmin> getAllCategoriesDisplayForAdmin(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         return cateRepository.findAllNotDeletedPaging(false, pageable)
+                .stream()
+                .map(this::toCategoryCategoryDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoryDisplayForAdmin> getSearchCategoriesDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return cateRepository.searchNotDeletedPaging(searchTxt, false, pageable)
                 .stream()
                 .map(this::toCategoryCategoryDisplayForAdmin)
                 .collect(Collectors.toList());

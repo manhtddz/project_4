@@ -3,6 +3,7 @@ package com.example.e_project_4_api.controllers;
 import com.example.e_project_4_api.dto.request.NewOrUpdateGenres;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.response.common_response.GenresResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.GenreDisplayForAdmin;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -35,6 +36,12 @@ public class GenresController {
     public ResponseEntity<List<GenreDisplayForAdmin>> findAllGenreDisplayForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllGenreDisplayForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/genres/display/search")
+    public ResponseEntity<List<GenreDisplayForAdmin>> getSearchedGenresDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchGenresDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/genres/count")

@@ -2,6 +2,7 @@ package com.example.e_project_4_api.controllers;
 
 import com.example.e_project_4_api.dto.request.NewOrUpdateCategory;
 import com.example.e_project_4_api.dto.response.common_response.CategoryResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.AlbumDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.CategoryDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.mix_response.CategoryWithAlbumsResponse;
 import com.example.e_project_4_api.ex.ValidationException;
@@ -30,6 +31,12 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDisplayForAdmin>> findAllForAdmin
             (@RequestParam(value = "page", defaultValue = "0") int page) {
         return new ResponseEntity<>(service.getAllCategoriesDisplayForAdmin(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/categories/display/search")
+    public ResponseEntity<List<CategoryDisplayForAdmin>> getSearchedCategoriesDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(service.getSearchCategoriesDisplayForAdmin(searchTxt, page), HttpStatus.OK);
     }
 
     @GetMapping("/admin/categories/count")

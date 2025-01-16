@@ -35,6 +35,12 @@ public class ArtistController {
         return new ResponseEntity<>(artistService.getAllArtistsDisplayForAdmin(page), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/artists/display/search")
+    public ResponseEntity<List<ArtistDisplayForAdmin>> getSearchedArtistsDisplayForAdmin
+            (@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "searchTxt", defaultValue = "") String searchTxt) {
+        return new ResponseEntity<>(artistService.getSearchArtistsDisplayForAdmin(searchTxt, page), HttpStatus.OK);
+    }
+
     @GetMapping("/admin/artists/count")
     public ResponseEntity<Object> getQuantity() {
         return new ResponseEntity<>(Map.of("qty", artistService.getNumberOfArtist()), HttpStatus.OK);

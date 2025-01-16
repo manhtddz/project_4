@@ -6,6 +6,7 @@ import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
 import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
+import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
 import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
@@ -258,6 +259,15 @@ public class UserService {
                 .map(this::toUserDisplayForAdmin)
                 .collect(Collectors.toList());
     }
+
+    public List<UserDisplayForAdmin> getSearchUsersDisplayForAdmin(String searchTxt, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return repo.searchNotDeletedPaging(searchTxt, false, pageable)
+                .stream()
+                .map(this::toUserDisplayForAdmin)
+                .collect(Collectors.toList());
+    }
+
 
     public UserResponse findById(int id) {
         Optional<Users> op = repo.findByIdAndIsDeleted(id, false);

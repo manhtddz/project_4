@@ -32,6 +32,9 @@ public interface AlbumRepository extends JpaRepository<Albums, Integer>, JpaSpec
     @Query("Select a from Albums a where a.isDeleted = :isDeleted")
     List<Albums> findAllNotDeleted(boolean isDeleted);
 
+    @Query("Select a from Albums a where a.title Like %:searchTxt% AND a.isDeleted = :isDeleted")
+    List<Albums> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, boolean isDeleted, Pageable pageable);
+
     @Query("Select a from Albums a where a.isDeleted = :isDeleted")
     List<Albums> findAllNotDeletedPaging(boolean isDeleted, Pageable pageable);
 

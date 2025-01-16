@@ -28,4 +28,7 @@ public interface PlaylistRepository extends JpaRepository<Playlists, Integer> {
 
     @Query("Select COUNT(a) from Playlists a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Playlists a where a.title Like %:searchTxt% AND a.isDeleted = :isDeleted")
+    List<Playlists> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, boolean isDeleted, Pageable pageable);
 }

@@ -26,4 +26,7 @@ public interface CategoryRepository extends JpaRepository<Categories, Integer> {
 
     @Query("Select COUNT(a) from Categories a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Categories a where a.title Like %:searchTxt% AND a.isDeleted = :isDeleted")
+    List<Categories> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, boolean isDeleted, Pageable pageable);
 }

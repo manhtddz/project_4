@@ -21,4 +21,7 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
 
     @Query("Select COUNT(a) from News a")
     int getNumberOfAll();
+
+    @Query("Select a from News a where a.title Like %:searchTxt%")
+    List<News> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, Pageable pageable);
 }

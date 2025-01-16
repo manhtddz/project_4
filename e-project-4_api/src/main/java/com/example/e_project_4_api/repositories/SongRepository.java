@@ -39,4 +39,7 @@ public interface SongRepository extends JpaRepository<Songs, Integer> {
 
     @Query("Select COUNT(a) from Songs a where a.isDeleted = :isDeleted")
     int getNumberOfAllNotDeleted(@Param("isDeleted") boolean isDeleted);
+
+    @Query("Select a from Songs a where a.title Like %:searchTxt% AND a.isDeleted = :isDeleted")
+    List<Songs> searchNotDeletedPaging(@Param("searchTxt") String searchTxt, boolean isDeleted, Pageable pageable);
 }
