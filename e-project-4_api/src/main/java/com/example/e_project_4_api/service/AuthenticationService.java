@@ -201,7 +201,7 @@ public class AuthenticationService {
                 throw new ValidationException(Collections.singletonList(Map.of("permissionError", "You don't have permission")));
             }
 
-            return new AdminOrArtistLoginResponse(jwtService.generateTokenForAdminOrArtist(request.getUsername(), user.getFullName(), user.getRole()));
+            return new AdminOrArtistLoginResponse(jwtService.generateTokenForAdminOrArtist(user.getId().toString(),user.getUsername(), user.getFullName(), user.getRole()));
         }
 
         return null;
