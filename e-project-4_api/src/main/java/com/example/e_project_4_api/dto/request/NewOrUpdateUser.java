@@ -22,7 +22,7 @@ public class NewOrUpdateUser {
     @NotBlank(message = "fullName is required")
     private String fullName;
     private String avatar;
-    @NotBlank(message = "password is required")
+//    @NotBlank(message = "password is required")
     private String password;
     @NotBlank(message = "phone is required")
     private String phone;

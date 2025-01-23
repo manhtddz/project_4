@@ -4,15 +4,10 @@ import com.example.e_project_4_api.dto.request.NewOrUpdateUser;
 import com.example.e_project_4_api.dto.request.UpdateFileModel;
 import com.example.e_project_4_api.dto.request.UpdatePasswordModel;
 import com.example.e_project_4_api.dto.request.UpdateUserWithAttribute;
-import com.example.e_project_4_api.dto.response.auth_response.LoginResponse;
 import com.example.e_project_4_api.dto.response.common_response.UserResponse;
-import com.example.e_project_4_api.dto.response.display_for_admin.SongDisplayForAdmin;
 import com.example.e_project_4_api.dto.response.display_for_admin.UserDisplayForAdmin;
-import com.example.e_project_4_api.ex.AlreadyExistedException;
 import com.example.e_project_4_api.ex.NotFoundException;
 import com.example.e_project_4_api.ex.ValidationException;
-import com.example.e_project_4_api.models.Artists;
-import com.example.e_project_4_api.models.Songs;
 import com.example.e_project_4_api.models.Users;
 import com.example.e_project_4_api.repositories.ArtistRepository;
 import com.example.e_project_4_api.repositories.UserRepository;
@@ -71,10 +66,11 @@ public class UserService {
             errors.add(Map.of("usernameError", "Already exist username"));
         }
 
-
-        if (!PasswordValidator.isValidPassword(request.getPassword())) {
-            errors.add(Map.of("passwordError",
-                    "Password is not strong enough, at least 8 character with special character and number"));
+        if (!request.getPassword().isEmpty()) {
+            if (!PasswordValidator.isValidPassword(request.getPassword())) {
+                errors.add(Map.of("passwordError",
+                        "Password is not strong enough, at least 8 characters with special character and number"));
+            }
         }
 
         if (!PhoneNumberValidator.isValidPhoneNumber(request.getPhone())) {
@@ -105,7 +101,12 @@ public class UserService {
             user.setAvatar(request.getAvatar());
         }
         user.setUsername(request.getUsername());
-        user.setPassword(encoder.encode(request.getPassword()));
+        if (!request.getPassword().isEmpty()) {
+            user.setPassword(encoder.encode(request.getPassword()));
+        } else {
+            user.setPassword(op.get().getPassword());
+        }
+
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setEmail(request.getEmail());
