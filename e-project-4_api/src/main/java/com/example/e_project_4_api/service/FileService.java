@@ -69,7 +69,7 @@ public class FileService {
 
     }
 
-    public String uploadAudioFile(@RequestParam("file") MultipartFile file) {
+    public String uploadAudioFile( MultipartFile file) {
         try {
             // Đường dẫn folder lưu trữ
             String uploadFolder = FOLDER + "audio/";
@@ -117,7 +117,7 @@ public class FileService {
         }
     }
 
-    public String uploadLRCFile(@RequestParam("file") MultipartFile file) {
+    public String uploadLRCFile( MultipartFile file) {
         try {
             // Đường dẫn folder lưu trữ
             String uploadFolder = FOLDER + "lrc/";
