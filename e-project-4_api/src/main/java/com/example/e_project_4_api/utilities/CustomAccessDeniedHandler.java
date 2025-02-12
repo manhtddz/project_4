@@ -1,5 +1,6 @@
 package com.example.e_project_4_api.utilities;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,5 +18,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN); // HTTP 403
         response.getWriter().write("You do not have permission to access this resource");
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        response.getWriter().write(objectMapper.writeValueAsString(objRes));
     }
 }
